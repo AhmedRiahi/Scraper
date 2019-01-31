@@ -1,3 +1,4 @@
 
 pupitter/node_modules/**
 .idea/**
+**/target/**
