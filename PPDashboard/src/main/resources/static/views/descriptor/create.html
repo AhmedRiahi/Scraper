@@ -1,0 +1,261 @@
+<div class='row'>
+			<div class='col-md-12'>
+				<h2>{{currentDescriptor.name}} Descriptor</h2>
+				<button class='btn btn-danger pull-right' ng-click="deleteDescriptor(currentDescriptor)">Delete</button>
+				<div class="clearfix"></div>
+			</div>
+			<div class='col-md-8'>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+					  <h3 class="panel-title">Parse Descriptor</h3>
+					</div>
+					<div class="panel-body">
+						<textarea class='form-control' placeholder='Put descriptor contents here...' ng-model='descriptor' rows="8"></textarea>
+					</div>
+					<div class="panel-footer">
+						<button class='btn btn-success pull-right' ng-click='parseDescriptor()'>Parse Descriptor</button>
+						<div class='clearfix'></div>
+					</div>
+				</div>
+			</div>
+			<div class='col-md-4'>
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+					  <h3 class="panel-title">Submit Descriptor</h3>
+					</div>
+					<div class="panel-body">
+						<div class='form-group'>
+							Descriptor name
+							<input type="text" class='form-control' ng-model="currentDescriptor.name" placeholder="Descriptor name">
+						</div>
+						<div class='form-group'>
+							Descriptor URL
+							<input type="text" class='form-control' ng-model="currentDescriptor.url" placeholder="Descriptor URL">
+						</div>
+						<div class='form-group'>
+							Descriptor Checking Interval (Minutes)
+							<input type="number" class='form-control' ng-model="currentDescriptor.checkingInterval" placeholder="Descriptor Checking Interval">
+						</div>
+					</div>
+					<div class="panel-footer">
+						<button class='btn btn-success pull-right' ng-click="submitDescriptor()">SubmitDescriptor</button>
+						<div class='clearfix'></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class='row'>
+				<div class='col-md-7'>
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">Descriptor Listeners</h3>
+							<div class="pull-right">
+								<button class="btn btn-danger btn-sm" ng-click="deleteListener()" ng-if="currentListener">Delete Listener</button>
+								<button class="btn btn-success btn-sm" ng-click="addListener()" >Add Listener</button>
+							</div>
+							<div class="clearfix"></div>
+						</div>
+						<div class="panel-body">
+							<div class='row'>
+								<div class='col-md-4'>
+									<ul class="list-group ">
+										<li class="list-group-item" 
+											ng-class='{
+												active : currentListener == listener,
+												"list-group-item-success": listener.semanticProperties.individual,
+												"list-group-item-info": listener.staticValue
+											}'
+											ng-repeat="listener in currentDescriptor.contentListeners"
+											ng-click="selectListener(listener)">{{listener.name}}</li>
+									</ul>
+								</div>
+								<div class='col-md-4' ng-if="currentListener">
+									<div>
+										<h4><b>Listener properties</b></h4>
+										<div class='form-group'>
+											Listener Name
+											<input 	type="text" 
+													class='form-control'  
+													ng-model="currentListener.name"
+													placeholder="Listener Name">
+										</div>
+										
+									</div>
+									<div ng-if="currentListener.semanticReference || currentListener.semanticProperties.individual">
+										<h4><b>Semantic properties</b></h4>
+										<div class='form-group'>
+											Semantic Name
+											<select ng-model="currentListener.semanticProperties.semanticName"
+													class="form-control"
+													ng-if="!currentListener.semanticProperties.individual">
+														
+													<option ng-repeat="property in currentListener.sourceSchema.allProperties"
+															value="{{property.name}}">
+														{{property.name}}
+													</option>
+											</select>
+											<select class='form-control' 
+													ng-model="currentListener.semanticProperties.semanticName"
+													ng-if="currentListener.semanticProperties.individual">
+
+												<option ng-repeat="schema in schemas"
+														value="{{schema.name}}">{{schema.name}}</option>
+											</select>
+											</br>
+											<div class='form-group'>
+												Static value
+
+												<input 	type="text" 
+														class='form-control'  
+														ng-model="currentListener.staticValue"
+														placeholder="Static value"
+														ng-if='!isSchemaReferenceProperty()'/>
+							
+												<select class="form-control"
+														ng-model="currentListener.staticValue"
+														ng-if="isSchemaReferenceProperty()"
+														ng-options="individual.uniqueProperty as individual.displayString for individual in schemaIndividuals[currentListener.semanticProperties.semanticName]">
+													
+												</select>
+
+											</div>
+										</div>
+										
+									</div>
+									<div class='form-group'>
+										<input 	type="checkbox"
+												ng-true-value="true"
+												ng-false-value="false"
+												ng-model="currentListener.semanticProperties.individual"> Individual
+									</div>
+								</div>
+							</div>
+							<div class='row' ng-show="currentListener">
+								<div class='col-md-6' >
+									<div class="well">
+										<h4><b>Pre-Process Script</b></h4>
+										
+										</br>
+										<textarea 	class="form-control" 
+													rows="8" 
+													placeholder="Please type your javascript code here..."
+													ng-model="currentListener.preProcessScript"></textarea>
+										</br>
+										<p class="label label-success" ng-bind="scriptResult" ng-show="scriptResult" style="display:block"></p></br>
+										<div class="pull-right">
+											<div class="form-inline">
+												<input type="text" class="form-control" placeholder="Script Input" ng-model="scriptInput"/>
+												<button class="btn btn-info " ng-click="testScript()">Test Script</button>
+											</div>
+										</div>
+										
+										<span class="clearfix"></span>
+									</div>
+								</div>
+								
+								<div class='col-md-6' >
+									<div class="well">
+										<div >
+											<button class="btn btn-success btn-sm pull-right" ng-click="addSignature()">Add</button>
+											<h4><b>Signatures</b></h4>
+										</div>
+										</br>
+										<table class="table table-striped">
+											<thead>
+												<tr>
+													<th>Type</th>
+													<th>Value</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="signature in currentListener.signatures">
+													<td>
+														<input type="text" ng-model="signature.signatureType" class="form-control"/>
+													</td>
+													<td>
+														<input type="text" ng-model="signature.value" class="form-control"/>
+													</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class='col-md-5'>
+					<div class="panel panel-primary">
+						<div class="panel-heading">
+							<h3 class="panel-title">Descriptor Relations</h3>
+						</div>
+						<div class="panel-body">
+							<div class="row">
+								<div class="col-md-6">
+									<h4><b>Semantic Relations</b></h4>
+									<div ng-repeat="sr in currentDescriptor.semanticRelations">
+										<div class='well'>
+											<div class="form-group">
+												Select Source Listener
+												<select class='form-control' ng-model="sr.source" 
+														ng-options="listener.name for listener in currentDescriptor.contentListeners track by listener.name">
+												</select>
+											</div>
+											<div class="form-group">
+												Select Target Listener
+												<select class='form-control' ng-model="sr.target.name">
+													<option ng-repeat="listener in currentDescriptor.contentListeners">{{listener.name}}</option>
+												</select>
+											</div>
+											<div class="form-group">
+												Cardinality Type
+												<select class='form-control' ng-model="sr.cardinalityType">
+													<option value="ONE_TO_ONE">One To One</option>
+													<option value="ONE_TO_MANY">One To Many</option>
+													<option value="MANY_TO_ONE">Many To One</option>
+													<option value="MANY_TO_MANY">Many To Many</option>
+												</select>
+											</div>
+											<div class="form-group">
+												Cardinality Type
+												<select class='form-control' ng-model="sr.type">
+													<option value="compositionRelation">Composition</option>
+													<option value="aggregationRelation">Aggregation</option>
+												</select>
+											</div>
+											<button class="btn btn-danger btn-sm pull-right" ng-click="removeSemanticRelation(sr)">Remove</button>
+											<div class="clearfix"></div>
+										</div>
+									</div>
+									<button class='btn btn-success' ng-click="addSemanticRelation()">Add</button>
+								</div>
+
+								<div class="col-md-6">
+									<h4><b>Struncture Relations</b></h4>
+									<div ng-repeat="sr in currentDescriptor.structureRelations">
+										<div class='well'>
+											<div class="form-group">
+												Select Source Listener
+												<select class='form-control' ng-model="sr.source.name">
+													<option ng-repeat="listener in currentDescriptor.contentListeners">{{listener.name}}</option>
+												</select>
+											</div>
+											<div class="form-group">
+												Select Target Listener
+												<select class='form-control' ng-model="sr.target.name">
+													<option ng-repeat="listener in currentDescriptor.contentListeners">{{listener.name}}</option>
+												</select>
+											</div>
+											<button class="btn btn-danger btn-sm pull-right" ng-click="removeStructureRelation(sr)">Remove</button>
+											<div class="clearfix"></div>
+										</div>
+									</div>
+									<button class='btn btn-success' ng-click="addStructureRelation()">Add</button>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+		</div>

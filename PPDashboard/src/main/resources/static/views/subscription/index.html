@@ -1,0 +1,33 @@
+<div class="row" style="padding: 20px">
+	<div class="col-md-4">
+		Select Schema
+		<select class="form-control" 
+				ng-model="schema" 
+				ng-options="schema as schema.name for schema in schemas track by schema.name"
+				ng-change="selectSubscriptionSchema()">
+		</select>
+		<div class="form-group" ng-repeat="property in schema.allProperties">
+			{{property.name}}
+			<input 	type="text" 
+					class="form-control" 
+					placeholder="{{property.name}}" 
+					ng-if="property.propertyType.class=='primitive'"
+					ng-model="individual[property.name]"/>
+
+			<select class="form-control"
+					ng-options="individual.displayString for individual in schemaIndividuals[property.propertyType.value]" 
+					ng-if="property.propertyType.class=='reference'" 
+					ng-model="individual[property.name]"></select>
+		</div>
+		</br>
+		<button class="btn btn-success pull-right" ng-click="createSubscription()">Create</button>
+		<br>
+	</div>
+	<div class="col-md-4">
+		<h3>Subscriptions</h3>
+		<div class="form-group well" ng-repeat="subscription in subscriptions">
+		<p><b>Schema</b> :{{subscription.schema.name}}</p>
+		<p><a href="http://localhost:9002/subscription/individuals/{{subscription.stringId}}" target="_blank">List of Individuals</a></p>
+		</div>
+	</div>
+</div>

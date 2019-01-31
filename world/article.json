@@ -1,0 +1,19 @@
+{
+	"id" : "Article",
+
+	"properties": {
+		"domain": {
+			"$ref": "domain"
+		},
+		"title":{
+			"type" : "text"
+		},
+		"description":{
+			"type" : "text"
+		},
+		"link":{
+			"type" : "url"
+		}
+	}
+
+}

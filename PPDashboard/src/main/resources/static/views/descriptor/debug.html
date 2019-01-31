@@ -1,0 +1,50 @@
+<div class='row'>
+	<div class='col-md-12'>
+		<h2><span class="glyphicon glyphicon-book"></span> {{executionHistory.descriptorJob.descriptor.name}} Descriptor</h2>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="well">
+					<h3>Last Executed step</h3>
+					<h4>{{dwdp.debugInformation.mozartExecutionStep}}</h4>
+				</div>
+				<div ng-show='dwdp.debugInformation.exception' class='well'>
+					<h3>Exception</h3>
+					{{dwdp.debugInformation.exception}}
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class='btn-group'>
+					<button ng-repeat="listener in contentListeners"
+							ng-click="selectContentListener(listener)"
+							class='btn btn-default'>
+							{{listener.name}}
+					</button>
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-9">
+				<iframe ng-src="{{crawledContentURL}}" class="debug-preview"></iframe>
+			</div>
+			
+			<div class="col-md-2">
+				<div ng-show='currentSignature'>
+					<button class="btn btn-success"
+							ng-repeat="signatureTag in currentSignature.taggedItems"
+							ng-click="selectSignatureTaggedItem(signatureTag)">
+							{{signatureTag.element}}
+					</button>
+					<p>{{matchedItems}} Matched Items</p>
+					<textarea 	class='form-control'
+								ng-model="currentSignatureTaggedItem.value"
+								rows="8"
+								cols="8"></textarea>
+					<button class="btn btn-success" ng-click="applyNewSignatureValue()">Apply</button>
+					<textarea ng-model="currentSignature.value"></textarea>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

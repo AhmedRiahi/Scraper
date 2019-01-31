@@ -1,0 +1,22 @@
+<div>
+	<div id="sidebar-wrapper" style="padding:0px;">
+		<ul class="sidebar-nav" style="width:-webkit-fill-available">
+			<li class="sidebar-brand" >
+				<button ui-sref="descriptor.create" class="btn btn-success btn-sm pull-right" style="margin:10px">
+					<i class="fa fa-plus-circle" aria-hidden="true"></i> Create
+				</button>
+				<a herf="javascript:void(0)">Descriptors</a>
+			</li>
+			<li>
+				<div class="form-group">
+			  		<input class="form-control" placeholder="Search Descriptor ..." ng-model="searchFilter">
+				</div>
+			<li style="white-space: nowrap;" 
+				ng-repeat="descriptor in descriptors | filter:searchFilter | orderBy:'name'" 
+				ng-class="{active : descriptor.stringId == currentDescriptor.stringId}">
+				<a 	ui-sref="descriptor.edit({descriptorId:descriptor.stringId})"
+					ng-class="{'descriptor-error':descriptor.checkingRequired == true}">{{descriptor.name}}</a>
+			</li>
+		</ul>
+	</div>
+</div>

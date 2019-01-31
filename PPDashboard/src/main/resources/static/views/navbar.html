@@ -1,0 +1,41 @@
+<nav  class="navbar navbar-inverse navbar-fixed-top" ng-controller='NavbarController' 
+      style="border-radius:0px;margin:0px;border-bottom: 2px groove #444444;">
+  	<div class="container-fluid">
+    	<div class="navbar-header">
+      		<a class="navbar-brand" href="#">Profit&Provide</a>
+    	</div>
+
+    	<div class="collapse navbar-collapse">
+      		<ul class="nav navbar-nav">
+      			<li ng-class="{active: isActive('/home')}">
+              <a ui-sref="home"><span class="glyphicon glyphicon-home"></span> Home</a>
+            </li>
+            <li ng-class="{active: isActive('/portfolio')}">
+              <a ui-sref="portfolio.create({portfolioId:{}})">
+                <i class="fa fa-briefcase" aria-hidden="true"></i> Portfolios
+              </a>
+            </li>
+            <li ng-class="{active: isActive('/descriptor')}">
+              <a ui-sref="descriptor.edit({descriptor:{}})">
+                <span class="glyphicon glyphicon-blackboard"></span> Descriptors
+              </a>
+            </li>
+            <li ng-class="{active: isActive('/schemas')}">
+              <a ui-sref="schemas.view"><span class="glyphicon glyphicon-globe"></span> World Schemas</a>
+            </li>
+            <li ng-class="{active: isActive('/subscription')}">
+              <a ui-sref="subscription"><span class="glyphicon glyphicon-th"></span> Subscriptions</a>
+            </li>
+            <li ng-class="{active: isActive('/Tools')}">
+              <a ui-sref="tools"><span class="glyphicon glyphicon-wrench"></span> Tools & Updates</a>
+            </li>
+          </ul>
+
+          <ul class="nav navbar-nav pull-right">
+            <li><a href="javascript:void(0)"><span class="glyphicon glyphicon-user"></span> {{user.principal.username}}</a></li>
+            <li><a href="javascript:void(0)" ng-click="logout()">Logout</a></li>
+          </ul>
+    	</div>
+
+  	</div>
+</nav>

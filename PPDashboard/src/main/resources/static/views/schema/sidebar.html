@@ -1,0 +1,16 @@
+<div>
+	<div id="sidebar-wrapper" style="padding:0px">
+		<ul class="sidebar-nav" style="width:-webkit-fill-available">
+			<li class="sidebar-brand"><a herf="javascript:void(0)">Schemas</a></li>
+			<li><button class='btn btn-success pull-right' ui-sref="schemas.create">Create</button></li>
+			<li>
+				<div class="form-group">
+			  		<input class="form-control" placeholder="Search Descriptor ..." ng-model="searchFilter">
+				</div>
+			<li ng-repeat="(schemaName,schema) in schemas | with:searchFilter" 
+				ng-class="{active : schema == currentSchema}">
+				<a ui-sref="schemas.view({schemaName:schemaName})">{{schema.name}}</a>
+			</li>
+		</ul>
+	</div>
+</div>

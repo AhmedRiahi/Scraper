@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+
+  "name": "Iknow catcher",
+  "description": "Iknow signature generator 1.0",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": "icon.png",
+    "default_popup": "popup.html"
+  },
+
+  "content_scripts": [{
+    "matches" : ["<all_urls>"],
+    "js"      : ["jquery-1.11.3.min.js","jquery-ui.js","jquery-getpath.js","bg.js"],
+    "css"     : ["style.css","jquery-ui.css"]
+  }],
+
+  "background": {
+    "scripts": ["cookies.js"],
+    "persistent": false
+  },
+
+  "permissions": ["cookies", "alarms" , "http://*/*", "https://*/*", "storage","activeTab,background"]
+}

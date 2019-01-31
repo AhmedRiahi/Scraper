@@ -1,0 +1,114 @@
+#iknow_menu{
+	position:fixed;
+	top:50px;
+	background-color: rgba(0,0,0,.6);
+	margin-left: 16px;
+	border-radius: 16px;
+	z-index: 999999;
+	box-shadow: 0 0 6px 3px rgba(0,0,0,.8);
+}
+
+#iknow_menu .title{
+	text-align: center !important;
+	font-size: 16px;
+	font-weight: bold;
+	margin: 0px;
+	border-bottom: 2px groove rgb(125, 125, 125);
+    background-color: #2EA5DE;
+    color: white;
+    text-shadow: 0 0 2px rgba(0,0,0,1);
+    padding: 10px;
+}
+
+
+#iknow_menu .title.first{
+	border-top-left-radius: 16px;
+	border-top-right-radius: 16px;
+	border-top:0px;
+	height: 12px;
+	padding: 0px;
+	background-color : rgb(222, 102, 16)
+}
+
+#iknow_menu .title.last{
+	border-bottom-left-radius: 16px;
+	border-bottom-right-radius: 16px;
+	border-bottom:0px;
+	height: 12px;
+	padding: 0px;
+	background-color : rgb(222, 102, 16)
+}
+
+#iknow_menu ul{
+	padding-left: 6px !important;
+	padding-right: 6px !important;
+	margin: 0px !important;
+	list-style: none;
+    color: white;
+}
+
+#iknow_new_listeners{
+	padding: 6px !important;
+}
+
+
+.iknow_hovered_element{
+	background-color: rgba(0,0,0,.2) !important ;
+	border-radius: 2px !important;
+	box-shadow: 0 0 0px 5px rgba(100,190,80,0.8) !important;
+	z-index: 999999;
+}
+
+#iknow_menu .iknow_item{
+	cursor: pointer;
+}
+
+#iknow_menu .iknow_item:hover{
+	background-color: red;
+}
+
+#iknow_menu .iknow_item.selected_menu_item{
+	background-color: blue;
+}
+
+.iknow_preview_container{
+	background-color: rgba(187, 0, 0, 0.18);
+    border: 2px solid rgba(0,0,0,.5);
+}
+
+.iknow_preview_element{
+	background-color: rgba(167, 187, 0, 0.18);
+    border-bottom: 4px groove rgba(0,0,0,.5);
+}
+
+#iknow_descriptor{
+	width: 100%;
+}
+
+#cl_signature{
+	width: 100%
+}
+
+#the_frame{
+	position: fixed;
+    -ms-zoom: 0.75;
+    -ms-zoom: 0.75;
+    -moz-transform: scale(0.75);
+    -moz-transform-origin: 0 0;
+    -o-transform: scale(0.75);
+    -o-transform-origin: 0 0;
+    /* -webkit-transform: scale(0.75); */
+    -webkit-transform-origin: 0 0;
+    width: inherit;
+    height: 100%;
+}
+
+
+.matching_cl{
+	border: dashed 3px red !important;
+}
+
+#iknow_item_properties{
+	color: white;
+    font-size: 16px;
+}

@@ -1,0 +1,321 @@
+<div class='row'>
+	<div class='col-md-12'>
+		<div class="row">
+			<div class="pull-right">
+				<button class="btn btn-danger" ng-click="deletePortfolio()"><i class="fa fa-trash" aria-hidden="true"></i> Delete Porfolio</button>
+				<button class="btn btn-success" ng-click="submitPortfolio()"><i class="fa fa-paper-plane" aria-hidden="true"></i> Submit Porfolio</button>
+			</div>
+			<h2 editable-text="currentPortfolio.name"><i class="fa fa-briefcase" aria-hidden="true"></i> {{currentPortfolio.name}}</h2>
+			<span class="label label-success">{{currentPortfolio.descriptors.length}} Descriptors</span>
+			<span class="label label-success">{{currentPortfolio.joins.length}} Joins</span>
+			<span class="label label-success">{{currentPortfolio.jobs.length}} Jobs</span>
+			</br></br>
+
+			<ul class="nav nav-tabs" id="tabPane">
+			    <li class="active">
+			    	<a data-toggle="tab" href="#descriptors"><i class="fa fa-file-code-o" aria-hidden="true"></i> Descriptors <span class="badge">{{currentPortfolio.descriptors.length}}</span></a>
+			   	</li>
+			    <li>
+			    	<a data-toggle="tab" href="#joins"><i class="fa fa-retweet" aria-hidden="true"></i> Joins <span class="badge">{{currentPortfolio.joins.length}}</span></a>
+			    </li>
+			    <li>
+			    	<a data-toggle="tab" href="#jobs"><i class="fa fa-tasks" aria-hidden="true"></i> Jobs <span class="badge">{{currentPortfolio.jobs.length}}</span></a>
+			    </li>
+			    <li>
+			    	<a data-toggle="tab" href="#execution_summary"><i class="fa fa-play-circle" aria-hidden="true"></i> Execution Summary</a>
+			    </li>
+			</ul>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="tab-content" style="padding-top: 30px;">
+
+					<div id="descriptors" class="tab-pane fade in active">
+						<div class="row">
+							<div class="col-md-3">
+								<div>
+									<button class="btn btn-xs btn-success pull-right"
+											ng-show="selectedDescriptor"
+											ng-click="allocateDescriptor()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+									<h4><b><i class="fa fa-list-alt" aria-hidden="true"></i> Available Descriptors</b></h4>
+								</div>
+								<div class="form-group">
+									<input type="text" class="form-control" ng-model="searchFilter" placeholder="Seatch"/>
+								</div>
+								<ul class="list-group">
+									<li class="list-group-item"
+										ng-class="{active : selectedDescriptor == descriptor }"
+										ng-repeat="descriptor in descriptors | filter:searchFilter | orderBy:'name'"
+										ng-click="$parent.selectedDescriptor = descriptor">{{descriptor.name}}</li>
+								</ul>
+							</div>
+
+							<div class="col-md-3">
+								<div>
+									<button class="btn btn-xs btn-danger pull-right"
+											ng-show="selectedAllocatedDescriptor"
+											ng-click="unallocateDescriptor()"><i class="fa fa-times" aria-hidden="true"></i> Remove</button>
+									<h4><b><i class="fa fa-share-square" aria-hidden="true"></i> Allocated Descriptors</b></h4>
+								</div>
+								<ul class="list-group">
+									<li class="list-group-item" 
+										class="list-group-item"
+										ng-class="{active : selectedAllocatedDescriptor == descriptor }"
+										ng-repeat="descriptor in currentPortfolio.descriptors"
+										ng-click="$parent.selectedAllocatedDescriptor = descriptor">
+										{{descriptor.name}}
+										<a ui-sref="descriptor.edit({descriptorId:descriptor.stringId})" class="btn btn-xs btn-warning pull-right" ><i class="fa fa-pencil" aria-hidden="true"></i> Edit</a>
+									</li>
+								</ul>
+							</div>
+						</div>
+				    </div>
+
+				    <div id="joins" class="tab-pane fade">
+				    	<div class="row">
+				    		<div class="col-md-3">
+				    			<div>
+				    				<div class="pull-right">
+					    				<button class="btn btn-xs btn-danger"
+					    						ng-show="selectedJoin"
+												ng-click="removeJoin()"><i class="fa fa-plus" aria-hidden="true"></i> Remove</button>
+										<button class="btn btn-xs btn-success"
+												ng-click="addJoin()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+									</div>
+									<h4><b><i class="fa fa-retweet" aria-hidden="true"></i> Portfolio Joins</b></h4>
+								</div>
+				    			<ul class="list-group">
+									<li class="list-group-item"
+										ng-class="{active : selectedJoin == join }"
+										ng-repeat="join in currentPortfolio.joins"
+										ng-click="$parent.selectedJoin = join">{{join.name}}</li>
+								</ul>
+				    		</div>
+				    		<div class="col-md-6">
+				    			<div class="row" ng-show="selectedJoin">
+				    				<div class="col-md-12">
+				    					<input type="text" class="form-control" ng-model="selectedJoin.name" placeholder="Join Name" />
+				    				</div>
+				    				<div class="col-md-6">
+						    			<h5><b>Source Join properties</b></h5>
+										<div class='form-group'>
+											Source Descriptor
+							    			<select class="form-control"
+							    					ng-model="selectedJoin.sourceDescriptorModel"
+							    					ng-options="descriptor as descriptor.name for descriptor in currentPortfolio.descriptors track by descriptor.name"/>
+							    		</div>
+							    		
+							    		<div class='form-group'>
+							    			Source Listener
+							    			<select class="form-control"
+													ng-model="selectedJoin.sourceContentListenerModel"
+													ng-options="listener as listener.name for listener in selectedJoin.sourceDescriptorModel.contentListeners | joinable"></select>
+										</div>
+										<div class='form-group'>
+											Source URL Listener
+											<select class="form-control"
+														ng-model="selectedJoin.sourceURLListener"
+														ng-options="listener as listener.name for listener in selectedJoin.sourceDescriptorModel.contentListeners track by listener.name"></select>
+										</div>
+										
+						    		</div>
+
+						    		<div class="col-md-6">
+						    			<h5><b>Target Join properties</b></h5>
+										<div class='form-group'>
+											Target Descriptor
+							    			<select class="form-control"
+							    					ng-model="selectedJoin.targetDescriptorModel"
+							    					ng-options="descriptor as descriptor.name for descriptor in currentPortfolio.descriptors track by descriptor.name"/>
+							    		</div>
+
+							    		<div class='form-group'>
+							    			Target Listener
+							    			<select class="form-control"
+													ng-model="selectedJoin.targetContentListenerModel"
+													ng-options="listener as listener.name for listener in selectedJoin.targetDescriptorModel.contentListeners track by listener.name"></select>
+										</div>
+
+										<div class='form-group'>
+											Target Semantic Mapping
+										    <select class="form-control"
+										    		ng-model="selectedJoin.targetDSMId">
+
+										    	<option ng-repeat="dsm in selectedJoin.targetDescriptorModel.descriptorSemanticMappings" 
+										    			value="{{dsm.stringId}}">
+										    		{{dsm.name}}
+										    	</option>
+										    </select>
+										</div>
+						    		</div>
+				    			</div>
+				    		</div>
+				    	</div>
+				    </div>
+
+				    <div id="jobs" class="tab-pane fade">
+				    	<div class="row">
+				    		<div class="col-md-3">
+				    			<div>
+				    				<div class="pull-right">
+					    				<button class="btn btn-xs btn-danger"
+					    						ng-show="selectedJob"
+												ng-click="removeJob()"><i class="fa fa-plus" aria-hidden="true"></i> Remove</button>
+										<button class="btn btn-xs btn-success"
+												ng-click="addJob()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+									</div>
+									<h4><b><i class="fa fa-hourglass-start" aria-hidden="true"></i> Portfolio Jobs</b></h4>
+								</div>
+				    			<ul class="list-group">
+									<li class="list-group-item" 
+										class="list-group-item"
+										ng-class="{active : selectedJob == job }"
+										ng-repeat="job in currentPortfolio.jobs"
+										ng-click="$parent.selectedJob = job">
+										<button class="btn btn-xs btn-success pull-right" ng-click="runJob(job)"><i class="fa fa-play" aria-hidden="true"></i> Run</button>
+										{{job.name}}
+									</li>
+								</ul>
+				    		</div>
+				    		<div class="col-md-4">
+				    			<div class="row" ng-show="selectedJob">
+
+					    			<div>
+					    				<div class='form-group'>
+						    				<b>Job Name</b>
+						    				<input type="text" class="form-control" ng-model="selectedJob.name" placeholder="Job Name" />
+						    			</div>
+						    			
+						    			<div class='form-group'>
+											<b>Job Descriptor</b>
+									    	<select class="form-control"
+									    			ng-model="selectedJob.descriptor"
+									    			ng-options="descriptor as descriptor.name for descriptor in currentPortfolio.descriptors track by descriptor.name"/>
+									    </div>
+
+									    <div class='form-group'>
+									    	<b>Job URL</b>
+						    				<input type="text" class="form-control" ng-model="selectedJob.url" placeholder="Job URL" />
+						    			</div>
+
+					    				<div class='form-group'>
+											<b>Job Checking Interval (Minutes)</b>
+											<input type="number" class='form-control' ng-model="selectedJob.checkingInterval" placeholder="Job Checking Interval">
+										</div>
+										
+										<div class='form-group'>
+											Descriptor Semantic Mapping
+										    <select class="form-control"
+										    		ng-model="selectedJob.descriptorSemanticMappingId">
+
+										    	<option ng-repeat="dsm in selectedJob.descriptor.descriptorSemanticMappings" 
+										    			value="{{dsm.stringId}}">
+										    		{{dsm.name}}
+										    	</option>
+										    </select>
+										</div>
+
+										<div class='checkbox'>
+											<label><input 	type="checkbox"
+												ng-true-value="true"
+												ng-false-value="false"
+												ng-model="selectedJob.standaloneMode"> Standalone Mode</label>
+										</div>
+
+										<div class='checkbox'>
+						    				<label><input type="checkbox" ng-model="selectedJob.disabled" /> Excluded from Scheduling</label>
+						    			</div>
+
+						    			<div class='checkbox'>
+						    				<label><input type="checkbox" ng-model="selectedJob.generateLinks" /> Generate Links</label>
+						    			</div>
+
+						    			<div class='checkbox'>
+						    				<label><input type="checkbox" ng-model="selectedJob.dynamicURLJob" /> Dynamic URL Job</label>
+						    			</div>
+
+						    			<div class='form-group' ng-show="selectedJob.dynamicURLJob">
+						    				<b>URL Regex</b>
+						    				<input type="text" class='form-control' ng-model="selectedJob.dynamicUrlPattern" placeholder="URL Regex">
+						    			</div>
+					    			</div>
+					    		</div>
+				    		</div>
+				    	</div>
+				    </div>
+
+				    <div id="execution_summary" class="tab-pane fade">
+				    	<div class="row">
+				    		<div class="col-md-3">
+				    			<h4>
+				    				<button class="btn btn-xs btn-success pull-right" ng-click="refreshExecutionHistory()"><i class="fa fa-refresh" aria-hidden="true"></i> Refresh</button>
+				    				<b><i class="fa fa-history" aria-hidden="true"></i> Execution History</b>
+				    			</h4>
+				    			<ul class="list-group">
+									<li class="list-group-item" style="cursor: pointer"
+										ng-class="{active : selectedExecution == exec,'list-group-item-danger' : exec.inError }"
+										ng-repeat="exec in executionHistory"
+										ng-click="selectExecutionHistory(exec)">
+										<h4 class="list-group-item-heading">
+											{{exec.descriptorJob.name}}
+											<span class="label label-default pull-right" style="font-size:10px">{{exec.startTime | date : 'dd/MM/yyyy'}}</span>
+										</h4>
+										
+										<span class="label label-warning">{{exec.startTime | date : 'HH:mm:ss'}}</span>
+										<span class="label label-warning">{{exec.finishTime | date : 'HH:mm:ss'}}</span>
+										<span class="label label-danger" ng-if="!exec.finishTime">Not Finished</span>
+										<span class="label label-success pull-right" style="font-size:10px">{{individuals.length}} Individuals</span>
+										<span class="clearfix"></span>
+										
+									</li>
+								</ul>
+				    		</div>
+
+				    		<div class="col-md-9" ng-if="selectedExecution">
+				    			<div class="row">
+				    				<div class="col-md-12">
+					    				<h4><b><i class="fa fa-bug" aria-hidden="true"></i> Debug Information</b></h4>
+					    				<h5>Last Executed Step : {{selectedExecution.dwdp.debugInformation.mozartExecutionStep}}</h5>
+					    				<h5 class="well" ng-if="selectedExecution.dwdp.debugInformation.exception">
+					    					Exception : {{selectedExecution.dwdp.debugInformation.exception}}
+					    				</h5>
+					    				<a class="btn btn-primary" ui-sref="debug({executionId:selectedExecution.stringId})">Debug Signature</a>
+					    			</div>
+				    			</div>
+				    			<div class="row">
+				    				<div class="col-md-12">
+					    				<h4><b><i class="fa fa-list-alt" aria-hidden="true"></i> Generated Individuals</b></h4>
+					    				<table class="table table-hover well" 
+					    						ng-repeat="individual in individuals">
+					    					<thead>
+												<th>Property Name</th>
+												<th>Property Value</th>
+					    					</thead>
+					    					<tbody>
+					    						<tr>
+					    							<td>Schema Name</td>
+					    							<td>{{individual.schemaName}}</td>
+					    						</tr>
+					    						<tr ng-repeat="property in individual.properties">
+					    							<td>{{property.name}}</td> 
+					    							<td>{{property.value}}</td>
+					    						</tr>
+					    					</tbody>
+					    				</table>
+					    			</div>
+				    			</div>
+				    		</div>
+				    	</div>
+				    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	$('#tabPane a').click(function (e) {
+	  e.preventDefault()
+	  $(this).tab('show')
+	})
+</script>

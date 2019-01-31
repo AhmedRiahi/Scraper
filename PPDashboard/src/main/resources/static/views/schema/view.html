@@ -1,0 +1,127 @@
+<div class='row'>
+	<div class='col-md-12'>
+		<div class='row' style="padding:10px" ng-if="currentSchema">
+			<div class="col-md-12">
+				<h2>{{currentSchema.name}}</h2>
+			</div>
+			<div class='col-md-6'>
+				<button class="btn btn-danger btn-sm pull-right" ng-click="deleteSchema()">Delete</button>
+				<div class="well">
+					<div class="form-group">
+						Schema Name
+						<input type="text" class="form-control" ng-model="currentSchema.name" placeholder="Schema name"/></br>
+					</div>
+
+					<div class="form-group">
+						Schema parent
+						<select class="form-control" ng-options="schema.name for schema in schemas track by schema.name" ng-model="currentSchema.parent">
+						</select>
+					</div>
+					<button class="btn btn-success pull-right" ng-click="addSchema()">Save</button>
+					<div class="clearfix"></div>
+				</div>
+				
+				<div class="panel panel-primary">
+					<div class="panel-heading">
+					  <h3 class="panel-title">Schema Properties</h3>
+					</div>
+					<div class="panel-body">
+						<div class="row">
+							<div class="col-md-6">
+								<ul class="list-group">
+									<li class="list-group-item"
+										ng-class='{active : currentProperty == property,"list-group-item-warning":property.propertyType.class=="reference"}'
+										ng-repeat="property in currentSchema.properties"
+										ng-click="selectProperty(property)">
+										{{property.name}}
+									</li>
+								</ul>
+							</div>
+							<div class="col-md-6" ng-if="currentProperty">
+								<div class="form-group">
+									Property Name
+									<input class="form-control" type="text" ng-model="currentProperty.name"/>
+								</div>
+								<div class="form-group">
+									<input 	type="checkbox"
+											ng-true-value="true"
+											ng-false-value="false" 
+											ng-model="currentProperty.unique"/> Unique property
+								</div>
+								<div class="form-group">
+									<input 	type="checkbox"
+											ng-true-value="true"
+											ng-false-value="false" 
+											ng-model="currentProperty.displayString"/> Display String
+								</div>
+								<div class="form-group">
+									Property Type
+									<select class="form-control"
+											ng-model="currentProperty.propertyType.class">
+										<option value="primitive">Primitive Type</option>
+										<option value="reference">Reference Type</option>
+									</select>
+								</div>
+								<div class="form-group" ng-if="currentProperty.propertyType.class=='primitive'">
+									Property Data Type
+									<select class="form-control"
+											ng-model="currentProperty.propertyType.value">
+										<option value="text">Text</option>
+										<option value="number">Number</option>
+										<option value="date">Date</option>
+										<option value="url">URL</option>
+									</select>
+								</div>
+								<div class="form-group" ng-if="currentProperty.propertyType.class=='reference'">
+									Property Data Type
+									<select class="form-control"
+											ng-model="currentProperty.propertyType.value">
+										<option ng-repeat="schema in schemas"  value="{{schema.name}}">{{schema.name}}</option>
+									</select>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<div class="pull-right">
+							<button class="btn btn-danger" ng-click="removeProperty()" ng-if="currentProperty">Delete Property</button>
+							<button class="btn btn-success" ng-click="addProperty()">Add Property</button>
+						</div>
+						<div class="clearfix"></div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<h3>Create Individual</h3>
+				<button class="btn btn-info pull-right" ng-click="createIndividual()">Create Individual</button>
+				<span class="clearfix"></span>
+				<div ng-if="currentIndividual">
+					<div class="form-group" ng-repeat="property in currentSchema.properties">
+						{{property.name}}
+						<input 	type="text" 
+								class="form-control"
+								ng-model="currentIndividual.properties[$index].value"
+								ng-if="property.propertyType.class=='primitive'"/>
+
+						<select class="form-control"
+								ng-if="property.propertyType.class=='reference'">
+							<option ng-repeat="individual in currentIndividual.properties[$index].individuals">{{individual.schemaName}}</option>
+						</select>
+					</div>
+					<button class="btn btn-success pull-right" ng-click="saveIndividual()">Save Individual</button>
+				</div>
+			</div>
+			<div class="col-md-6">
+				<h3>Schema Individuals</h3>
+				<div class="well" ng-repeat="individual in schemaIndividuals">
+					<button class="btn btn-danger btn-sm pull-right" ng-click="deleteIndividual(individual)">Delete</button>
+					<span class="clearfix"></span>
+					<p ng-repeat="property in currentSchema.allProperties">
+						<b>{{property.name}}</b> : {{individual[property.name]}}
+					</p>
+				
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

@@ -1,0 +1,22 @@
+<div>
+	<div id="sidebar-wrapper" style="padding:0px">
+		<ul class="sidebar-nav" style="width:-webkit-fill-available">
+			<li class="sidebar-brand">
+				<button class='btn btn-sm btn-success pull-right' ui-sref="portfolio.create" style="margin:10px">
+					<i class="fa fa-plus-circle" aria-hidden="true"></i> Create
+				</button>
+				<a href="javascript:void(0)">
+					Portfolios
+				</a>
+			</li>
+			<li>
+				<div class="form-group">
+			  		<input class="form-control" placeholder="Search Portfolio ..." ng-model="searchFilter">
+				</div>
+			<li ng-repeat="portfolio in portfolios | filter:searchFilter" 
+				ng-class="{active : portfolio == currentPortfolio}">
+				<a ui-sref="portfolio.view({portfolioId:portfolio.stringId})">{{portfolio.name}}</a>
+			</li>
+		</ul>
+	</div>
+</div>

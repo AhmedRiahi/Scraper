@@ -1,0 +1,111 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>ProfitNProvide</groupId>
+  <artifactId>PPGlobal</artifactId>
+  <version>0.0.3-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+   <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>1.5.3.RELEASE</version>
+  </parent>
+
+    <profiles>
+
+        <profile>
+            <id>dev</id>
+            <properties>
+                <activatedProperties>dev</activatedProperties>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+        <profile>
+            <id>release</id>
+            <properties>
+                <activatedProperties>release</activatedProperties>
+            </properties>
+        </profile>
+    </profiles>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+    </build>
+
+
+  <scm>
+      <url>http://vps445897.ovh.net:3000/PNP/PNP.git</url>
+      <connection>scm:git:http://vps445897.ovh.net:3000/PNP/PNP.git</connection>
+      <developerConnection>scm:git:http://vps445897.ovh.net:3000/PNP/PNP.git</developerConnection>
+    <tag>HEAD</tag>
+  </scm>
+
+  <modules>
+      <module>PPDatabase</module>
+      <module>PPFramework</module>
+      <module>PPScrapper</module>
+      <module>PPCrawler</module>
+      <module>PPAnalytics</module>
+      <module>PPSubscription</module>
+      <module>PPEngine</module>
+      <module>PPDashboard</module>
+      <module>PPMozart</module>
+      <module>PPSemantic</module>
+      <module>PPCleaner</module>
+      <module>PPAdmin</module>
+      <module>PPStructureDetector</module>
+      <module>PPLabTest</module>
+      <module>PPNLP</module>
+  </modules>
+
+
+    <dependencies>
+    	<dependency>
+	      <groupId>org.springframework.kafka</groupId>
+	      <artifactId>spring-kafka</artifactId>
+	      <version>1.0.0.RELEASE</version>
+	    </dependency>
+    
+    	<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+      
+      	<dependency>
+		    <groupId>de.codecentric</groupId>
+		    <artifactId>spring-boot-admin-starter-client</artifactId>
+		    <version>1.5.1</version>
+		</dependency>
+      
+      	<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+		
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.6</version>
+		</dependency>
+
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-log4j12</artifactId>
+		    <version>1.7.5</version>
+		</dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.16</version>
+        </dependency>
+    </dependencies>
+
+</project>

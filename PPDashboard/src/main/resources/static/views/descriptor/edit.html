@@ -1,0 +1,474 @@
+<div class='row'>
+	<div class='col-md-12'>
+		<div class="row">
+			<div class="pull-right">
+				<button class='btn btn-danger' ng-click="deleteDescriptor(currentDescriptor)"><i class="fa fa-trash" aria-hidden="true"></i> Delete Descriptor</button>
+				<button class='btn btn-success' ng-click="submitDescriptor()"><i class="fa fa-paper-plane" aria-hidden="true"></i> SubmitDescriptor</button>
+			</div>
+			<h2 editable-text="currentDescriptor.name"><span class="glyphicon glyphicon-book"></span> {{currentDescriptor.name}}</h2>
+			<h3 class="label label-danger" ng-if="currentDescriptor.checkingRequired==true">
+				Error occured on this descriptor, please check log files...
+				<button class='btn btn-info btn-sm' ng-click="flagAsChecked()">Flag as Checked</button>
+			</h3>
+			<h5>
+				<b>- Schemas</b> :
+				<span 	class="label label-info" 
+						ng-repeat="schema in currentDescriptor.individualSchemas">
+						{{schema}}
+				</span>
+			</h5>
+			<div class="checkbox">
+				<label><input type="checkbox" ng-model="currentDescriptor.useJSRendering">Use JS Rendering</label>
+			</div>
+			<br><br>
+			<ul class="nav nav-tabs" id="tabPane">
+			    <li class="active">
+			    	<a data-toggle="tab" href="#json">
+			    		<i class="fa fa-file-code-o" aria-hidden="true"></i> JSON Input
+			    	</a>
+			   	</li>
+			    <li>
+			    	<a data-toggle="tab" href="#coockies">
+			    		<i class="fa fa-retweet" aria-hidden="true"></i> Coockies <span class="badge">{{currentDescriptor.cookies.length}}</span>
+			    	</a>
+			    </li>
+			    <li>
+			    	<a data-toggle="tab" href="#listeners">
+			    		<i class="fa fa-assistive-listening-systems" aria-hidden="true"></i> Listeners <span class="badge">{{currentDescriptor.contentListeners.length}}</span>
+			    	</a>
+			    </li>
+			    <li>
+			    	<a data-toggle="tab" href="#semanticRelations">
+			    		<i class="fa fa-puzzle-piece" aria-hidden="true"></i> Semantic Relations <span class="badge">{{currentDescriptor.semanticRelations.length}}</span>
+			    	</a>
+			    </li>
+			    <li>
+			    	<a data-toggle="tab" href="#structureRelations">
+			    		<i class="fa fa-puzzle-piece" aria-hidden="true"></i> Structure Relations <span class="badge">{{currentDescriptor.structureRelations.length}}</span>
+			    	</a>
+			    </li>
+			    <li>
+			    	<a data-toggle="tab" href="#semanticMapping">
+			    		<i class="fa fa-link" aria-hidden="true"></i> Semantic Mapping <span class="badge">{{currentDescriptor.descriptorSemanticMappings.length}}</span>
+			    	</a>
+			    </li>
+			    <li>
+			    	<a data-toggle="tab" href="#generatedIndividuals">
+			    		<i class="fa fa-users" aria-hidden="true"></i> Generated Inidividuals
+			    	</a>
+			    </li>
+			</ul>
+		</div>
+		
+		<div class="row">
+			<div class="col-md-12">
+				<div class="tab-content" style="padding-top: 30px;">
+
+					<div id="json" class="tab-pane fade in active">
+						<div class="row">
+							<div class='col-md-12'>
+								<div>
+									<div class="pull-right">
+										<button class='btn btn-xs btn-success' ng-click='parseDescriptor()'><i class="fa fa-terminal" aria-hidden="true"></i> Parse Descriptor</button>
+									</div>
+									<h4><b><i class="fa fa-terminal" aria-hidden="true"></i> Parse Descriptor</b></h4>
+									<select class="form-control" ng-model="currentDescriptor.type">
+										<option value="HTML">HTML</option>
+										<option value="XML">XML</option>
+										<option value="JSON">JSON</option>
+									</select>
+								</div>
+								<div>
+									<textarea class='form-control' placeholder='Put descriptor contents here...' ng-model='descriptor' rows="8"></textarea>
+								</div>
+								<div ng-if="currentDescriptor.type=='XML'">
+									<div class="row">
+										<div class="col-md-6">
+											<pre class="prettyprint lang-xml" data-content="{{descriptor}}" nodes='nodes'></pre>
+										</div>
+										<div class="col-md-6">
+											<div ng-if="currentNode">
+												{{currentNode.nodeName}}
+												<button class="btn btn-success btn-xs" ng-click="addXmlDescriptorListener()">Add Listener</button>
+												<input type="text" class="form-control" ng-model="currentListener.name">
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<div id="coockies" class="tab-pane fade">
+				    	<div class="row">
+				    		<div class='col-md-6'>
+								<div>
+									<h4 class="panel-title"><b>Descriptor Cookies</b></h4>
+								</div>
+								<div>
+									<table class="table table-striped">
+										<thead>
+											<tr>
+												<th>Name</th>
+												<th>Value</th>
+											</tr>
+										</thead>
+										<tbody>
+											<tr ng-repeat="cookie in currentDescriptor.cookies">
+												<td>
+													<input type="text" ng-model="cookie.name" class="form-control"/>
+												</td>
+												<td>
+													<input type="text" ng-model="cookie.value" class="form-control"/>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+
+							</div>
+				    	</div>
+				    </div>
+
+				    <div id="listeners" class="tab-pane fade">
+				    	<div class="row">
+				    		<div class='col-md-3'>
+				    			<div>
+									<div class="pull-right">
+										<button class="btn btn-danger btn-xs" ng-click="deleteListener()" ng-if="currentListener"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
+										<button class="btn btn-success btn-xs" ng-click="addListener()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+									</div>
+									<h4><b><i class="fa fa-assistive-listening-systems" aria-hidden="true"></i> Listeners</b></h4>
+								</div>
+								<ul class="list-group ">
+									<li class="list-group-item" 
+										ng-class='{
+											active : currentListener == listener,
+											"list-group-item-success": listener.individual,
+											"list-group-item-info": listener.staticValue
+										}'
+										ng-repeat="listener in currentDescriptor.contentListeners"
+										ng-click="selectListener(listener)">{{listener.name}}</li>
+								</ul>
+							</div>
+							<div class="col-md-9">
+								<div class="row" ng-if="currentListener">
+									<div class='col-md-6'>
+										<div>
+											<h4><b>Listener properties</b></h4>
+											<div class='form-group'>
+												Listener Name
+												<input 	type="text" 
+														class='form-control'  
+														ng-model="currentListener.name"
+														placeholder="Listener Name">
+											</div>
+										</div>
+
+										<div class='form-group'>
+											<input 	type="checkbox"
+													ng-true-value="true"
+													ng-false-value="false"
+													ng-model="currentListener.individual"> Individual
+
+											<input 	type="checkbox"
+													ng-true-value="true"
+													ng-false-value="false"
+													ng-model="currentListener.joinable"> Joinable
+										</div>
+									</div>
+
+									<div class='col-md-6'>
+										<div class="well">
+											<div >
+												<button class="btn btn-success btn-xs pull-right" ng-click="addSignature()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+												<h4><b>Signatures</b></h4>
+											</div>
+											</br>
+											<table class="table table-striped">
+												<thead>
+													<tr>
+														<th>Type</th>
+														<th>Value</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr ng-repeat="signature in currentListener.signatures">
+														<td>
+															<input type="text" ng-model="signature.signatureType" class="form-control"/>
+														</td>
+														<td>
+															<input type="text" ng-model="signature.value" class="form-control"/>
+														</td>
+													</tr>
+												</tbody>
+											</table>
+										</div>
+
+										<div class="well">
+											<h4><b>Pre-Process Script</b></h4>
+											</br>
+											<textarea 	class="form-control" 
+														rows="8" 
+														placeholder="Please type your javascript code here..."
+														ng-model="currentListener.preProcessScript"></textarea>
+											</br>
+											<p class="label label-success" ng-bind="scriptResult" ng-show="scriptResult" style="display:block"></p></br>
+											<div class="pull-right">
+												<div class="form-inline">
+													<input type="text" class="form-control" placeholder="Script Input" ng-model="scriptInput"/>
+													<button class="btn btn-info " ng-click="testScript()">Test Script</button>
+												</div>
+											</div>
+											
+											<span class="clearfix"></span>
+										</div>
+									</div>
+								</div>
+							</div>
+				    	</div>
+				    </div>
+
+				    <div id="semanticRelations" class="tab-pane fade">
+				    	<div class="row">
+				    		<div class='col-md-12'>
+				    			<div>
+				    				<div class="pull-right">
+				    					<button class='btn btn-xs btn-success' ng-click="addSemanticRelation()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+				    				</div>
+									<h4><b><i class="fa fa-puzzle-piece" aria-hidden="true"></i> Semantic Relations</b></h4>
+								</div>
+								<div>	
+									<table class="table table-hover table-condensed">
+										<thead>
+											<th>Source</th>
+											<th>Target</th>
+											<th>Cardinality</th>
+											<th>Type</th>
+											<th>Action</th>
+										</thead>
+										<tbody>
+											<tr ng-repeat="sr in currentDescriptor.semanticRelations">
+												<td>
+													<select class='form-control' ng-model="sr.source" 
+															ng-options="listener.name for listener in currentDescriptor.contentListeners track by listener.name">
+													</select>
+												</td>
+												<td>
+													<select class='form-control' ng-model="sr.target.name">
+														<option ng-repeat="listener in currentDescriptor.contentListeners">{{listener.name}}</option>
+													</select>
+												</td>
+												<td>
+													<select class='form-control' ng-model="sr.cardinalityType">
+														<option value="ONE_TO_ONE">One To One</option>
+														<option value="ONE_TO_MANY">One To Many</option>
+														<option value="MANY_TO_ONE">Many To One</option>
+														<option value="MANY_TO_MANY">Many To Many</option>
+													</select>
+												</td>
+												<td>
+													<select class='form-control' ng-model="sr.type">
+														<option value="compositionRelation">Composition</option>
+														<option value="aggregationRelation">Aggregation</option>
+													</select>
+												</td>
+												<td>
+													<button class="btn btn-xs btn-danger" ng-click="removeSemanticRelation(sr)">
+														<i class="fa fa-minus" aria-hidden="true"></i>
+													</button>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+				    	</div>
+				    </div>
+
+				    <div id="structureRelations" class="tab-pane fade">
+				    	<div>
+							<div class="pull-right">
+								<button class='btn btn-xs btn-success pull-right' ng-click="addStructureRelation()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+							</div>				
+							<h4><b><i class="fa fa-puzzle-piece" aria-hidden="true"></i> Struncture Relations</b></h4>
+						</div>
+						<table class="table table-hover table-condensed">
+							<thead>
+								<th>Source</th>
+								<th>Target</th>
+								<th>Action</th>
+							</thead>
+							<tbody>
+								<tr ng-repeat="sr in currentDescriptor.structureRelations">
+									<td>
+										<select class='form-control' ng-model="sr.source.name">
+										<option ng-repeat="listener in currentDescriptor.contentListeners">{{listener.name}}</option>
+									</select>
+									</td>
+									<td>
+										<select class='form-control' ng-model="sr.target.name">
+										<option ng-repeat="listener in currentDescriptor.contentListeners">{{listener.name}}</option>
+									</select>
+									</td>
+									<td>
+										<button class="btn btn-xs btn-danger" ng-click="removeStructureRelation(sr)">
+											<i class="fa fa-minus" aria-hidden="true"></i>
+										</button>
+									</td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+
+				    <div id="semanticMapping" class="tab-pane fade">
+				    	<div class="row">
+				    		<div class='col-md-3'>
+				    			<div>
+									<div class="pull-right">
+										<button class="btn btn-danger btn-xs" ng-click="deleteDSM()" ng-if="currentDSM"><i class="fa fa-times" aria-hidden="true"></i> Delete</button>
+										<button class="btn btn-success btn-xs" ng-click="addDSM()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+									</div>
+									<h4><b><i class="fa fa-link" aria-hidden="true"></i> Semantic Mapping</b></h4>
+								</div>
+								<ul class="list-group">
+									<li class="list-group-item" 
+										ng-class='{active : currentDSM == dsm}'
+										ng-repeat="dsm in currentDescriptor.descriptorSemanticMappings"
+										ng-click="selectDSM(dsm)">{{dsm.name}}</li>
+								</ul>
+							</div>
+							
+							<div class="col-md-9" ng-if="currentDSM">
+								<div class="row">
+									<div class="col-md-12">
+										<div class="row">
+											<div class="col-md-8">
+												<h4><b>Mapping Name</b></h4>
+												<input type="text" class="form-control" placeholder="Mapping Name" ng-model="currentDSM.name"/>
+											</div>
+										</div>
+									</div>
+									<div class="col-md-4">
+										<h4><b>Listeners</b></h4>
+										<ul class="list-group ">
+											<li class="list-group-item" 
+												ng-class='{
+													active : currentDSM.currentListener == listener,
+													"list-group-item-success": listener.individual,
+													"list-group-item-info": listener.staticValue
+												}'
+												ng-repeat="listener in currentDescriptor.contentListeners"
+												ng-click="selectDSMListener(listener)">{{listener.name}}</li>
+										</ul>
+									</div>
+									<div class="col-md-4">
+										<div ng-if="currentDSM.currentListener.semanticReference || currentDSM.currentListener.individual">
+											<h4><b>Semantic properties</b></h4>
+											<div class='form-group'>
+												Semantic Name
+												<select ng-model="currentDSM.clSemanticProperties[currentDSM.currentListener.name]"
+														class="form-control"
+														ng-if="!currentDSM.currentListener.individual">
+																				
+													<option ng-repeat="property in currentDSM.currentListener.sourceSchema.allProperties"
+															value="{{property.name}}">
+														{{property.name}}
+													</option>
+												</select>
+
+												<select class='form-control' 
+														ng-model="currentDSM.clSemanticProperties[currentDSM.currentListener.name]"
+														ng-if="currentDSM.currentListener.individual">
+
+													<option ng-repeat="schema in schemas"
+															value="{{schema.name}}">
+															{{schema.name}}
+													</option>
+												</select>
+												</br>
+												<div class='form-group' ng-if="!currentDSM.currentListener.individual">
+                                                    Static value
+
+                                                    <input     type="text" 
+                                                        class='form-control'  
+                                                        ng-model="currentDSM.currentListener.staticValue"
+                                                        placeholder="Static value"
+                                                        ng-if='!isSchemaReferenceProperty(currentDSM.currentListener)'/>
+                                                    
+                                                    <select class="form-control"
+                                                            ng-model="currentDSM.currentListener.staticValue"
+                                                            ng-if="isSchemaReferenceProperty(currentDSM.currentListener)"
+                                                            ng-options="individual.uniqueProperty as individual.displayString for individual in schemaIndividuals[currentDSM.clSemanticProperties[currentDSM.currentListener.name]]">
+                                                                    
+                                                    </select>
+                                                </div>
+												
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+				    	</div>
+				    </div>
+
+				    <div id="generatedIndividuals" class="tab-pane fade" ng-controller="ViewDescriptorController">
+				    	<div class="row">
+							<div class="col-md-12" >
+								<div class="pull-right">
+									<button class='btn btn-info' 
+											ng-click="refreshDescriptorData()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
+									 <button 	class='btn btn-danger' 
+												ng-click="removeDescriptorIndividuals()"><span class="glyphicon glyphicon-remove"></span> Remove All individuals</button>
+									
+								</div>
+								<div class='clearfix'></div>
+								</br>
+								<div class="panel panel-primary" ng-repeat="schema in descriptorSchemas track by schema.name">
+									<div class="panel-heading">
+									  	<h3 class="panel-title"><span class="glyphicon glyphicon-th-list"></span> {{schema.name}}</h3>
+									</div>
+									<div class="panel-body">
+										<table class="table table-hover">
+											<thead>
+												<tr>
+													<th>#</th>
+													<th ng-repeat="property in schema.allProperties">{{property.name}}</th>
+													<th>Creation Date</th>
+												</tr>
+											</thead>
+											<tbody>
+												<tr ng-repeat="individual in publishedIndividuals | orderBy:'-creationDate' track by $index"
+													ng-if="individual.schemaName == schema.name">
+													<td>{{$index}}</td>
+													<td ng-repeat="property in schema.allProperties">
+														<span ng-if="property.propertyType.value!='url'">
+															{{individual[property.name]}}
+														</span>
+														<a 	href='{{individual[property.name]}}' 
+															target='_blank'
+															ng-if="property.propertyType.value=='url'">URL</a>
+													</td>
+													<td>{{individual.creationDate | date}}</td>
+												</tr>
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+				    </div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+
+
+<script type="text/javascript">
+	$('#tabPane a').click(function (e) {
+	  e.preventDefault()
+	  $(this).tab('show')
+	})
+</script>

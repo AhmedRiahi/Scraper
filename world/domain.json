@@ -1,0 +1,9 @@
+{
+	"id" : "domain",
+
+	"properties" : {
+		"name" : {
+			"type" : "String"
+		}
+	}
+}
