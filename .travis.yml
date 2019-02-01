@@ -4,7 +4,7 @@ addons:
   sonarcloud:
     organization: "ahmedriahi-github"
     token:
-      secure: 6ad459a4157f9e9ca2dccaa07671774e10c6fc71
+      secure: 5a5a0c07cbcaef323f6d9de346b4bdb88d3eeb9b
 script:
   - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install -P TRAVIS_BUILD
   - sonar-scanner
