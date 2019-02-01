@@ -15,7 +15,7 @@ public class CrawlLinksDataSet1 {
     private HashSet<Link> newLinks;
 	
 	
-    public CrawlLinksDataSet(){
+    public CrawlLinksDataSet1(){
         this.externalLinks 		= new HashSet<Link>();
         this.internaLinks 		= new HashSet<Link>();
         this.irrelevantLinks 	= new HashSet<Link>();
@@ -23,7 +23,7 @@ public class CrawlLinksDataSet1 {
     }
     
     
-    public void append(CrawlLinksDataSet cld){
+    public void append(CrawlLinksDataSet1 cld){
         this.externalLinks.addAll(cld.externalLinks);
         this.internaLinks.addAll(cld.internaLinks);
         this.irrelevantLinks.addAll(cld.irrelevantLinks);
