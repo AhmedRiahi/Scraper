@@ -1,9 +1,9 @@
 package com.pp.framework.propagation;
 
+import com.pp.framework.propagation.Exception.InvalidReceiverListeningEventsException;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import com.pp.framework.propagation.Exception.InvalidReceiverListeningEventsException;
 
 public class PropagationController {
 

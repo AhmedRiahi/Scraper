@@ -1,12 +1,12 @@
 package com.pp.structureDetector.algorithm.classificationMethods.implementation;
 
-import java.util.List;
-
 import com.pp.framework.dataStructure.tree.Tree;
 import com.pp.framework.dataStructure.tree.TreeNode;
 import com.pp.structureDetector.abstractStructure.StatNode;
 import com.pp.structureDetector.algorithm.classificationMethods.ClassificationMethod;
 import com.pp.structureDetector.exception.NoCapacityToDetectException;
+
+import java.util.List;
 
 public class TextLengthMethod extends ClassificationMethod{
 

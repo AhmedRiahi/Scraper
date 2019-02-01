@@ -1,8 +1,7 @@
 package com.pp.database.model.scrapper.descriptor.relation;
 
-import org.mongodb.morphia.annotations.Entity;
-
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
+import org.mongodb.morphia.annotations.Entity;
 
 //TODO : missing sibling classes : contained in , between, upper to ....
 @Entity

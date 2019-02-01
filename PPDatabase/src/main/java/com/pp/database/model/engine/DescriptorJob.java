@@ -2,13 +2,12 @@ package com.pp.database.model.engine;
 
 
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
-
 import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
+
 import javax.validation.constraints.NotNull;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 @Data

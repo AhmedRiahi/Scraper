@@ -1,14 +1,16 @@
 package com.pp.dashboard.service;
 
-import java.util.List;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
 import com.pp.dashboard.controller.DescriptorsPortfolioController;
+import com.pp.database.dao.crawler.CrawledContentDAO;
+import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
+import com.pp.database.dao.mozart.JobExecutionHistoryDAO;
+import com.pp.database.dao.scrapper.DescriptorDAO;
+import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.mozart.JobExecutionHistory;
+import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
+import com.pp.framework.kafka.KafkaTopics;
+import com.pp.framework.kafka.sender.PPSender;
 import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -17,14 +19,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.pp.database.dao.crawler.CrawledContentDAO;
-import com.pp.database.dao.mozart.JobExecutionHistoryDAO;
-import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
-import com.pp.database.dao.scrapper.DescriptorDAO;
-import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.database.model.scrapper.descriptor.DescriptorModel;
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.util.List;
 
 @Service
 public class DescriptorService {

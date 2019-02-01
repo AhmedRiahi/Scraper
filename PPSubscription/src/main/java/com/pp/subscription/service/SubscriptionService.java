@@ -1,16 +1,5 @@
 package com.pp.subscription.service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
-
-import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -21,6 +10,16 @@ import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.database.model.subscription.SchemaSubscription;
 import com.pp.subscription.core.SubscriptionScanner;
+import org.bson.types.ObjectId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class SubscriptionService {

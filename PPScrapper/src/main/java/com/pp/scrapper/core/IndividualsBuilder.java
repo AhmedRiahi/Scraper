@@ -1,13 +1,8 @@
 package com.pp.scrapper.core;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
-import org.springframework.stereotype.Service;
-
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.DescriptorScrapingResult;
+import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import com.pp.database.model.scrapper.descriptor.listeners.ScrapedContent;
 import com.pp.database.model.scrapper.descriptor.relation.AggregationRelation;
@@ -16,6 +11,10 @@ import com.pp.database.model.scrapper.descriptor.relation.SemanticRelation;
 import com.pp.database.model.scrapper.descriptor.relation.SemanticRelation.CardinalityType;
 import com.pp.database.model.semantic.individual.IndividualProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
+import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service

@@ -1,7 +1,7 @@
 package com.pp.engine.config;
 
-import java.io.IOException;
-
+import com.pp.engine.job.CleanerJob;
+import com.pp.engine.job.DescriptorsProcessingJob;
 import org.quartz.JobDetail;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger;
@@ -17,8 +17,7 @@ import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
-import com.pp.engine.job.CleanerJob;
-import com.pp.engine.job.DescriptorsProcessingJob;
+import java.io.IOException;
 
 
 @Configuration

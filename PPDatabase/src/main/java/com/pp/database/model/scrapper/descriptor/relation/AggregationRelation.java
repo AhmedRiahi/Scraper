@@ -1,8 +1,7 @@
 package com.pp.database.model.scrapper.descriptor.relation;
 
-import org.mongodb.morphia.annotations.Entity;
-
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
+import org.mongodb.morphia.annotations.Entity;
 
 @Entity
 public class AggregationRelation extends SemanticRelation{

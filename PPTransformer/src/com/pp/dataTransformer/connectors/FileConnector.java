@@ -1,13 +1,5 @@
 package com.pp.dataTransformer.connectors;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Iterator;
-
 import com.pp.dataTransformer.configuration.ConfigParameters;
 import com.pp.dataTransformer.exception.ConfigurationAttributeException;
 import com.pp.dataTransformer.exception.DataLoadingException;
@@ -15,6 +7,9 @@ import com.pp.dataTransformer.exception.DataWritingException;
 import com.pp.dataTransformer.record.RecordValue;
 import com.pp.dataTransformer.record.RecordValues;
 import com.pp.dataTransformer.record.RecordsSet;
+
+import java.io.*;
+import java.util.Iterator;
 
 public class FileConnector extends Connector{
 

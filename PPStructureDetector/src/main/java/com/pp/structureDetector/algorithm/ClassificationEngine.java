@@ -1,24 +1,17 @@
 package com.pp.structureDetector.algorithm;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.TreeSet;
-import java.util.stream.Collectors;
-
-import com.pp.structureDetector.abstractStructure.WebContentTypes;
-import org.jsoup.nodes.Element;
-
-
 import com.pp.framework.dataStructure.tree.Tree;
 import com.pp.framework.dataStructure.tree.TreeNode;
 import com.pp.structureDetector.abstractStructure.ClassRate;
 import com.pp.structureDetector.abstractStructure.StatNode;
+import com.pp.structureDetector.abstractStructure.WebContentTypes;
 import com.pp.structureDetector.algorithm.classificationMethods.implementation.CssClassRateMethod;
 import com.pp.structureDetector.algorithm.classificationMethods.implementation.TextLengthMethod;
+import org.jsoup.nodes.Element;
 import org.springframework.stereotype.Service;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ClassificationEngine {

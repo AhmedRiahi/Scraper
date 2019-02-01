@@ -2,7 +2,6 @@ package com.pp.dashboard.controller;
 
 import com.pp.dashboard.service.DescriptorsPortfolioService;
 import com.pp.database.model.common.DescriptorsPortfolio;
-import com.pp.database.model.mozart.JobExecutionHistory;
 import com.pp.framework.kafka.KafkaTopics;
 import com.pp.framework.kafka.sender.PPSender;
 import org.slf4j.Logger;

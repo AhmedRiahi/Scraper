@@ -1,41 +1,38 @@
 package com.pp.crawler.core;
 
+import com.pp.crawler.exception.IrrelevantLinkException;
+import com.pp.database.model.crawler.Cookie;
+import com.pp.database.model.crawler.CrawlLinksDataSet;
+import com.pp.database.model.crawler.Link;
+import com.pp.database.model.crawler.Sitemap;
+import lombok.extern.slf4j.Slf4j;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.springframework.stereotype.Service;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorCompletionService;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.stereotype.Service;
-
-import com.pp.crawler.exception.IrrelevantLinkException;
-import com.pp.database.model.crawler.Cookie;
-import com.pp.database.model.crawler.CrawlLinksDataset;
-import com.pp.database.model.crawler.Link;
-import com.pp.database.model.crawler.Sitemap;
-
 @Service
+@Slf4j
 public class PPCrawler {
 
 	private URL baseURL;
 	private final ExecutorService executor;
-    private final ExecutorCompletionService<CrawlLinksDataset> executorService;
+    private final ExecutorCompletionService<CrawlLinksDataSet> executorService;
     private int threadsNumber = 40;
-    private CrawlLinksDataset crawlingLinksDataset;
-    private List<Future<CrawlLinksDataset>> futureResults;
+    private CrawlLinksDataSet crawlingLinksDataset;
+    private List<Future<CrawlLinksDataSet>> futureResults;
     
     public PPCrawler(){
     	this.executor = Executors.newFixedThreadPool(this.threadsNumber);
-    	this.executorService = new ExecutorCompletionService<CrawlLinksDataset>(this.executor);
+    	this.executorService = new ExecutorCompletionService<CrawlLinksDataSet>(this.executor);
     }
 	
     public String download(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
@@ -54,7 +51,7 @@ public class PPCrawler {
     public Sitemap createSitemap(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
     	System.out.println("Sitemap creation started");
     	this.baseURL = url;
-    	this.crawlingLinksDataset = new CrawlLinksDataset();
+    	this.crawlingLinksDataset = new CrawlLinksDataSet();
     	HashSet<Link> links = this.crawlFirstPage(url);
         this.launchWaveCrawling(links);
         System.out.println("Sitemap creation finished");
@@ -83,14 +80,14 @@ public class PPCrawler {
         	int portionFrom = i*wavePortionSize;
         	int portionTo = (i+1)*wavePortionSize;
             HashSet<Link> linksPortion =  (HashSet<Link>) links.stream().skip(portionFrom).limit(portionTo).collect(Collectors.toSet());
-            Future<CrawlLinksDataset> futureResult = this.crawlLinks(linksPortion);
+            Future<CrawlLinksDataSet> futureResult = this.crawlLinks(linksPortion);
             this.futureResults.add(futureResult);
         }
         
         // for the rest of links
-        int rest = links.size()%this.threadsNumber;
+        long rest = links.size()%this.threadsNumber;
         HashSet<Link> linksPortion =  (HashSet<Link>) links.stream().skip(links.size()-rest).limit(links.size()).collect(Collectors.toSet());
-        Future<CrawlLinksDataset> futureResult = this.crawlLinks(linksPortion);
+        Future<CrawlLinksDataSet> futureResult = this.crawlLinks(linksPortion);
         this.futureResults.add(futureResult);
         
         this.collectCrawlingResults();
@@ -105,21 +102,21 @@ public class PPCrawler {
     	int collectedResultsNumber = 0;
     	while(collectedResultsNumber < this.futureResults.size()){
 			try {
-				Future<CrawlLinksDataset> future = this.executorService.take();
+				Future<CrawlLinksDataSet> future = this.executorService.take();
 				System.out.println(future.isDone()+" "+collectedResultsNumber);
-				CrawlLinksDataset cld = future.get();
+				CrawlLinksDataSet cld = future.get();
 				this.crawlingLinksDataset.append(cld);
 	            collectedResultsNumber++;
 			} catch (InterruptedException e) {
-				e.printStackTrace();
+				log.error(e.getMessage(),e);
 			} catch (ExecutionException e) {
-				e.printStackTrace();
+                log.error(e.getMessage(),e);
 			}
     	}
         this.crawlingLinksDataset.cleanNewLinks();
     }
         
-    private Future<CrawlLinksDataset> crawlLinks(HashSet<Link> links){
+    private Future<CrawlLinksDataSet> crawlLinks(HashSet<Link> links){
         LinkPoolDownloader linkPoolDownloader = new LinkPoolDownloader(this.baseURL,links);
         return this.executorService.submit(linkPoolDownloader);
     }

@@ -1,9 +1,8 @@
 package com.pp.database.model.scrapper.descriptor.relation;
 
+import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
-
-import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 
 @Entity
 public abstract class ContentListenersRelation {

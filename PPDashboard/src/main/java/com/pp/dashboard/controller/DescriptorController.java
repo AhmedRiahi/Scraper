@@ -1,20 +1,15 @@
 package com.pp.dashboard.controller;
 
-import java.util.List;
-
-import com.pp.database.model.mozart.JobExecutionHistory;
-import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
-
 import com.pp.dashboard.service.DescriptorService;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
+import com.pp.database.model.mozart.JobExecutionHistory;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
+import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import com.pp.framework.dataStructure.Couple;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 
 @RestController

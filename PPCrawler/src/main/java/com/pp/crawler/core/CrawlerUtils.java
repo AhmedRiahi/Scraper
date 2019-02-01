@@ -1,15 +1,14 @@
 package com.pp.crawler.core;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.HashSet;
-
+import com.pp.crawler.exception.IrrelevantLinkException;
+import com.pp.database.model.crawler.Link;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import com.pp.crawler.exception.IrrelevantLinkException;
-import com.pp.database.model.crawler.Link;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.HashSet;
 
 public final class CrawlerUtils {
 	

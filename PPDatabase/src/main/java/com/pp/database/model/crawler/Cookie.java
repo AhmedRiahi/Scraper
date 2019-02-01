@@ -2,8 +2,6 @@ package com.pp.database.model.crawler;
 
 import org.mongodb.morphia.annotations.Embedded;
 
-import com.pp.database.kernel.PPEntity;
-
 @Embedded
 public class Cookie {
 

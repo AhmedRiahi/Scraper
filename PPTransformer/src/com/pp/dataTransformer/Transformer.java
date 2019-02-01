@@ -1,18 +1,14 @@
 package com.pp.dataTransformer;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import com.pp.dataTransformer.configuration.SourceProvider;
 import com.pp.dataTransformer.connectors.Connector;
-import com.pp.dataTransformer.exception.ConfigurationAttributeException;
-import com.pp.dataTransformer.exception.DataLoadingException;
-import com.pp.dataTransformer.exception.DataWritingException;
-import com.pp.dataTransformer.exception.NoDataFoundException;
-import com.pp.dataTransformer.exception.UnsupportedConnectorException;
+import com.pp.dataTransformer.exception.*;
 import com.pp.dataTransformer.matcher.algorithm.EntityMapper;
 import com.pp.dataTransformer.record.RecordAttribute;
 import com.pp.dataTransformer.record.RecordsSet;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 public class Transformer {
 

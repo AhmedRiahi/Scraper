@@ -1,18 +1,18 @@
 package com.pp.database.model.crawler;
 
-import java.util.Date;
-
 import com.pp.database.kernel.PPEntity;
+
+import java.util.Date;
 
 public class Sitemap extends PPEntity{
 	
 	private String domainName;
-	private CrawlLinksDataset cld;
+	private CrawlLinksDataSet cld;
 	private Date lastCheckingDate;
 	
 	public Sitemap(String domainName){
 		this.domainName = domainName;
-		this.cld = new CrawlLinksDataset();
+		this.cld = new CrawlLinksDataSet();
 	}
 	
 	// -------------------------------- GETTER / SETTER --------------------------------
@@ -21,11 +21,11 @@ public class Sitemap extends PPEntity{
 		return domainName;
 	}
 	
-	public CrawlLinksDataset getCld() {
+	public CrawlLinksDataSet getCld() {
 		return cld;
 	}
 
-	public void setCld(CrawlLinksDataset cld) {
+	public void setCld(CrawlLinksDataSet cld) {
 		this.cld = cld;
 	}
 

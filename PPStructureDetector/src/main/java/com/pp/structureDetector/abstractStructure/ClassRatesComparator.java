@@ -2,8 +2,6 @@ package com.pp.structureDetector.abstractStructure;
 
 import java.util.Comparator;
 
-import com.pp.structureDetector.abstractStructure.ClassRate;
-
 public class ClassRatesComparator implements Comparator<ClassRate>{
 
 	@Override

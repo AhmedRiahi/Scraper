@@ -1,7 +1,5 @@
 package com.pp.database.model.scrapper.descriptor;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;

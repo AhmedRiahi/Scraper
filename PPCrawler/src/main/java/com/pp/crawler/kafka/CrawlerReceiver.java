@@ -1,21 +1,14 @@
 package com.pp.crawler.kafka;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Arrays;
-import java.util.StringJoiner;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pp.crawler.core.PPCrawler;
 import com.pp.crawler.payload.RendererPayload;
-import org.apache.juli.logging.Log;
+import com.pp.database.dao.crawler.CrawledContentDAO;
+import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
+import com.pp.database.model.crawler.CrawledContent;
+import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
+import com.pp.framework.kafka.KafkaTopics;
+import com.pp.framework.kafka.sender.PPSender;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
@@ -24,15 +17,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 
-import com.pp.crawler.core.PPCrawler;
-import com.pp.database.dao.crawler.CrawledContentDAO;
-import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
-import com.pp.database.model.crawler.CrawledContent;
-import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.stream.Collectors;
 
-import static com.pp.framework.kafka.KafkaTopics.IN;
 import static com.pp.framework.kafka.KafkaTopics.OUT;
 
 public class CrawlerReceiver {

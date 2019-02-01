@@ -1,12 +1,12 @@
 package com.pp.dataTransformer.matcher.algorithm;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import com.pp.dataTransformer.matcher.pattern.MatchingPattern;
 import com.pp.dataTransformer.matcher.pattern.MatchingRule;
 import com.pp.dataTransformer.record.RecordsSet;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public abstract class PatternMatcher {
 

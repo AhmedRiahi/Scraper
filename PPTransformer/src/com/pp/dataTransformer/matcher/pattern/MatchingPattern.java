@@ -1,14 +1,13 @@
 package com.pp.dataTransformer.matcher.pattern;
 
+import com.pp.dataTransformer.record.RecordAttribute;
+import com.pp.dataTransformer.record.RecordsSet;
+
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
-
-import com.pp.dataTransformer.record.RecordAttribute;
-import com.pp.dataTransformer.record.RecordsSet;
 
 public abstract class MatchingPattern {
 

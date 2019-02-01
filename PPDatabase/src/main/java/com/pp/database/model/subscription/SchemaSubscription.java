@@ -1,13 +1,12 @@
 package com.pp.database.model.subscription;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.mongodb.morphia.annotations.Reference;
-
 import com.mongodb.BasicDBObject;
 import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.semantic.schema.IndividualSchema;
+import org.mongodb.morphia.annotations.Reference;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class SchemaSubscription extends PPEntity{
 

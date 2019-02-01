@@ -1,9 +1,9 @@
 package com.pp.dataTransformer.configuration;
 
+import com.pp.dataTransformer.exception.ConfigurationAttributeException;
+
 import java.util.HashMap;
 import java.util.Map;
-
-import com.pp.dataTransformer.exception.ConfigurationAttributeException;
 
 public class SourceProvider {
 

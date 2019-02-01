@@ -1,22 +1,21 @@
 package com.pp.database.model.mozart;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.common.DescriptorsPortfolio;
+import com.pp.database.model.crawler.CrawledContent;
 import com.pp.database.model.engine.DescriptorJob;
+import com.pp.database.model.scrapper.descriptor.listeners.ScrapedContent;
+import com.pp.database.model.semantic.individual.PPIndividual;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.annotations.Transient;
 
-import com.pp.database.kernel.PPEntity;
-import com.pp.database.model.crawler.CrawledContent;
-import com.pp.database.model.scrapper.descriptor.listeners.ScrapedContent;
-import com.pp.database.model.semantic.individual.PPIndividual;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Data
 @Entity

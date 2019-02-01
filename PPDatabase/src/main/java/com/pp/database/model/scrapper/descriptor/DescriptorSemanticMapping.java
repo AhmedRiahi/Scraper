@@ -4,12 +4,11 @@ import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import lombok.Data;
 import org.bson.types.ObjectId;
-import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.PrePersist;
 
-import javax.annotation.PostConstruct;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 @Data
 public class DescriptorSemanticMapping extends PPEntity{

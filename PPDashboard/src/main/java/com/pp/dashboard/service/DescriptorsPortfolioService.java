@@ -4,7 +4,6 @@ package com.pp.dashboard.service;
 import com.pp.database.dao.common.DescriptorsPortfolioDAO;
 import com.pp.database.dao.mozart.JobExecutionHistoryDAO;
 import com.pp.database.model.common.DescriptorsPortfolio;
-import com.pp.database.model.mozart.JobExecutionHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

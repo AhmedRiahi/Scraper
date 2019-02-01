@@ -1,12 +1,11 @@
 package com.pp.database.dao.scrapper;
 
-import java.util.List;
-
+import com.pp.database.kernel.PPDAO;
+import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import org.mongodb.morphia.query.Query;
 import org.springframework.stereotype.Repository;
 
-import com.pp.database.kernel.PPDAO;
-import com.pp.database.model.scrapper.descriptor.DescriptorModel;
+import java.util.List;
 
 @Repository
 public class DescriptorDAO extends PPDAO<DescriptorModel>{

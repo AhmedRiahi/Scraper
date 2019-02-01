@@ -1,11 +1,10 @@
 package com.pp.database.model.scrapper.descriptor.signature;
 
-import org.mongodb.morphia.annotations.Entity;
-
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.As;
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+import org.mongodb.morphia.annotations.Entity;
 
 @JsonTypeInfo(use  =Id.NAME,include= As.PROPERTY, property="type")
 @JsonSubTypes({

@@ -1,14 +1,5 @@
 package com.pp.dataTransformer.connectors;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.Iterator;
-
 import com.pp.dataTransformer.configuration.ConfigParameters;
 import com.pp.dataTransformer.exception.ConfigurationAttributeException;
 import com.pp.dataTransformer.exception.DataLoadingException;
@@ -16,6 +7,9 @@ import com.pp.dataTransformer.exception.DataWritingException;
 import com.pp.dataTransformer.record.RecordValue;
 import com.pp.dataTransformer.record.RecordValues;
 import com.pp.dataTransformer.record.RecordsSet;
+
+import java.sql.*;
+import java.util.Iterator;
 
 public class SqlConnector extends Connector{
 

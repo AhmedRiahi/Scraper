@@ -1,15 +1,5 @@
 package com.pp.structureDetector.abstractStructure;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
-
-import org.jsoup.nodes.Element;
-
-import com.pp.structureDetector.abstractStructure.WebContentTypes;
 import com.pp.framework.dataStructure.ObservableTreeSet;
 import com.pp.framework.dataStructure.tree.ProcessingTreeNodeValue;
 import com.pp.framework.dataStructure.tree.TreeNode;
@@ -17,6 +7,9 @@ import com.pp.framework.dataStructure.tree.TreeNodeValue;
 import com.pp.framework.propagation.Message;
 import com.pp.framework.propagation.PropagationEvent;
 import com.pp.framework.propagation.PropagationResponse;
+import org.jsoup.nodes.Element;
+
+import java.util.*;
 
 public class StatNode extends ProcessingTreeNodeValue{
 

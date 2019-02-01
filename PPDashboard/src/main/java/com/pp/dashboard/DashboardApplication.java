@@ -1,5 +1,6 @@
 package com.pp.dashboard;
 
+import com.pp.dashboard.service.DashboardUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -19,8 +20,6 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-
-import com.pp.dashboard.service.DashboardUserService;
 
 @ComponentScan("com.pp")
 @SpringBootApplication

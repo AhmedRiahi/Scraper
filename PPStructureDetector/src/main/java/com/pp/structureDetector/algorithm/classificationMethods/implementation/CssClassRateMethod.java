@@ -1,19 +1,19 @@
 package com.pp.structureDetector.algorithm.classificationMethods.implementation;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.TreeSet;
-
 import com.pp.framework.dataStructure.tree.Tree;
 import com.pp.framework.dataStructure.tree.TreeNode;
+import com.pp.framework.propagation.Exception.InvalidReceiverListeningEventsException;
 import com.pp.framework.propagation.Message;
 import com.pp.framework.propagation.PropagationResponse;
-import com.pp.framework.propagation.Exception.InvalidReceiverListeningEventsException;
 import com.pp.structureDetector.abstractStructure.ClassRate;
 import com.pp.structureDetector.abstractStructure.StatNode;
 import com.pp.structureDetector.algorithm.classificationMethods.ClassificationMethod;
 import com.pp.structureDetector.exception.NoCapacityToDetectException;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.TreeSet;
 
 public class CssClassRateMethod extends ClassificationMethod{
 

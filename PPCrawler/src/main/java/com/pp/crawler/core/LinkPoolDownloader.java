@@ -1,5 +1,11 @@
 package com.pp.crawler.core;
 
+import com.pp.crawler.exception.IrrelevantLinkException;
+import com.pp.database.model.crawler.CrawlLinksDataSet;
+import com.pp.database.model.crawler.Link;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -7,14 +13,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.concurrent.Callable;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-
-import com.pp.crawler.exception.IrrelevantLinkException;
-import com.pp.database.model.crawler.CrawlLinksDataset;
-import com.pp.database.model.crawler.Link;
-
-public class LinkPoolDownloader implements Callable<CrawlLinksDataset>{
+public class LinkPoolDownloader implements Callable<CrawlLinksDataSet>{
 
 	private URL domainURL;
     private HashSet<Link> inputLinks;
@@ -27,8 +26,8 @@ public class LinkPoolDownloader implements Callable<CrawlLinksDataset>{
     }
 		
     @Override
-    public CrawlLinksDataset call(){
-        CrawlLinksDataset cld = new CrawlLinksDataset();
+    public CrawlLinksDataSet call(){
+        CrawlLinksDataSet cld = new CrawlLinksDataSet();
         Iterator<Link> iterator = this.inputLinks.iterator();
         while(iterator.hasNext()){
         	Link link = iterator.next();

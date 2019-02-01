@@ -1,14 +1,12 @@
 package com.pp.database.dao.mozart;
 
-import java.util.Date;
-import java.util.List;
-
-import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
+import com.pp.database.kernel.PPDAO;
 import com.pp.database.model.mozart.JobExecutionHistory;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 
-import com.pp.database.kernel.PPDAO;
+import java.util.Date;
+import java.util.List;
 
 @Repository
 public class JobExecutionHistoryDAO extends PPDAO<JobExecutionHistory>{

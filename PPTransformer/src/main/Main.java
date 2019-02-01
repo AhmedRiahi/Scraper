@@ -1,7 +1,5 @@
 package main;
 
-import java.util.List;
-
 import com.pp.dataTransformer.Transformer;
 import com.pp.dataTransformer.exception.DataLoadingException;
 import com.pp.dataTransformer.matcher.algorithm.TextPatternMatcher;
@@ -10,6 +8,8 @@ import com.pp.dataTransformer.matcher.pattern.MatchingRuleTypes;
 import com.pp.dataTransformer.matcher.pattern.TextPattern;
 import com.pp.dataTransformer.record.RecordAttribute;
 import com.pp.dataTransformer.record.RecordsSet;
+
+import java.util.List;
 
 public class Main {
 

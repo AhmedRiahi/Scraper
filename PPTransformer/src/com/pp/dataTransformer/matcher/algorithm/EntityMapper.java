@@ -1,17 +1,17 @@
 package com.pp.dataTransformer.matcher.algorithm;
 
+import com.github.drapostolos.typeparser.TypeParser;
+import com.pp.dataTransformer.record.RecordAttribute;
+import com.pp.dataTransformer.record.RecordValue;
+import com.pp.dataTransformer.record.RecordValues;
+import com.pp.dataTransformer.record.RecordsSet;
+
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
-import com.github.drapostolos.typeparser.TypeParser;
-import com.pp.dataTransformer.record.RecordAttribute;
-import com.pp.dataTransformer.record.RecordValue;
-import com.pp.dataTransformer.record.RecordValues;
-import com.pp.dataTransformer.record.RecordsSet;
 
 public class EntityMapper<T> {
 	

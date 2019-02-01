@@ -1,9 +1,11 @@
 package com.pp.database.model.crawler;
 
-import java.net.URL;
-
+import lombok.Data;
 import org.mongodb.morphia.annotations.Transient;
 
+import java.net.URL;
+
+@Data
 public class Link{
 	
 	@Transient
@@ -14,30 +16,4 @@ public class Link{
         this.url = url;
         this.urlString = this.url.toString();
     }
-
-    @Override
-    public String toString() {
-        return "URL : "+this.url.toString();
-    }
-    
-    @Override
-    public int hashCode() {
-    	return this.url.hashCode();
-    }
-    
-    @Override
-    public boolean equals(Object obj) {
-    	return this.hashCode() == obj.hashCode();
-    }
-	
-    
-    // -------------------------------- GETTER / SETTER --------------------------------
-    
-    public URL getUrl() {
-        return url;
-    }
-
-    public void setUrl(URL url) {
-        this.url = url;
-    }	
 }

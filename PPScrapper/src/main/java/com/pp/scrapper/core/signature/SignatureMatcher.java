@@ -1,6 +1,5 @@
 package com.pp.scrapper.core.signature;
 
-import com.pp.database.model.scrapper.descriptor.signature.DomSignatureModel;
 import com.pp.database.model.scrapper.descriptor.signature.SignatureModel;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;

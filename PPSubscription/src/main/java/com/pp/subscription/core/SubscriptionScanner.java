@@ -1,16 +1,15 @@
 package com.pp.subscription.core;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
+import com.mongodb.DBObject;
+import com.pp.database.model.semantic.schema.PropertyDefinition;
+import com.pp.database.model.subscription.SchemaSubscription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.DBObject;
-import com.pp.database.model.semantic.schema.PropertyDefinition;
-import com.pp.database.model.subscription.SchemaSubscription;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 public class SubscriptionScanner {

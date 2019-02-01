@@ -1,23 +1,21 @@
 package com.pp.database.model.scrapper.descriptor;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-
-import javax.xml.bind.annotation.XmlRootElement;
-import lombok.Data;
-import lombok.NonNull;
-import org.mongodb.morphia.annotations.Embedded;
-import org.mongodb.morphia.annotations.Entity;
-
 import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.crawler.Cookie;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import com.pp.database.model.scrapper.descriptor.relation.SemanticRelation;
 import com.pp.database.model.scrapper.descriptor.relation.StructureRelation;
+import lombok.Data;
+import lombok.NonNull;
+import org.mongodb.morphia.annotations.Embedded;
+import org.mongodb.morphia.annotations.Entity;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @XmlRootElement

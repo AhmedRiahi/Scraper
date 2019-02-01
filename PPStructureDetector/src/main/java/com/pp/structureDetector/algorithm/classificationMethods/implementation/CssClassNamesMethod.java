@@ -1,15 +1,15 @@
 package com.pp.structureDetector.algorithm.classificationMethods.implementation;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.pp.framework.dataStructure.tree.Tree;
 import com.pp.framework.dataStructure.tree.TreeNode;
 import com.pp.structureDetector.abstractStructure.StatNode;
 import com.pp.structureDetector.abstractStructure.WebContentTypes;
 import com.pp.structureDetector.algorithm.classificationMethods.ClassificationMethod;
 import com.pp.structureDetector.exception.NoCapacityToDetectException;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class CssClassNamesMethod extends ClassificationMethod{
 

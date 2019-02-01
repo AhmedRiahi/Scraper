@@ -1,5 +1,7 @@
 package com.pp.engine.job;
 
+import com.pp.framework.kafka.KafkaTopics;
+import com.pp.framework.kafka.sender.PPSender;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
@@ -7,9 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
 
 @Component
 public class CleanerJob implements Job{

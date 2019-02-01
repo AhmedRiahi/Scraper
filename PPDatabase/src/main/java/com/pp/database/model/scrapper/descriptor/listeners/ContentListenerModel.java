@@ -1,13 +1,12 @@
 package com.pp.database.model.scrapper.descriptor.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import com.pp.database.model.scrapper.descriptor.signature.SignatureModel;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Id;
 
-import com.pp.database.model.scrapper.descriptor.signature.SignatureModel;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @Embedded("ContentListener")

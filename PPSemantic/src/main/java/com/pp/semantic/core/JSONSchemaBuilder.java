@@ -1,17 +1,12 @@
 package com.pp.semantic.core;
 
-import java.util.Iterator;
-
+import com.pp.database.model.semantic.schema.*;
 import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
-import com.pp.database.model.semantic.schema.IndividualSchema;
-import com.pp.database.model.semantic.schema.PrimitivePropertyType;
-import com.pp.database.model.semantic.schema.PropertyDefinition;
-import com.pp.database.model.semantic.schema.PropertyType;
-import com.pp.database.model.semantic.schema.ReferencePropertyType;
+import java.util.Iterator;
 
 @Service
 public class JSONSchemaBuilder {

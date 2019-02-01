@@ -1,14 +1,12 @@
 package com.pp.scrapper.core;
 
 
-import com.pp.database.model.scrapper.descriptor.signature.SignatureType;
-import com.pp.scrapper.core.signature.HTMLSignatureMatcher;
-
-import com.pp.scrapper.core.signature.SignatureMatcher;
-import org.jsoup.nodes.Element;
-
 import com.pp.database.model.crawler.CrawledContent;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
+import com.pp.database.model.scrapper.descriptor.signature.SignatureType;
+import com.pp.scrapper.core.signature.HTMLSignatureMatcher;
+import com.pp.scrapper.core.signature.SignatureMatcher;
+import org.jsoup.nodes.Element;
 
 
 public class PPHTMLScrapper extends PPScraper{

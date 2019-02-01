@@ -1,7 +1,5 @@
 package com.pp.dataTransformer.connectors;
 
-import java.util.List;
-
 import com.pp.dataTransformer.configuration.SourceProvider;
 import com.pp.dataTransformer.exception.ConfigurationAttributeException;
 import com.pp.dataTransformer.exception.DataLoadingException;
@@ -9,6 +7,8 @@ import com.pp.dataTransformer.exception.DataWritingException;
 import com.pp.dataTransformer.exception.UnsupportedConnectorException;
 import com.pp.dataTransformer.record.RecordValues;
 import com.pp.dataTransformer.record.RecordsSet;
+
+import java.util.List;
 
 public abstract class Connector {
 

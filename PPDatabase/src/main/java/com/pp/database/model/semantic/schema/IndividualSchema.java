@@ -1,18 +1,16 @@
 package com.pp.database.model.semantic.schema;
 
+import com.pp.database.kernel.PPEntity;
+import org.mongodb.morphia.annotations.PostLoad;
+import org.mongodb.morphia.annotations.Reference;
+import org.mongodb.morphia.annotations.Transient;
+
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
-import org.mongodb.morphia.annotations.PostLoad;
-import org.mongodb.morphia.annotations.Reference;
-import org.mongodb.morphia.annotations.Transient;
-
-import com.pp.database.kernel.PPEntity;
 
 @XmlRootElement
 public class IndividualSchema extends PPEntity{

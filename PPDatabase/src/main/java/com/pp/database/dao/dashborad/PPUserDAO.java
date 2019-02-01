@@ -1,9 +1,8 @@
 package com.pp.database.dao.dashborad;
 
-import org.springframework.stereotype.Repository;
-
 import com.pp.database.kernel.PPDAO;
 import com.pp.database.model.dashboard.PPUser;
+import org.springframework.stereotype.Repository;
 
 @Repository
 public class PPUserDAO extends PPDAO<PPUser>{

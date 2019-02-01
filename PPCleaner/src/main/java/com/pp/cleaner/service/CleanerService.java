@@ -1,7 +1,7 @@
 package com.pp.cleaner.service;
 
-import java.util.List;
-
+import com.pp.cleaner.kafka.CleanerReceiver;
+import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.dao.mozart.JobExecutionHistoryDAO;
 import com.pp.database.model.mozart.JobExecutionHistory;
 import org.slf4j.Logger;
@@ -9,16 +9,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.pp.cleaner.kafka.CleanerReceiver;
-import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
-import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
+import java.util.List;
 
 @Service
 public class CleanerService {
 	
 	private static final Logger log = LoggerFactory.getLogger(CleanerReceiver.class);
 
-	private static final long CLEAN_DELAY = 2 * 24 * 60 * 60 * 1000 ; // 2 day
+	private static final long CLEAN_DELAY = 2 * 24 * 60 * 60 * 1000l ; // 2 day
 	@Autowired
 	private DescriptorWorkflowDataPackageDAO dwdpDAO;
 

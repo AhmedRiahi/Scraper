@@ -1,8 +1,8 @@
 package com.pp.database.model.scrapper.descriptor.signature;
 
-import javax.xml.bind.annotation.XmlEnum;
-
 import org.mongodb.morphia.annotations.Entity;
+
+import javax.xml.bind.annotation.XmlEnum;
 
 @Entity
 @XmlEnum

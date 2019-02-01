@@ -1,16 +1,12 @@
 package com.pp.framework.dataStructure.tree;
 
+import com.pp.framework.dataStructure.Couple;
+import com.pp.framework.propagation.Exception.InvalidReceiverListeningEventsException;
+import com.pp.framework.propagation.*;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-
-import com.pp.framework.dataStructure.Couple;
-import com.pp.framework.propagation.Message;
-import com.pp.framework.propagation.PropagationEvent;
-import com.pp.framework.propagation.PropagationReceiver;
-import com.pp.framework.propagation.PropagationResponse;
-import com.pp.framework.propagation.PropagationSender;
-import com.pp.framework.propagation.Exception.InvalidReceiverListeningEventsException;
 
 public class TreeNode<T extends TreeNodeValue> extends PropagationSender implements PropagationReceiver,Comparable<TreeNode<T>> {
 

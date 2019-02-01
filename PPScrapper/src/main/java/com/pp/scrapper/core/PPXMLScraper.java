@@ -7,7 +7,6 @@ import com.pp.scrapper.core.signature.SignatureMatcher;
 import com.pp.scrapper.core.signature.XMLSignatureMatcher;
 import org.jsoup.nodes.Element;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 public class PPXMLScraper extends PPScraper{
 

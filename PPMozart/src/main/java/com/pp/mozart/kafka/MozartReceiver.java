@@ -1,20 +1,13 @@
 package com.pp.mozart.kafka;
 
-import com.mongodb.DBObject;
-import com.pp.database.dao.semantic.PPIndividualDAO;
-import com.pp.database.model.semantic.individual.PPIndividual;
+import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
+import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
+import com.pp.framework.kafka.sender.PPSender;
+import com.pp.mozart.service.MozartService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-
-import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
-import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
-import com.pp.mozart.service.MozartService;
-
-import java.util.List;
 
 import static com.pp.framework.kafka.KafkaTopics.*;
 

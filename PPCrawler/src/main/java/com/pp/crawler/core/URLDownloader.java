@@ -1,10 +1,11 @@
 package com.pp.crawler.core;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import com.pp.crawler.exception.IrrelevantLinkException;
+import com.pp.database.model.crawler.Cookie;
+import org.jsoup.HttpStatusException;
+
+import javax.net.ssl.*;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.security.KeyManagementException;
@@ -12,18 +13,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSession;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import org.jsoup.HttpStatusException;
-
-import com.pp.crawler.exception.IrrelevantLinkException;
-import com.pp.database.model.crawler.Cookie;
 
 public class URLDownloader {
 

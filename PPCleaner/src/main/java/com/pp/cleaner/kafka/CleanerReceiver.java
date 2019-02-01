@@ -1,13 +1,12 @@
 package com.pp.cleaner.kafka;
 
+import com.pp.cleaner.service.CleanerService;
+import com.pp.framework.kafka.KafkaTopics;
+import com.pp.framework.kafka.sender.PPSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
-
-import com.pp.cleaner.service.CleanerService;
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
 
 public class CleanerReceiver {
 	

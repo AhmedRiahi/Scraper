@@ -1,11 +1,10 @@
 package com.pp.database.model.scrapper.descriptor.listeners;
 
+import com.pp.database.kernel.PPEntity;
 import org.jsoup.nodes.Element;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.PrePersist;
 import org.mongodb.morphia.annotations.Transient;
-
-import com.pp.database.kernel.PPEntity;
 
 @Entity
 public class ScrapedContent extends PPEntity{

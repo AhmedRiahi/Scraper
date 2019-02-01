@@ -1,8 +1,8 @@
 package com.pp.framework.propagation;
 
-import java.util.List;
-
 import com.pp.framework.propagation.Exception.InvalidReceiverListeningEventsException;
+
+import java.util.List;
 
 public class PropagationSender {
 

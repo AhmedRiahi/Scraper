@@ -1,8 +1,8 @@
 package com.pp.database.kernel;
 
-import java.util.List;
-
 import org.mongodb.morphia.annotations.Entity;
+
+import java.util.List;
 
 @Entity
 public class PPModel extends PPEntity{

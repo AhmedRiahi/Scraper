@@ -1,11 +1,5 @@
 package com.pp.dashboard.service;
 
-import java.util.List;
-
-import com.pp.framework.kafka.KafkaTopics;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
@@ -13,7 +7,12 @@ import com.pp.database.dao.scrapper.DescriptorDAO;
 import com.pp.database.dao.semantic.PPIndividualDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
+import com.pp.framework.kafka.KafkaTopics;
 import com.pp.framework.kafka.sender.PPSender;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class DashboardService{

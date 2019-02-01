@@ -1,12 +1,11 @@
 package com.pp.database.dao.subscription;
 
-import java.util.List;
-
+import com.pp.database.kernel.PPDAO;
+import com.pp.database.model.subscription.SchemaSubscription;
 import org.bson.types.ObjectId;
 import org.springframework.stereotype.Repository;
 
-import com.pp.database.kernel.PPDAO;
-import com.pp.database.model.subscription.SchemaSubscription;
+import java.util.List;
 
 @Repository
 public class SchemaSubscriptionDAO extends PPDAO<SchemaSubscription>{

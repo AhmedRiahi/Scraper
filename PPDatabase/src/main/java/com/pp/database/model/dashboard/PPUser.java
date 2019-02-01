@@ -1,8 +1,8 @@
 package com.pp.database.model.dashboard;
 
-import javax.validation.constraints.NotNull;
-
 import com.pp.database.kernel.PPEntity;
+
+import javax.validation.constraints.NotNull;
 
 public class PPUser extends PPEntity{
 

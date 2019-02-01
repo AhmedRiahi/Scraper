@@ -1,5 +1,6 @@
 package com.pp.engine;
 
+import com.pp.engine.config.SchedulerConfig;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,8 +9,6 @@ import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
-
-import com.pp.engine.config.SchedulerConfig;
 
 @Import({ SchedulerConfig.class })
 @ComponentScan("com.pp")

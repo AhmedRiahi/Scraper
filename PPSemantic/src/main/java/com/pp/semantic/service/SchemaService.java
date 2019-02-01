@@ -1,23 +1,20 @@
 package com.pp.semantic.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-
-import org.json.simple.JSONObject;
+import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
+import com.pp.database.model.semantic.schema.IndividualSchema;
+import com.pp.semantic.core.JSONSchemaBuilder;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
-import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
-import com.pp.database.model.semantic.schema.IndividualSchema;
-import com.pp.semantic.core.JSONSchemaBuilder;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service

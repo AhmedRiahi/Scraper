@@ -1,16 +1,11 @@
 package com.pp.framework.dataStructure.tree;
 
+import com.pp.framework.dataStructure.Couple;
+import com.pp.framework.propagation.*;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
-
-import com.pp.framework.dataStructure.Couple;
-import com.pp.framework.propagation.Message;
-import com.pp.framework.propagation.PropagationController;
-import com.pp.framework.propagation.PropagationEvent;
-import com.pp.framework.propagation.PropagationReceiver;
-import com.pp.framework.propagation.PropagationResponse;
-import com.pp.framework.propagation.PropagationSender;
 
 public class Tree<T extends TreeNodeValue> extends PropagationSender implements PropagationReceiver{
 

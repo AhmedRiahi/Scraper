@@ -1,16 +1,13 @@
 package com.pp.database.model.semantic.individual;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
-
-import javax.validation.constraints.NotNull;
-
+import com.pp.database.kernel.PPEntity;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Embedded;
 
-import com.pp.database.kernel.PPEntity;
+import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 @Data
 public class PPIndividual extends PPEntity{

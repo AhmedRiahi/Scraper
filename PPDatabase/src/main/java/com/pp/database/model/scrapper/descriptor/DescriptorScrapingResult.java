@@ -1,19 +1,17 @@
 package com.pp.database.model.scrapper.descriptor;
 
+import com.pp.database.kernel.PPEntity;
+import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
+import com.pp.database.model.scrapper.descriptor.listeners.ScrapedContent;
+import lombok.Data;
+import org.mongodb.morphia.annotations.Entity;
+import org.mongodb.morphia.annotations.Reference;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import lombok.Data;
-import org.mongodb.morphia.annotations.Entity;
-import org.mongodb.morphia.annotations.Reference;
-
-import com.pp.database.kernel.PPEntity;
-import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
-import com.pp.database.model.scrapper.descriptor.listeners.ScrapedContent;
 
 @Data
 @Entity

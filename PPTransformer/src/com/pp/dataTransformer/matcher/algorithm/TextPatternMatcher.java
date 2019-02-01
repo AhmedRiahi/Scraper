@@ -1,8 +1,5 @@
 package com.pp.dataTransformer.matcher.algorithm;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import com.pp.dataTransformer.matcher.pattern.MatchingPattern;
 import com.pp.dataTransformer.matcher.pattern.MatchingRule;
 import com.pp.dataTransformer.matcher.pattern.MatchingRuleTypes;
@@ -11,6 +8,9 @@ import com.pp.dataTransformer.record.RecordAttribute;
 import com.pp.dataTransformer.record.RecordValue;
 import com.pp.dataTransformer.record.RecordValues;
 import com.pp.dataTransformer.record.RecordsSet;
+
+import java.util.List;
+import java.util.Map.Entry;
 
 public class TextPatternMatcher extends PatternMatcher{
 

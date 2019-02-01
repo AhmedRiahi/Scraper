@@ -1,48 +1,39 @@
 package com.pp.analytics.service;
 
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBCursor;
+import com.mongodb.DBObject;
 import com.pp.database.dao.common.DescriptorsPortfolioDAO;
+import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
+import com.pp.database.dao.semantic.PPIndividualDAO;
+import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
+import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.engine.DescriptorJob;
+import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.scrapper.descriptor.DescriptorJoin;
+import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
+import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
+import com.pp.database.model.semantic.individual.IndividualProperty;
+import com.pp.database.model.semantic.individual.PPIndividual;
+import com.pp.database.model.semantic.schema.IndividualSchema;
+import com.pp.database.model.semantic.schema.PrimitivePropertyType;
+import com.pp.database.model.semantic.schema.PropertyDefinition;
 import com.pp.database.model.semantic.schema.ReferencePropertyType;
+import com.pp.framework.urlUtils.URLUtils;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCollection;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
-import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
-import com.pp.database.dao.semantic.PPIndividualDAO;
-import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
-import com.pp.database.kernel.MongoDatastore;
-import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.database.model.scrapper.descriptor.DescriptorModel;
-import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
-import com.pp.database.model.semantic.individual.IndividualProperty;
-import com.pp.database.model.semantic.individual.PPIndividual;
-import com.pp.database.model.semantic.individual.ReferenceProperty;
-import com.pp.database.model.semantic.schema.IndividualSchema;
-import com.pp.database.model.semantic.schema.PrimitivePropertyType;
-import com.pp.database.model.semantic.schema.PropertyDefinition;
-import com.pp.framework.urlUtils.URLUtils;
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
+import java.net.MalformedURLException;
+import java.util.*;
+import java.util.regex.Pattern;
 
 @Service
 public class AnalyticsService {
