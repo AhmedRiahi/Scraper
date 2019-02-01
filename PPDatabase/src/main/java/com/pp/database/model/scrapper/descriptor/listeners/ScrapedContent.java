@@ -1,12 +1,14 @@
 package com.pp.database.model.scrapper.descriptor.listeners;
 
 import com.pp.database.kernel.PPEntity;
+import lombok.Data;
 import org.jsoup.nodes.Element;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.PrePersist;
 import org.mongodb.morphia.annotations.Transient;
 
 @Entity
+@Data
 public class ScrapedContent extends PPEntity{
 
 	@Transient
@@ -32,24 +34,6 @@ public class ScrapedContent extends PPEntity{
 	@Override
 	public String toString() {
 		return contentListenerName;
-	}
-	
-	// -------------------------------- GETTER / SETTER --------------------------------
-	
-	public String getContentListenerName() {
-		return contentListenerName;
-	}
-
-	public void setContentListenerName(String contentListenerName) {
-		this.contentListenerName = contentListenerName;
-	}
-
-	public Element getContent() {
-		return content;
-	}
-	
-	public void setContent(Element content) {
-		this.content = content;
 	}
 	
 }

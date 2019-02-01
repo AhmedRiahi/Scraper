@@ -78,7 +78,6 @@ public class DescriptorService {
 	
 	public void descriptorErrorsChecked(String descriptorId) {
 		DescriptorModel descriptor = this.descriptorDAO.get(descriptorId);
-		//descriptor.setCheckingRequired(false);
 		this.descriptorDAO.save(descriptor);
 	}
 	

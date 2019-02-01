@@ -103,10 +103,18 @@ public class TreeNode<T extends TreeNodeValue> extends PropagationSender impleme
 
 	@Override
 	public boolean equals(Object obj) {
-		TreeNode<T> temp = (TreeNode<T>) obj;
-		return this.hash.equals(temp.hash);
+		if(obj != null && obj instanceof TreeNode){
+			TreeNode<T> temp = (TreeNode<T>) obj;
+			return this.hash.equals(temp.hash);
+		}
+		return false;
 	}
-	
+
+	@Override
+	public int hashCode() {
+		return this.hash.hashCode();
+	}
+
 	@Override
 	public int compareTo(TreeNode<T> o) {
 		return this.hash.compareTo(o.hash);

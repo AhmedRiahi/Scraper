@@ -9,7 +9,6 @@ import com.pp.database.model.semantic.individual.IndividualProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
-import org.mongodb.morphia.Key;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
@@ -23,11 +22,6 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 
 	public PPIndividualDAO() {
 		super(PPIndividual.class);
-	}
-	
-	@Override
-	public Key<PPIndividual> save(PPIndividual individual) {
-		return super.save(individual);
 	}
 	
 	public void saveConvert(PPIndividual individual) {
@@ -54,12 +48,12 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 	}
 	
 	public List<DBObject> getStagingDescriptorIndividuals(String descriptorId){
-		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());;
+		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"descriptorId", descriptorId);
 	}
 
 	public List<DBObject> getStagingWokflowIndividuals(String workflowId){
-		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());;
+		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"workflowId", workflowId);
 	}
 	

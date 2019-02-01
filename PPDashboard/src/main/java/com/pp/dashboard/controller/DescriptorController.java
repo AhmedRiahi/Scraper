@@ -43,7 +43,7 @@ public class DescriptorController {
 	@RequestMapping(path="/testScript",method=RequestMethod.POST)
 	public Couple<String, String> testContentListenerScript(@RequestBody String... params) {
 		String result = this.descriptorService.testScript(params[0],params[1]);
-		return new Couple<String, String>("result",result);
+		return new Couple<>("result",result);
 	}
 	
 	@RequestMapping(path="/flagAsChecked/{descriptorId}",method=RequestMethod.GET)

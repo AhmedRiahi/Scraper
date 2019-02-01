@@ -6,7 +6,6 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
@@ -17,6 +16,6 @@ import org.springframework.context.annotation.Import;
 public class EngineApplication {
 
 	public static void main(String[] args) {
-		ApplicationContext context = SpringApplication.run(EngineApplication.class, args);
+		SpringApplication.run(EngineApplication.class, args);
 	}
 }

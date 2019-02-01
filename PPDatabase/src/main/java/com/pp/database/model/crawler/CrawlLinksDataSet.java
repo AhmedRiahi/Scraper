@@ -16,10 +16,10 @@ public class CrawlLinksDataSet {
 	
 	
     public CrawlLinksDataSet(){
-        this.externalLinks 		= new HashSet<Link>();
-        this.internaLinks 		= new HashSet<Link>();
-        this.irrelevantLinks 	= new HashSet<Link>();
-        this.newLinks 			= new HashSet<Link>();
+        this.externalLinks 		= new HashSet<>();
+        this.internaLinks 		= new HashSet<>();
+        this.irrelevantLinks 	= new HashSet<>();
+        this.newLinks 			= new HashSet<>();
     }
     
     
@@ -37,6 +37,6 @@ public class CrawlLinksDataSet {
     }
 
     public boolean containsNewLinks(){
-    	return this.newLinks.size() != 0;
+    	return !this.newLinks.isEmpty();
     }
 }

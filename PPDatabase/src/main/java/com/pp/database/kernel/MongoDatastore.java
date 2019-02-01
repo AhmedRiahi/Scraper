@@ -17,23 +17,27 @@ public class MongoDatastore {
 	private static Datastore stagingDatastore;
 	private static Datastore publishDatastore;
 	private static AdvancedDatastore advancedDatastore;
-	private static String ENVIRONMENT = "";
-	private static final String databaseName = "PPDatabase"+ENVIRONMENT;
-	private static final String stagingDatabase = "PPStagingDatabase"+ENVIRONMENT;
-	private static final String publishDatabase = "PPPublishDatabase"+ENVIRONMENT;
+	private static final String ENVIRONMENT = "";
+	private static final String DATABASE_NAME = "PPDatabase"+ENVIRONMENT;
+	private static final String STAGING_DATABASE_NAME = "PPStagingDatabase"+ENVIRONMENT;
+	private static final String PUBLISH_DATABASE_NAME = "PPPublishDatabase"+ENVIRONMENT;
 	private static String host = "127.0.0.1";
 	private static final String USERNAME = "";
-    private static final String password = "";
+    private static final String PASSWORD = "";
+
+    private MongoDatastore(){
+    	//hide public constructor
+	}
 
 	
 	public static Datastore getDatastore(){
 		if( MongoDatastore.datastore == null){
 			Morphia morphia = new Morphia();
-            List<MongoCredential> credentialsList = new ArrayList<MongoCredential>();
-            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.databaseName,MongoDatastore.password.toCharArray());
+            List<MongoCredential> credentialsList = new ArrayList<>();
+            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.DATABASE_NAME,MongoDatastore.PASSWORD.toCharArray());
             credentialsList.add(credential);
             ServerAddress addr = new ServerAddress(host, 27017);
-			MongoDatastore.datastore = morphia.createDatastore(new MongoClient(addr),MongoDatastore.databaseName);
+			MongoDatastore.datastore = morphia.createDatastore(new MongoClient(addr),MongoDatastore.DATABASE_NAME);
 		}
 		return MongoDatastore.datastore;
 	}
@@ -41,11 +45,11 @@ public class MongoDatastore {
 	public static AdvancedDatastore getAdvancedDatastore(){
 		if( MongoDatastore.advancedDatastore == null){
 			Morphia morphia = new Morphia();
-            List<MongoCredential> credentialsList = new ArrayList<MongoCredential>();
-            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.stagingDatabase,MongoDatastore.password.toCharArray());
+            List<MongoCredential> credentialsList = new ArrayList<>();
+            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.STAGING_DATABASE_NAME,MongoDatastore.PASSWORD.toCharArray());
             credentialsList.add(credential);
             ServerAddress addr = new ServerAddress(host, 27017);
-			MongoDatastore.advancedDatastore = new DatastoreImpl(morphia, new MongoClient(addr), MongoDatastore.stagingDatabase);
+			MongoDatastore.advancedDatastore = new DatastoreImpl(morphia, new MongoClient(addr), MongoDatastore.STAGING_DATABASE_NAME);
 		}
 		return MongoDatastore.advancedDatastore;
 	}
@@ -53,11 +57,11 @@ public class MongoDatastore {
 	public static Datastore getStagingDatastore() {
 		if( MongoDatastore.stagingDatastore == null){
 			Morphia morphia = new Morphia();
-            List<MongoCredential> credentialsList = new ArrayList<MongoCredential>();
-            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.stagingDatabase,MongoDatastore.password.toCharArray());
+            List<MongoCredential> credentialsList = new ArrayList<>();
+            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.STAGING_DATABASE_NAME,MongoDatastore.PASSWORD.toCharArray());
             credentialsList.add(credential);
             ServerAddress addr = new ServerAddress(host, 27017);
-			MongoDatastore.stagingDatastore = morphia.createDatastore(new MongoClient(addr),MongoDatastore.stagingDatabase);
+			MongoDatastore.stagingDatastore = morphia.createDatastore(new MongoClient(addr),MongoDatastore.STAGING_DATABASE_NAME);
 		}
 		return MongoDatastore.stagingDatastore;
 	}
@@ -65,11 +69,11 @@ public class MongoDatastore {
 	public static Datastore getPublishDatastore() {
 		if( MongoDatastore.publishDatastore == null){
 			Morphia morphia = new Morphia();
-            List<MongoCredential> credentialsList = new ArrayList<MongoCredential>();
-            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.publishDatabase,MongoDatastore.password.toCharArray());
+            List<MongoCredential> credentialsList = new ArrayList<>();
+            MongoCredential credential = MongoCredential.createScramSha1Credential(MongoDatastore.USERNAME,MongoDatastore.PUBLISH_DATABASE_NAME,MongoDatastore.PASSWORD.toCharArray());
             credentialsList.add(credential);
             ServerAddress addr = new ServerAddress(host, 27017);
-			MongoDatastore.publishDatastore = morphia.createDatastore(new MongoClient(addr),MongoDatastore.publishDatabase);
+			MongoDatastore.publishDatastore = morphia.createDatastore(new MongoClient(addr),MongoDatastore.PUBLISH_DATABASE_NAME);
 		}
 		return MongoDatastore.publishDatastore;
 	}

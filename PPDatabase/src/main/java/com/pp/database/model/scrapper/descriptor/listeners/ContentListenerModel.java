@@ -31,7 +31,15 @@ public class ContentListenerModel{
 
 	@Override
 	public boolean equals(Object obj) {
-		return ((ContentListenerModel)obj).getName().equals(this.name);
+		if(obj != null && obj instanceof ContentListenerModel){
+			return ((ContentListenerModel)obj).getName().equals(this.name);
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return this.getName().hashCode();
 	}
 
 	public boolean isStatic() {

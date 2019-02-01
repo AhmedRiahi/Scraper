@@ -1,5 +1,8 @@
 package com.pp.framework.propagation;
 
+import lombok.Data;
+
+@Data
 public class PropagationEvent {
 
 	
@@ -16,16 +19,10 @@ public class PropagationEvent {
 	
 	@Override
 	public boolean equals(Object obj) {
-		PropagationEvent tmp = (PropagationEvent)obj;
-		return tmp.id == this.id;
-	};
-	
-	// -------------------------------- GETTER / SETTER --------------------------------
-	public int getId() {
-		return id;
-	}
-
-	public void setId(int id) {
-		this.id = id;
+		if(obj != null && obj instanceof PropagationEvent){
+			PropagationEvent tmp = (PropagationEvent)obj;
+			return tmp.id == this.id;
+		}
+		return false;
 	}
 }

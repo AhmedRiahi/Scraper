@@ -217,9 +217,7 @@ public class AnalyticsService {
 	
 	
 	private void processIndividualsProperties(DescriptorJob descriptorJob, List<PPIndividual> individuals) {
-		individuals.stream().forEach(individual -> {
-			this.processIndividualProperties(descriptorJob.getUrl(),descriptorJob.getDescriptor(),descriptorJob.getDescriptorSemanticMappingId(),individual);
-		});
+		individuals.stream().forEach(individual -> this.processIndividualProperties(descriptorJob.getUrl(),descriptorJob.getDescriptor(),descriptorJob.getDescriptorSemanticMappingId(),individual));
 	}
 
     private void processManuelIndividualProperties(PPIndividual individual) {
