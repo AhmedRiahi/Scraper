@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 @Entity
 @Data
-public class CrawlLinksDataSet1 {
+public class CrawlLinksDataSet {
 	
     private HashSet<Link> externalLinks;
     private HashSet<Link> internaLinks;
@@ -15,7 +15,7 @@ public class CrawlLinksDataSet1 {
     private HashSet<Link> newLinks;
 	
 	
-    public CrawlLinksDataSet1(){
+    public CrawlLinksDataSet(){
         this.externalLinks 		= new HashSet<Link>();
         this.internaLinks 		= new HashSet<Link>();
         this.irrelevantLinks 	= new HashSet<Link>();
@@ -23,7 +23,7 @@ public class CrawlLinksDataSet1 {
     }
     
     
-    public void append(CrawlLinksDataSet1 cld){
+    public void append(CrawlLinksDataSet cld){
         this.externalLinks.addAll(cld.externalLinks);
         this.internaLinks.addAll(cld.internaLinks);
         this.irrelevantLinks.addAll(cld.irrelevantLinks);

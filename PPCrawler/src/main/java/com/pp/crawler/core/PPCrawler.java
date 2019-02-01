@@ -2,7 +2,7 @@ package com.pp.crawler.core;
 
 import com.pp.crawler.exception.IrrelevantLinkException;
 import com.pp.database.model.crawler.Cookie;
-import com.pp.database.model.crawler.CrawlLinksDataSet1;
+import com.pp.database.model.crawler.CrawlLinksDataSet;
 import com.pp.database.model.crawler.Link;
 import com.pp.database.model.crawler.Sitemap;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +25,14 @@ public class PPCrawler {
 
 	private URL baseURL;
 	private final ExecutorService executor;
-    private final ExecutorCompletionService<CrawlLinksDataSet1> executorService;
+    private final ExecutorCompletionService<CrawlLinksDataSet> executorService;
     private int threadsNumber = 40;
-    private CrawlLinksDataSet1 crawlingLinksDataset;
-    private List<Future<CrawlLinksDataSet1>> futureResults;
+    private CrawlLinksDataSet crawlingLinksDataset;
+    private List<Future<CrawlLinksDataSet>> futureResults;
     
     public PPCrawler(){
     	this.executor = Executors.newFixedThreadPool(this.threadsNumber);
-    	this.executorService = new ExecutorCompletionService<CrawlLinksDataSet1>(this.executor);
+    	this.executorService = new ExecutorCompletionService<CrawlLinksDataSet>(this.executor);
     }
 	
     public String download(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
@@ -51,7 +51,7 @@ public class PPCrawler {
     public Sitemap createSitemap(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
     	log.info("Sitemap creation started");
     	this.baseURL = url;
-    	this.crawlingLinksDataset = new CrawlLinksDataSet1();
+    	this.crawlingLinksDataset = new CrawlLinksDataSet();
     	HashSet<Link> links = this.crawlFirstPage(url);
         this.launchWaveCrawling(links);
         log.info("Sitemap creation finished");
@@ -80,14 +80,14 @@ public class PPCrawler {
         	int portionFrom = i*wavePortionSize;
         	int portionTo = (i+1)*wavePortionSize;
             HashSet<Link> linksPortion =  (HashSet<Link>) links.stream().skip(portionFrom).limit(portionTo).collect(Collectors.toSet());
-            Future<CrawlLinksDataSet1> futureResult = this.crawlLinks(linksPortion);
+            Future<CrawlLinksDataSet> futureResult = this.crawlLinks(linksPortion);
             this.futureResults.add(futureResult);
         }
         
         // for the rest of links
         long rest = links.size()%this.threadsNumber;
         HashSet<Link> linksPortion =  (HashSet<Link>) links.stream().skip(links.size()-rest).limit(links.size()).collect(Collectors.toSet());
-        Future<CrawlLinksDataSet1> futureResult = this.crawlLinks(linksPortion);
+        Future<CrawlLinksDataSet> futureResult = this.crawlLinks(linksPortion);
         this.futureResults.add(futureResult);
         
         this.collectCrawlingResults();
@@ -102,9 +102,9 @@ public class PPCrawler {
     	int collectedResultsNumber = 0;
     	while(collectedResultsNumber < this.futureResults.size()){
 			try {
-				Future<CrawlLinksDataSet1> future = this.executorService.take();
+				Future<CrawlLinksDataSet> future = this.executorService.take();
                 log.info(future.isDone()+" "+collectedResultsNumber);
-				CrawlLinksDataSet1 cld = future.get();
+				CrawlLinksDataSet cld = future.get();
 				this.crawlingLinksDataset.append(cld);
 	            collectedResultsNumber++;
 			} catch (InterruptedException e) {
@@ -116,7 +116,7 @@ public class PPCrawler {
         this.crawlingLinksDataset.cleanNewLinks();
     }
         
-    private Future<CrawlLinksDataSet1> crawlLinks(HashSet<Link> links){
+    private Future<CrawlLinksDataSet> crawlLinks(HashSet<Link> links){
         LinkPoolDownloader linkPoolDownloader = new LinkPoolDownloader(this.baseURL,links);
         return this.executorService.submit(linkPoolDownloader);
     }

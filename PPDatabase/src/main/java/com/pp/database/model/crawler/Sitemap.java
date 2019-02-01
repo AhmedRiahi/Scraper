@@ -7,12 +7,12 @@ import java.util.Date;
 public class Sitemap extends PPEntity{
 	
 	private String domainName;
-	private CrawlLinksDataSet1 cld;
+	private CrawlLinksDataSet cld;
 	private Date lastCheckingDate;
 	
 	public Sitemap(String domainName){
 		this.domainName = domainName;
-		this.cld = new CrawlLinksDataSet1();
+		this.cld = new CrawlLinksDataSet();
 	}
 	
 	// -------------------------------- GETTER / SETTER --------------------------------
@@ -21,11 +21,11 @@ public class Sitemap extends PPEntity{
 		return domainName;
 	}
 	
-	public CrawlLinksDataSet1 getCld() {
+	public CrawlLinksDataSet getCld() {
 		return cld;
 	}
 
-	public void setCld(CrawlLinksDataSet1 cld) {
+	public void setCld(CrawlLinksDataSet cld) {
 		this.cld = cld;
 	}
 
