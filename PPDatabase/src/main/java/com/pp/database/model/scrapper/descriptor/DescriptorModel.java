@@ -35,16 +35,14 @@ public class DescriptorModel extends PPEntity{
 	public static final int SEMANTIC_LISTENER = 1;
 	public static final int STRUCTURED_LISTENER = 2;
 	
-	public DescriptorModel(){}
-	
 	
 	public Set<String> getIndividualSchemas(){
-		List<ContentListenerModel> individualCls =  this.contentListeners.stream().filter(cl -> cl.isIndividual()).collect(Collectors.toList());
-		return individualCls.stream().map(cl -> this.descriptorSemanticMappings.stream().map(dsm -> dsm.getClSemanticName(cl)).collect(Collectors.toSet())).flatMap(map -> map.stream()).collect(Collectors.toSet());
+		List<ContentListenerModel> individualCls =  this.contentListeners.stream().filter(ContentListenerModel::isIndividual).collect(Collectors.toList());
+		return individualCls.stream().map(cl -> this.descriptorSemanticMappings.stream().map(dsm -> dsm.getClSemanticName(cl)).collect(Collectors.toSet())).flatMap(Set::stream).collect(Collectors.toSet());
 	}
 	
 	public List<ContentListenerModel> getStructureRelatedSources(ContentListenerModel cl){
-		return this.structureRelations.stream().filter(s -> s.getTarget().equals(cl)).map(s -> s.getSource()).collect(Collectors.toList());
+		return this.structureRelations.stream().filter(s -> s.getTarget().equals(cl)).map(StructureRelation::getSource).collect(Collectors.toList());
 	}
 
 	public List<SemanticRelation> getSemanticRelationsAsSource(ContentListenerModel cl){

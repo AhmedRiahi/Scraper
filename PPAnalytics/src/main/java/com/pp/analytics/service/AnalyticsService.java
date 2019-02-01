@@ -160,7 +160,6 @@ public class AnalyticsService {
         this.processManuelIndividualProperties(individual);
 		boolean duplicateIndividual = this.isDuplicatedIndividual(individual);
 		if(!duplicateIndividual) {
-			//this.processIndividualProperties(null,individual);
 			this.publishIndividual(individual);
 		}else {
 			log.info("Duplicated individual {}",individual);
@@ -198,7 +197,6 @@ public class AnalyticsService {
 		IndividualSchema schema = this.individualSchemaDAO.findOne("name",individual.getSchemaName());
 				
 		List<PropertyDefinition> uniqueSchemaProperties = schema.getUniqueProperties();
-		boolean individualExists = false;
 		for(PropertyDefinition property : uniqueSchemaProperties) {
 			DBObject query = new BasicDBObject();
 			Optional<IndividualProperty> individualProperty = individual.getProperty(property.getName());
@@ -207,16 +205,13 @@ public class AnalyticsService {
 				DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getName());
 				DBObject dbObject = collection.findOne(query);
 				if(dbObject != null) {
-					individualExists = true;
-					break;
+					return true;
 				}
 			}else {
-				individualExists = true;
-				break;
+				return true;
 			}
-			
 		}
-		return individualExists;
+		return false;
 	}
 	
 	
@@ -231,14 +226,14 @@ public class AnalyticsService {
         IndividualSchema schema = this.individualSchemaDAO.findOne("name",individual.getSchemaName());
         // TODO Also handle parent properties
         List<PropertyDefinition> properties = schema.getAllProperties();
-        properties.stream().forEach(property -> {
+        properties.stream().forEach(property ->
             individual.getProperty(property.getName()).ifPresent(individualProperty -> {
                 if (property.isDisplayString()) {
                     String displayString = individual.getProperty(property.getName()).get().getValue();
                     individual.setDisplayString(displayString);
                 }
-            });
-        });
+            })
+        );
     }
 	
 	
@@ -247,7 +242,7 @@ public class AnalyticsService {
 		IndividualSchema schema = this.individualSchemaDAO.findOne("name",individual.getSchemaName());
 		// Get all properties including parent ones
 		List<PropertyDefinition> properties = schema.getAllProperties();
-		properties.stream().forEach(property -> {
+		properties.stream().forEach(property ->
 			individual.getProperty(property.getName()).ifPresent(individualProperty -> {
 				
 				if(property.isDisplayString()) {
@@ -301,8 +296,8 @@ public class AnalyticsService {
 					}
 				}
 				
-			});
-		});
+			})
+		);
 	}
 	
 	

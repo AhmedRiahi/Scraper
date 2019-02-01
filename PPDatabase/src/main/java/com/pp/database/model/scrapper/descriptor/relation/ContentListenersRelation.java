@@ -1,10 +1,12 @@
 package com.pp.database.model.scrapper.descriptor.relation;
 
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
+import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
 @Entity
+@Data
 public abstract class ContentListenersRelation {
 
 	@Reference
@@ -22,26 +24,7 @@ public abstract class ContentListenersRelation {
 	
 	
 	public boolean doConcerns(ContentListenerModel cl){
-		if(this.source.equals(cl) || this.target.equals(cl)) return true;
-		return false;
-	}
-	
-	// -------------------------------- GETTER / SETTER --------------------------------
-
-	public ContentListenerModel getSource() {
-		return source;
-	}
-
-	public void setSource(ContentListenerModel source) {
-		this.source = source;
-	}
-
-	public ContentListenerModel getTarget() {
-		return target;
-	}
-
-	public void setTarget(ContentListenerModel target) {
-		this.target = target;
+		return this.source.equals(cl) || this.target.equals(cl);
 	}
 
 }

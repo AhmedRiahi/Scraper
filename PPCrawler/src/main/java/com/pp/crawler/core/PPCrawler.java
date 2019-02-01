@@ -98,7 +98,7 @@ public class PPCrawler {
         
     }
     
-    private void collectCrawlingResults(){
+    private void collectCrawlingResults() {
     	int collectedResultsNumber = 0;
     	while(collectedResultsNumber < this.futureResults.size()){
 			try {
@@ -107,9 +107,12 @@ public class PPCrawler {
 				CrawlLinksDataSet cld = future.get();
 				this.crawlingLinksDataset.append(cld);
 	            collectedResultsNumber++;
-			} catch (InterruptedException | ExecutionException e) {
+			} catch (InterruptedException e) {
 				log.error(e.getMessage(),e);
-			}
+                Thread.currentThread().interrupt();
+			} catch ( ExecutionException e) {
+                log.error(e.getMessage(),e);
+            }
     	}
         this.crawlingLinksDataset.cleanNewLinks();
     }
