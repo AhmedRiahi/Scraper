@@ -7,7 +7,7 @@ import java.util.HashSet;
 
 @Entity
 @Data
-public class CrawlLinksDataSet {
+public class CrawlLinksDataSet1 {
 	
     private HashSet<Link> externalLinks;
     private HashSet<Link> internaLinks;

@@ -40,13 +40,6 @@
     </build>
 
 
-  <scm>
-      <url>http://vps445897.ovh.net:3000/PNP/PNP.git</url>
-      <connection>scm:git:http://vps445897.ovh.net:3000/PNP/PNP.git</connection>
-      <developerConnection>scm:git:http://vps445897.ovh.net:3000/PNP/PNP.git</developerConnection>
-    <tag>HEAD</tag>
-  </scm>
-
   <modules>
       <module>PPDatabase</module>
       <module>PPFramework</module>
