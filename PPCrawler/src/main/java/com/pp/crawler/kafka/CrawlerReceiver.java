@@ -37,9 +37,7 @@ public class CrawlerReceiver {
 	@Autowired
 	private CrawledContentDAO crawledContentDAO;
 
-	//private static final String RENDERING_SCRIPT_PATH = "C:\\Users\\Camirra\\git\\pupitter\\";
     private static final String RENDERING_SCRIPT_PATH = "/home/pnp_bin/pupitter/";
-	private static final String PHANTOM_JS_COMMAND = "node "+RENDERING_SCRIPT_PATH+"script.js";
 	
 	@KafkaListener(topics = KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.IN)
 	public void download(String workflowId) {
@@ -59,10 +57,10 @@ public class CrawlerReceiver {
                 this.sendCrawlingResult(dwdp,pageContent);
             }
 
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			log.error(e.toString(),e);
 			if(dwdp != null){
-                dwdp.getDebugInformation().setException(e.getMessage()+"\n"+Arrays.stream(e.getStackTrace()).map(st -> st.toString()).collect(Collectors.joining("\n")));
+                dwdp.getDebugInformation().setException(e.getMessage()+"\n"+Arrays.stream(e.getStackTrace()).map(StackTraceElement::toString).collect(Collectors.joining("\n")));
                 this.dwdpDAO.save(dwdp);
             }else{
 			    log.error("Enable to set debug information exception because dwdp is null");

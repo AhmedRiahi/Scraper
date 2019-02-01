@@ -11,11 +11,11 @@ import org.jsoup.nodes.Document;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
@@ -32,27 +32,27 @@ public class PPCrawler {
     
     public PPCrawler(){
     	this.executor = Executors.newFixedThreadPool(this.threadsNumber);
-    	this.executorService = new ExecutorCompletionService<CrawlLinksDataSet>(this.executor);
+    	this.executorService = new ExecutorCompletionService<>(this.executor);
     }
 	
-    public String download(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
+    public String download(URL url) throws  IOException, IrrelevantLinkException{
 		URLDownloader urlDownloader = new URLDownloader(url);
 		urlDownloader.download();
 		return urlDownloader.getUrlContent();
     }
     
-    public String download(URL url,List<Cookie> cookies) throws MalformedURLException, IOException, IrrelevantLinkException{
+    public String download(URL url,List<Cookie> cookies) throws  IOException, IrrelevantLinkException{
 		URLDownloader urlDownloader = new URLDownloader(url);
 		urlDownloader.setCookies(cookies);
 		urlDownloader.download();
 		return urlDownloader.getUrlContent();
     }
 	
-    public Sitemap createSitemap(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
+    public Sitemap createSitemap(URL url) throws  IOException, IrrelevantLinkException{
     	log.info("Sitemap creation started");
     	this.baseURL = url;
     	this.crawlingLinksDataset = new CrawlLinksDataSet();
-    	HashSet<Link> links = this.crawlFirstPage(url);
+    	Set<Link> links = this.crawlFirstPage(url);
         this.launchWaveCrawling(links);
         log.info("Sitemap creation finished");
         Sitemap sitemap = new Sitemap(url.getHost());
@@ -60,10 +60,10 @@ public class PPCrawler {
         return sitemap;
     }
     
-    private HashSet<Link> crawlFirstPage(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
+    private Set<Link> crawlFirstPage(URL url) throws IOException, IrrelevantLinkException{
     	String firstPage = this.download(url);
         Document document = Jsoup.parse(firstPage);
-        HashSet<Link> links = CrawlerUtils.detectLinks(url,document);
+        Set<Link> links = CrawlerUtils.detectLinks(url,document);
         this.crawlingLinksDataset.getInternaLinks().add(new Link(url));
         return links;
     }
@@ -72,7 +72,7 @@ public class PPCrawler {
         this.futureResults = new ArrayList<>();
     }
     
-    private void launchWaveCrawling(HashSet<Link> links){
+    private void launchWaveCrawling(Set<Link> links){
     	this.initWaveCrawling();
         log.info("Start wave processing : "+links.size());
         int wavePortionSize = links.size()/this.threadsNumber;
@@ -107,10 +107,8 @@ public class PPCrawler {
 				CrawlLinksDataSet cld = future.get();
 				this.crawlingLinksDataset.append(cld);
 	            collectedResultsNumber++;
-			} catch (InterruptedException e) {
+			} catch (InterruptedException | ExecutionException e) {
 				log.error(e.getMessage(),e);
-			} catch (ExecutionException e) {
-                log.error(e.getMessage(),e);
 			}
     	}
         this.crawlingLinksDataset.cleanNewLinks();
@@ -123,17 +121,6 @@ public class PPCrawler {
 	
     public void shutdown(){
         this.executor.shutdown();
-    }
-
-	
-    // -------------------------------- GETTER / SETTER --------------------------------
-
-    public int getThreadsNumber() {
-        return threadsNumber;
-    }
-	
-    public void setThreadsNumber(int threadsNumber) {
-	this.threadsNumber = threadsNumber;
     }
 
 }

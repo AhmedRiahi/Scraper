@@ -2,10 +2,14 @@ package com.pp.crawler.core;
 
 import com.pp.crawler.exception.IrrelevantLinkException;
 import com.pp.database.model.crawler.Cookie;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.HttpStatusException;
 
-import javax.net.ssl.*;
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
 import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -13,16 +17,17 @@ import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.security.cert.X509Certificate;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Slf4j
+@Data
 public class URLDownloader {
 
 	private URL url;
 	private String urlContent = "";
 	private int timeout = 60*1000;
 	private boolean followRedirection = true;
-	private int status;
 	private List<Cookie> cookies;
 	private String[] userAgents = 	{	"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/60.0.3112.101 Safari/537.36"
 									};
@@ -34,11 +39,7 @@ public class URLDownloader {
 			SSLContext sc = SSLContext.getInstance("TLS");
 			sc.init(null, new TrustManager[] { new TrustAllX509TrustManager() }, new java.security.SecureRandom());
 			HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
-			HttpsURLConnection.setDefaultHostnameVerifier( new HostnameVerifier(){
-			    public boolean verify(String string,SSLSession ssls) {
-			        return true;
-			    }
-			});
+			HttpsURLConnection.setDefaultHostnameVerifier((x,y) ->  true);
 		} catch (NoSuchAlgorithmException | KeyManagementException e) {
 			log.error(e.getMessage(),e);
 		}
@@ -46,13 +47,11 @@ public class URLDownloader {
 		HttpURLConnection.setFollowRedirects(this.followRedirection);
 	}
 	
-	public URLDownloader(){
-		
-	}
+	public URLDownloader(){}
 	
 	
 	public void download() throws IrrelevantLinkException, IOException{
-		
+		this.urlContent = "";
 		HttpURLConnection urlConnection =  (HttpURLConnection) this.url.openConnection();
 		
 		urlConnection.setRequestProperty("User-agent",this.getRandomUserAgent());
@@ -65,9 +64,9 @@ public class URLDownloader {
 		urlConnection.setReadTimeout(this.timeout);
 		urlConnection.setInstanceFollowRedirects(this.followRedirection);
 
-		this.status = urlConnection.getResponseCode();
+		int status = urlConnection.getResponseCode();
 		if(urlConnection.getContentType().toLowerCase().contains("html")){
-			switch(this.status){
+			switch(status){
 			case HttpURLConnection.HTTP_OK:
 				String charset = "";
 				int index = urlConnection.getContentType().indexOf("charset=")+8;
@@ -90,7 +89,7 @@ public class URLDownloader {
 				break;
 			
 			default:
-				throw new HttpStatusException("Not yet managed status", this.status, this.url.toString());
+				throw new HttpStatusException("Not yet managed status", status, this.url.toString());
 			}
 		}else{
 			throw new IrrelevantLinkException();
@@ -106,72 +105,21 @@ public class URLDownloader {
 			br = new BufferedReader(new InputStreamReader(stream));
 		}
 		String line = "";
-		String content = "";
+		StringBuilder contentBuilder = new StringBuilder();
 		while((line=br.readLine())!=null){
-			content += line;
+			contentBuilder.append(line);
 		}
 		stream.close();
 		br.close();
-		return content;
+		return contentBuilder.toString();
 		
 	}
 	
 	
 	private String getRandomUserAgent(){
-		return this.userAgents[(int) (Math.random()*this.userAgents.length)];
+		return this.userAgents[new Random().nextInt() *this.userAgents.length];
 	}
 
-	
-	// -------------------------------- GETTER / SETTER --------------------------------
-
-	public int getTimeout() {
-		return timeout;
-	}
-
-	public void setTimeout(int timeout) {
-		this.timeout = timeout;
-	}
-
-	public boolean isFollowRedirection() {
-		return followRedirection;
-	}
-
-	public void setFollowRedirection(boolean followRedirection) {
-		this.followRedirection = followRedirection;
-	}
-
-	public URL getUrl() {
-		return url;
-	}
-
-
-	public void setUrl(URL url) {
-		this.urlContent = "";
-		this.url = url;
-	}
-
-
-	public String[] getUserAgents() {
-		return userAgents;
-	}
-
-
-	public void setUserAgents(String[] userAgents) {
-		this.userAgents = userAgents;
-	}
-
-
-	public String getUrlContent() {
-		return urlContent;
-	}
-
-	public List<Cookie> getCookies() {
-		return cookies;
-	}
-
-	public void setCookies(List<Cookie> cookies) {
-		this.cookies = cookies;
-	}
 
 }
 
@@ -180,12 +128,12 @@ class TrustAllX509TrustManager implements X509TrustManager {
         return new X509Certificate[0];
     }
 
-    public void checkClientTrusted(java.security.cert.X509Certificate[] certs,
-            String authType) {
+    public void checkClientTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+    	//no implementation yet
     }
 
-    public void checkServerTrusted(java.security.cert.X509Certificate[] certs,
-            String authType) {
+    public void checkServerTrusted(java.security.cert.X509Certificate[] certs, String authType) {
+		//no implementation yet
     }
 
 }

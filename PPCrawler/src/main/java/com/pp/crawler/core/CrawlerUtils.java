@@ -10,11 +10,16 @@ import org.jsoup.select.Elements;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
+import java.util.Set;
 
 @Slf4j
 public final class CrawlerUtils {
+
+    private CrawlerUtils(){
+        //hide public constructor
+    }
 	
-    public static HashSet<Link> detectLinks(URL referingURL,Document document){
+    public static Set<Link> detectLinks(URL referingURL, Document document){
 		HashSet<Link> links = new HashSet<>();
 		Elements elements = document.getElementsByTag("a");
         for(Element element : elements){
@@ -27,7 +32,6 @@ public final class CrawlerUtils {
                 }catch(MalformedURLException ex) {
                 	log.info("MalformedURLException :"+href);
                 	log.error(ex.getMessage(),ex);
-                	continue;
                 } catch (IrrelevantLinkException e) {
                     log.error(e.getMessage(),e);
 				}

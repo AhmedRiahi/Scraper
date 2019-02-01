@@ -24,8 +24,6 @@ import com.pp.database.model.semantic.schema.ReferencePropertyType;
 import com.pp.framework.urlUtils.URLUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -286,7 +284,6 @@ public class AnalyticsService {
 					}
 				}else {
 					if(property.getPropertyType() instanceof ReferencePropertyType) {
-					    // TODO
                         IndividualSchema referenceSchema = this.individualSchemaDAO.findOne("name",property.getPropertyType().getValue());
                         PropertyDefinition uniqueSchemaProperty = referenceSchema.getUniqueProperties().get(0);
 						//Search Reference on database
@@ -322,9 +319,7 @@ public class AnalyticsService {
 			DBObject query = new BasicDBObject();
 			query.put("workflowId",dwdp.getStringId());
 			DBCursor cursor = collection.find(query);
-			cursor.forEach(dbObject ->{
-				MongoDatastore.getPublishDatastore().getDB().getCollection(schemaName).insert(dbObject);
-			});
+			cursor.forEach(dbObject -> MongoDatastore.getPublishDatastore().getDB().getCollection(schemaName).insert(dbObject));
 		});
 	}
 }
