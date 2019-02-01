@@ -24,7 +24,6 @@ public class MongoDatastore {
 	private static final String stagingDatabase = "PPStagingDatabase"+ENVIRONMENT;
 	private static final String publishDatabase = "PPPublishDatabase"+ENVIRONMENT;
 	private static String host = "127.0.0.1";
-    //private static String host = "151.80.145.65";
 	private static final String USERNAME = "";
     private static final String password = "";
 
