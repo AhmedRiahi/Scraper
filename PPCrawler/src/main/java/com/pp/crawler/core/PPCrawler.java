@@ -49,12 +49,12 @@ public class PPCrawler {
     }
 	
     public Sitemap createSitemap(URL url) throws MalformedURLException, IOException, IrrelevantLinkException{
-    	System.out.println("Sitemap creation started");
+    	log.info("Sitemap creation started");
     	this.baseURL = url;
     	this.crawlingLinksDataset = new CrawlLinksDataSet();
     	HashSet<Link> links = this.crawlFirstPage(url);
         this.launchWaveCrawling(links);
-        System.out.println("Sitemap creation finished");
+        log.info("Sitemap creation finished");
         Sitemap sitemap = new Sitemap(url.getHost());
         sitemap.setCld(this.crawlingLinksDataset);
         return sitemap;
@@ -74,7 +74,7 @@ public class PPCrawler {
     
     private void launchWaveCrawling(HashSet<Link> links){
     	this.initWaveCrawling();
-        System.out.println("Start wave processing : "+links.size());
+        log.info("Start wave processing : "+links.size());
         int wavePortionSize = links.size()/this.threadsNumber;
         for(int i=0 ; i<this.threadsNumber ;i++){
         	int portionFrom = i*wavePortionSize;
@@ -103,7 +103,7 @@ public class PPCrawler {
     	while(collectedResultsNumber < this.futureResults.size()){
 			try {
 				Future<CrawlLinksDataSet> future = this.executorService.take();
-				System.out.println(future.isDone()+" "+collectedResultsNumber);
+                log.info(future.isDone()+" "+collectedResultsNumber);
 				CrawlLinksDataSet cld = future.get();
 				this.crawlingLinksDataset.append(cld);
 	            collectedResultsNumber++;

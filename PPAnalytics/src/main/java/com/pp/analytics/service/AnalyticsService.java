@@ -22,6 +22,7 @@ import com.pp.database.model.semantic.schema.PrimitivePropertyType;
 import com.pp.database.model.semantic.schema.PropertyDefinition;
 import com.pp.database.model.semantic.schema.ReferencePropertyType;
 import com.pp.framework.urlUtils.URLUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +37,8 @@ import java.util.*;
 import java.util.regex.Pattern;
 
 @Service
+@Slf4j
 public class AnalyticsService {
-	
-	private static final Logger log = LoggerFactory.getLogger(AnalyticsService.class);
 
 	@Autowired
 	private PPIndividualDAO individualDAO;
@@ -280,7 +280,7 @@ public class AnalyticsService {
 							String fullURL = URLUtils.generateFullURL(url,individualProperty.getValue());
 							individualProperty.setValue(fullURL);
 						} catch (MalformedURLException e) {
-							e.printStackTrace();
+							log.error(e.getMessage(),e);
 						}
 						break;
 					}

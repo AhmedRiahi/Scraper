@@ -2,6 +2,7 @@ package com.pp.crawler.core;
 
 import com.pp.crawler.exception.IrrelevantLinkException;
 import com.pp.database.model.crawler.Link;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -10,6 +11,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashSet;
 
+@Slf4j
 public final class CrawlerUtils {
 	
     public static HashSet<Link> detectLinks(URL referingURL,Document document){
@@ -23,11 +25,11 @@ public final class CrawlerUtils {
                     Link link = new Link(url);
                     links.add(link);
                 }catch(MalformedURLException ex) {
-                	System.out.println("MalformedURLException :"+href);
-                	ex.printStackTrace();
+                	log.info("MalformedURLException :"+href);
+                	log.error(ex.getMessage(),ex);
                 	continue;
                 } catch (IrrelevantLinkException e) {
-                	
+                    log.error(e.getMessage(),e);
 				}
             }
         }	

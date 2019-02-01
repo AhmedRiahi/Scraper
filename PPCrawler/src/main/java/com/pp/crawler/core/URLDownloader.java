@@ -2,6 +2,7 @@ package com.pp.crawler.core;
 
 import com.pp.crawler.exception.IrrelevantLinkException;
 import com.pp.database.model.crawler.Cookie;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.HttpStatusException;
 
 import javax.net.ssl.*;
@@ -14,6 +15,7 @@ import java.security.cert.X509Certificate;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 public class URLDownloader {
 
 	private URL url;
@@ -38,8 +40,7 @@ public class URLDownloader {
 			    }
 			});
 		} catch (NoSuchAlgorithmException | KeyManagementException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			log.error(e.getMessage(),e);
 		}
 		
 		HttpURLConnection.setFollowRedirects(this.followRedirection);
@@ -83,7 +84,7 @@ public class URLDownloader {
 				
 			case HttpURLConnection.HTTP_MOVED_PERM:
 			case HttpURLConnection.HTTP_MOVED_TEMP:
-				System.out.println("URL moved from "+url+" "+urlConnection.getHeaderField("Location"));
+				log.info("URL moved from "+url+" "+urlConnection.getHeaderField("Location"));
 				this.setUrl(new URL(urlConnection.getHeaderField("Location")));
 				this.download();
 				break;
