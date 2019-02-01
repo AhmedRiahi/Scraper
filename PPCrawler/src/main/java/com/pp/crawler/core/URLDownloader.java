@@ -117,7 +117,7 @@ public class URLDownloader {
 	
 	
 	private String getRandomUserAgent(){
-		return this.userAgents[new Random().nextInt() *this.userAgents.length];
+		return this.userAgents[new Random().nextInt() % this.userAgents.length];
 	}
 
 

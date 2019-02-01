@@ -35,7 +35,7 @@ public class ScraperReceiver {
 			log.info("Saving {} scrapedContents",dwdp.getScrapedContents().size());
 			this.dwdpDAO.updateCollection(dwdp,"individuals",dwdp.getIndividuals());
 			this.sender.send(KafkaTopics.Scraper.MATCH_DESCRIPTOR+KafkaTopics.OUT,workflowId);
-		}catch(Throwable e) {
+		}catch(Exception e) {
 			log.error("Scraper Exception",e);
 			if(dwdp != null){
 				dwdp.getDebugInformation().setException(e.getMessage()+"\n"+ Arrays.stream(e.getStackTrace()).map(st -> st.toString()).collect(Collectors.joining("\n")));

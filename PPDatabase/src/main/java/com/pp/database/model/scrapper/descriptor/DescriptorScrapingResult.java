@@ -42,6 +42,7 @@ public class DescriptorScrapingResult extends PPEntity{
 	}
 
 	public List<ScrapedContent> getChildsOfWithCL(ScrapedContent scParent,String clName){
+
 		return this.scrapedContents.get(scParent).stream().filter(scChild -> scChild.getContentListenerName().equals(clName)).collect(Collectors.toList());
 	}
 

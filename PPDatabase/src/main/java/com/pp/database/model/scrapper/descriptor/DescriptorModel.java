@@ -6,6 +6,7 @@ import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import com.pp.database.model.scrapper.descriptor.relation.SemanticRelation;
 import com.pp.database.model.scrapper.descriptor.relation.StructureRelation;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import org.mongodb.morphia.annotations.Embedded;
 import org.mongodb.morphia.annotations.Entity;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 @Data
 @XmlRootElement
 @Entity("Descriptor")
+@NoArgsConstructor
 public class DescriptorModel extends PPEntity{
 
     @NonNull
