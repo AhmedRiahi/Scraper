@@ -240,6 +240,7 @@ public class AnalyticsService {
 		IndividualSchema schema = this.individualSchemaDAO.findOne("name",individual.getSchemaName());
 		// Get all properties including parent ones
 		List<PropertyDefinition> properties = schema.getAllProperties();
+		List<ContentListenerModel> clsWithScript = new ArrayList<>();
 		properties.stream().forEach(property ->
 			individual.getProperty(property.getName()).ifPresent(individualProperty -> {
 				
@@ -249,15 +250,12 @@ public class AnalyticsService {
 				}
 
 				Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId,individualProperty.getName());
-                // Apply user expression on property value if exists
+
+				//prepare content listener with pre process script
 				clOpt.ifPresent(cl -> {
-					if(cl.getPreProcessScript() !=  null) {
-                        try {
-                            this.executeIndividualPreProcessScript(cl.getPreProcessScript(), individualProperty);
-                        } catch (ScriptException e) {
-                            log.error(e.toString());
-                        }
-                    }
+					if (cl.getPreProcessScript() != null) {
+						clsWithScript.add(cl);
+					}
 				});
 
 				if(property.getPropertyType() instanceof PrimitivePropertyType) {
@@ -296,13 +294,28 @@ public class AnalyticsService {
 				
 			})
 		);
+
+		properties.stream().forEach(property ->
+				individual.getProperty(property.getName()).ifPresent(individualProperty -> {
+					Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId,individualProperty.getName());
+					clOpt.ifPresent(cl -> {
+						if (cl.getPreProcessScript() != null) {
+							try{
+								this.executeIndividualPreProcessScript(cl.getPreProcessScript(),individualProperty,individual);
+							} catch (ScriptException e) {
+								log.error(e.toString());
+							}
+						}
+					});
+				})
+		);
 	}
 	
 	
-	private void executeIndividualPreProcessScript(String script,IndividualProperty property) throws ScriptException {
-		this.engine.put("clContent", property.getValue());
+	private void executeIndividualPreProcessScript(String script,IndividualProperty individualProperty,PPIndividual ppIndividual) throws ScriptException {
+		ppIndividual.getProperties().stream().forEach(property -> this.engine.put(property.getName(), property.getValue()));
 		String result = (String) this.engine.eval(script);
-		property.setValue(result);
+		individualProperty.setValue(result);
 	}
 	
 	

@@ -14,6 +14,7 @@ import com.pp.mozart.kafka.MozartReceiver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -63,6 +64,7 @@ public class MozartService {
                 join.setSourceDSMId(dwdp.getDescriptorJob().getDescriptorSemanticMappingId());
                 DescriptorJob joinJob = new DescriptorJob();
                 joinJob.setDescriptor(join.getTargetDescriptorModel());
+                joinJob.getCrawlingParams().setHttpMethod(HttpMethod.GET.name());
                 joinJob.getCrawlingParams().setUrl(individual.get(join.getSourceURLListener().getName()).toString());
                 joinJob.setStandaloneMode(false);
                 joinJob.setDescriptorSemanticMappingId(join.getTargetDSMId());

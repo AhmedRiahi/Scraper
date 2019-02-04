@@ -2,6 +2,7 @@ package com.pp.database.model.engine;
 
 
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
+import com.pp.database.model.scrapper.descriptor.DescriptorType;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;

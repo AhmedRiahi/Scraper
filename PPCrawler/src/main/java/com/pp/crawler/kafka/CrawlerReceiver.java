@@ -51,6 +51,7 @@ public class CrawlerReceiver {
                 rendererPayload.setWorkflowId(dwdp.getStringId());
 			    this.sender.send(KafkaTopics.Renderer.DOWNLOAD+KafkaTopics.IN,mapper.writeValueAsString(rendererPayload));
             }else{
+			    log.info("downloading url : "+crawlingParams.getUrl());
                 String pageContent = this.ppCrawler.download(crawlingParams,dwdp.getDescriptorJob().getDescriptor().getCookies());
                 this.sendCrawlingResult(dwdp,pageContent);
             }

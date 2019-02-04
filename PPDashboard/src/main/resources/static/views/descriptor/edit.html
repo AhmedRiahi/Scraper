@@ -20,7 +20,13 @@
 			<div class="checkbox">
 				<label><input type="checkbox" ng-model="currentDescriptor.useJSRendering">Use JS Rendering</label>
 			</div>
-			<br><br>
+			<div class='col-md-3 form-group'>
+				<b>Descriptor Type</b>
+				<select class="form-control"
+						ng-model="currentDescriptor.descriptorType"
+						ng-options="type for type in ['XML','JSON']"/>
+			</div>
+			<br><br><br><br><br><br>
 			<ul class="nav nav-tabs" id="tabPane">
 			    <li class="active">
 			    	<a data-toggle="tab" href="#json">

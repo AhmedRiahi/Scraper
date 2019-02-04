@@ -30,6 +30,7 @@ public class DescriptorModel extends PPEntity{
     private List<SemanticRelation> semanticRelations = new ArrayList<>();
     private List<StructureRelation> structureRelations = new ArrayList<>();
 	private List<Cookie> cookies = new ArrayList<>();
+	private DescriptorType descriptorType = DescriptorType.XML;
 	@Embedded
 	private List<DescriptorSemanticMapping> descriptorSemanticMappings = new ArrayList<>();
 	private boolean useJSRendering = false;

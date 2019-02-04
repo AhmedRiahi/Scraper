@@ -82,7 +82,7 @@ public class URLDownloader {
 		urlConnection.setInstanceFollowRedirects(this.followRedirection);
 
 		int status = urlConnection.getResponseCode();
-		if(urlConnection.getContentType().toLowerCase().contains("html")){
+		if(urlConnection.getContentType().toLowerCase().contains("html") || urlConnection.getContentType().toLowerCase().contains("application/json")){
 			switch(status){
 			case HttpURLConnection.HTTP_OK:
 				String charset = "";
