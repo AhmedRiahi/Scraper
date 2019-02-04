@@ -36,8 +36,6 @@ public class CrawlerReceiver {
 	private DescriptorWorkflowDataPackageDAO dwdpDAO;
 	@Autowired
 	private CrawledContentDAO crawledContentDAO;
-
-    private static final String RENDERING_SCRIPT_PATH = "/home/pnp_bin/pupitter/";
 	
 	@KafkaListener(topics = KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.IN)
 	public void download(String workflowId) {
