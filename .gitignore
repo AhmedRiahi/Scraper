@@ -5,3 +5,6 @@ pupitter/node_modules/**
 **/logs/**
 **/*.iml
 PPLabTest/PPLabTest.iml
+*.iml
+PPDatabase/PPDatabase.iml
+pupitter/**

@@ -5,9 +5,11 @@ import com.pp.database.model.crawler.Cookie;
 import com.pp.database.model.crawler.CrawlLinksDataSet;
 import com.pp.database.model.crawler.Link;
 import com.pp.database.model.crawler.Sitemap;
+import com.pp.database.model.engine.DescriptorJobCrawlingParams;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -41,8 +43,10 @@ public class PPCrawler {
 		return urlDownloader.getUrlContent();
     }
     
-    public String download(URL url,List<Cookie> cookies) throws  IOException, IrrelevantLinkException{
-		URLDownloader urlDownloader = new URLDownloader(url);
+    public String download(DescriptorJobCrawlingParams crawlingParams, List<Cookie> cookies) throws  IOException, IrrelevantLinkException{
+		URLDownloader urlDownloader = new URLDownloader(new URL(crawlingParams.getUrl()));
+		urlDownloader.setHttpMethod(HttpMethod.resolve(crawlingParams.getHttpMethod()));
+		urlDownloader.setBodyParams(crawlingParams.getHttpParams());
 		urlDownloader.setCookies(cookies);
 		urlDownloader.download();
 		return urlDownloader.getUrlContent();

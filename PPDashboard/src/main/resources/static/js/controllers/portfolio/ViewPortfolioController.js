@@ -114,4 +114,10 @@ var ViewPortfolioController = function($scope,$http,$stateParams,DataService,ngT
 			ngToast.danger('Job Not Launched!');
 		})
 	}
+
+	$scope.addHttpBodyParam = function(){
+		if($scope.selectedJob.crawlingParams == null)$scope.selectedJob.crawlingParams = {}
+		if($scope.selectedJob.crawlingParams.httpParams == null)$scope.selectedJob.crawlingParams.httpParams = new Array();
+		$scope.selectedJob.crawlingParams.httpParams.push({key:'key',value:'value'});
+	}
 }

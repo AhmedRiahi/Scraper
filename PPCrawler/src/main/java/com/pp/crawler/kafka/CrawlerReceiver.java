@@ -6,6 +6,7 @@ import com.pp.crawler.payload.RendererPayload;
 import com.pp.database.dao.crawler.CrawledContentDAO;
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.crawler.CrawledContent;
+import com.pp.database.model.engine.DescriptorJobCrawlingParams;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.framework.kafka.KafkaTopics;
 import com.pp.framework.kafka.sender.PPSender;
@@ -18,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 
 import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -43,15 +43,15 @@ public class CrawlerReceiver {
         DescriptorWorkflowDataPackage dwdp = null;
 		try {
 		    dwdp = this.dwdpDAO.get(workflowId);
-			URL url = new URL(dwdp.getDescriptorJob().getUrl());
+            DescriptorJobCrawlingParams crawlingParams = dwdp.getDescriptorJob().getCrawlingParams();
 			if(dwdp.getDescriptorJob().getDescriptor().isUseJSRendering()){
                 ObjectMapper mapper = new ObjectMapper();
                 RendererPayload rendererPayload = new RendererPayload();
-                rendererPayload.setUrl(dwdp.getDescriptorJob().getUrl());
+                rendererPayload.setDescriptorJobCrawlingParams(dwdp.getDescriptorJob().getCrawlingParams());
                 rendererPayload.setWorkflowId(dwdp.getStringId());
 			    this.sender.send(KafkaTopics.Renderer.DOWNLOAD+KafkaTopics.IN,mapper.writeValueAsString(rendererPayload));
             }else{
-                String pageContent = this.ppCrawler.download(url,dwdp.getDescriptorJob().getDescriptor().getCookies());
+                String pageContent = this.ppCrawler.download(crawlingParams,dwdp.getDescriptorJob().getDescriptor().getCookies());
                 this.sendCrawlingResult(dwdp,pageContent);
             }
 

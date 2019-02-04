@@ -63,7 +63,7 @@ public class MozartService {
                 join.setSourceDSMId(dwdp.getDescriptorJob().getDescriptorSemanticMappingId());
                 DescriptorJob joinJob = new DescriptorJob();
                 joinJob.setDescriptor(join.getTargetDescriptorModel());
-                joinJob.setUrl(individual.get(join.getSourceURLListener().getName()).toString());
+                joinJob.getCrawlingParams().setUrl(individual.get(join.getSourceURLListener().getName()).toString());
                 joinJob.setStandaloneMode(false);
                 joinJob.setDescriptorSemanticMappingId(join.getTargetDSMId());
                 joinDwdp.setDescriptorJob(joinJob);

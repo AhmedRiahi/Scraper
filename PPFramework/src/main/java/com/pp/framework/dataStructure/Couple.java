@@ -1,5 +1,10 @@
 package com.pp.framework.dataStructure;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Data
+@NoArgsConstructor
 public class Couple<K,V> {
 
 	private K key;
@@ -7,24 +12,6 @@ public class Couple<K,V> {
 	
 	public Couple(K key,V value){
 		this.key = key;
-		this.value = value;
-	}
-
-	// -------------------------------- GETTER / SETTER --------------------------------
-	
-	public K getKey() {
-		return key;
-	}
-
-	public void setKey(K key) {
-		this.key = key;
-	}
-
-	public V getValue() {
-		return value;
-	}
-
-	public void setValue(V value) {
 		this.value = value;
 	}
 }

@@ -79,7 +79,7 @@ public class EngineService {
         job.getToBeProcessedLinks().stream().forEach(link -> {
             // Prepare Data package
             DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
-            job.setUrl(link);
+            job.getCrawlingParams().setUrl(link);
             dwdp.setPortfolio(portfolio);
             dwdp.setDescriptorJob(job);
             dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");

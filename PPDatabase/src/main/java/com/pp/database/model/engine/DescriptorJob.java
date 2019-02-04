@@ -18,7 +18,7 @@ public class DescriptorJob{
     @Reference
     private DescriptorModel descriptor;
     private String descriptorSemanticMappingId;
-    private String url;
+    private DescriptorJobCrawlingParams crawlingParams = new DescriptorJobCrawlingParams();
     private Date lastCheckingDate;
     private int checkingInterval = 60 * 24; // 24 hours default checking interval
     private int executionErrorsCount = 0;
