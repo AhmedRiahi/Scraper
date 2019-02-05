@@ -11,7 +11,7 @@ import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.engine.DescriptorJob;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.database.model.scrapper.descriptor.DescriptorJoin;
+import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
@@ -136,21 +136,24 @@ public class AnalyticsService {
         DescriptorSemanticMapping targetDSM = join.getTargetDescriptorModel().getSemanticMappingById(join.getTargetDSMId()).get();
         // Select Joined Descriptor Individual Schema Name
         //TODO We are selecting only first related source
-        ContentListenerModel joinedSourceContentListener = join.getSourceDescriptorModel().getSemanticRelationsAsTarget(join.getSourceContentListenerModel()).get(0).getSource();
-        String joinedIndividualSchemaName  = sourceDSM.getClSemanticName(joinedSourceContentListener);
-        // Query Joined Descriptor Individual
-        query.put("_id",new ObjectId(dwdp.getJoinDetails().getJoinedIndividualId()));
-        DBObject joinedIndividual = MongoDatastore.getAdvancedDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
+		join.getJoinProperties().stream().forEach(descriptorJoinProperties -> {
+			ContentListenerModel joinedSourceContentListener = join.getSourceDescriptorModel().getSemanticRelationsAsTarget(descriptorJoinProperties.getSourceContentListenerModel()).get(0).getSource();
+			String joinedIndividualSchemaName  = sourceDSM.getClSemanticName(joinedSourceContentListener);
+			// Query Joined Descriptor Individual
+			query.put("_id",new ObjectId(dwdp.getJoinDetails().getJoinedIndividualId()));
+			DBObject joinedIndividual = MongoDatastore.getAdvancedDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
 
-        //Get Joiner Individual
-        PPIndividual joinerIndividual = dwdp.getIndividuals().get(0);
-         //Update Joined Individual new property
-        String joinedPropertyName = sourceDSM.getClSemanticName(join.getSourceContentListenerModel());
-        String joinerPropertyName = targetDSM.getClSemanticName(join.getTargetContentListenerModel());
-        String joinerIndividualPropertyValue = joinerIndividual.getProperty(joinerPropertyName).get().getValue();
-        joinedIndividual.put(joinedPropertyName,joinerIndividualPropertyValue);
-        DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName);
-        collection.save(joinedIndividual);
+			//Get Joiner Individual
+			PPIndividual joinerIndividual = dwdp.getIndividuals().get(0);
+			//Update Joined Individual new property
+			String joinedPropertyName = sourceDSM.getClSemanticName(descriptorJoinProperties.getSourceContentListenerModel());
+			String joinerPropertyName = targetDSM.getClSemanticName(descriptorJoinProperties.getTargetContentListenerModel());
+			String joinerIndividualPropertyValue = joinerIndividual.getProperty(joinerPropertyName).get().getValue();
+			joinedIndividual.put(joinedPropertyName,joinerIndividualPropertyValue);
+			DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName);
+			collection.save(joinedIndividual);
+		});
+
     }
 
 
@@ -240,7 +243,7 @@ public class AnalyticsService {
 		IndividualSchema schema = this.individualSchemaDAO.findOne("name",individual.getSchemaName());
 		// Get all properties including parent ones
 		List<PropertyDefinition> properties = schema.getAllProperties();
-		List<ContentListenerModel> clsWithScript = new ArrayList<>();
+
 		properties.stream().forEach(property ->
 			individual.getProperty(property.getName()).ifPresent(individualProperty -> {
 				
@@ -248,15 +251,6 @@ public class AnalyticsService {
 					String displayString = individual.getProperty(property.getName()).get().getValue();
 					individual.setDisplayString(displayString);
 				}
-
-				Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId,individualProperty.getName());
-
-				//prepare content listener with pre process script
-				clOpt.ifPresent(cl -> {
-					if (cl.getPreProcessScript() != null) {
-						clsWithScript.add(cl);
-					}
-				});
 
 				if(property.getPropertyType() instanceof PrimitivePropertyType) {
 					//TODO Convert property value to propertyType (to Java type)
@@ -291,23 +285,22 @@ public class AnalyticsService {
                         }
 					}
 				}
-				
 			})
 		);
 
 		properties.stream().forEach(property ->
-				individual.getProperty(property.getName()).ifPresent(individualProperty -> {
-					Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId,individualProperty.getName());
-					clOpt.ifPresent(cl -> {
-						if (cl.getPreProcessScript() != null) {
-							try{
-								this.executeIndividualPreProcessScript(cl.getPreProcessScript(),individualProperty,individual);
-							} catch (ScriptException e) {
-								log.error(e.toString());
-							}
+			individual.getProperty(property.getName()).ifPresent(individualProperty -> {
+				Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId,individualProperty.getName());
+				clOpt.ifPresent(cl -> {
+					if (cl.getPreProcessScript() != null) {
+						try{
+							this.executeIndividualPreProcessScript(cl.getPreProcessScript(),individualProperty,individual);
+						} catch (ScriptException e) {
+							log.error(e.toString());
 						}
-					});
-				})
+					}
+				});
+			})
 		);
 	}
 	

@@ -1,11 +1,13 @@
-package com.pp.database.model.scrapper.descriptor;
+package com.pp.database.model.scrapper.descriptor.join;
 
+import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 @Data
 @Entity
@@ -19,6 +21,5 @@ public class DescriptorJoin{
     private DescriptorModel targetDescriptorModel;
     private String targetDSMId;
     private ContentListenerModel sourceURLListener;
-    private ContentListenerModel sourceContentListenerModel;
-    private ContentListenerModel targetContentListenerModel;
+    private List<DescriptorJoinProperties> joinProperties;
 }

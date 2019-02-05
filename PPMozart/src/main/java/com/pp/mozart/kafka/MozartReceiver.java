@@ -65,7 +65,7 @@ public class MozartReceiver {
 		    if(dwdp.getDescriptorJob().isStandaloneMode()){
                 this.sender.send(Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+ IN, workflowId);
             }else{
-		        if(dwdp.getJoinDetails().isJoin()){
+		        if(dwdp.getJoinDetails().isJoiner()){
                     this.sender.send(Analytics.ANALYSE_JOINER_DESCRITOR_POPULATION+ IN, workflowId);
                 }else{
                     this.sender.send(Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+ IN, workflowId);

@@ -56,6 +56,11 @@ var ViewPortfolioController = function($scope,$http,$stateParams,DataService,ngT
 		$scope.selectedJoin = join;
 	}
 
+	$scope.addJoinProperties = function(){
+		if($scope.selectedJoin.joinProperties == null) $scope.selectedJoin.joinProperties = new Array();
+		$scope.selectedJoin.joinProperties.push({sourceContentListenerModel:'',targetContentListenerModel:''})
+	}
+
 	$scope.removeJoin = function(){
 		var index = $scope.currentPortfolio.joins.indexOf($scope.selectedJoin);
 		$scope.currentPortfolio.joins.splice(index,1);

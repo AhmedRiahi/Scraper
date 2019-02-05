@@ -58,7 +58,7 @@ public class MozartService {
         individuals.stream().forEach(individual -> {
             dwdp.getPortfolio().getDescriptorJoins(dwdp.getDescriptorJob().getDescriptor()).stream().forEach(join -> {
                 DescriptorWorkflowDataPackage joinDwdp = new DescriptorWorkflowDataPackage();
-                joinDwdp.getJoinDetails().setJoin(true);
+                joinDwdp.getJoinDetails().setJoiner(true);
                 joinDwdp.getJoinDetails().setJoinedIndividualId(individual.get("_id").toString());
                 joinDwdp.getJoinDetails().setJoinedDWDP(dwdp);
                 join.setSourceDSMId(dwdp.getDescriptorJob().getDescriptorSemanticMappingId());
@@ -82,7 +82,7 @@ public class MozartService {
 	public void finishDescriptorWorkflow(String workflowId) {
 		LOGGER.info("Finishing workflow processing {}",workflowId);
 		DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        if(!dwdp.getJoinDetails().isJoin()){
+        if(!dwdp.getJoinDetails().isJoiner()){
             DescriptorJob descriptorJob = dwdp.getPortfolio().getJobByName(dwdp.getDescriptorJob().getName()).get();
             descriptorJob.setLastCheckingDate(new Date());
             descriptorJob.setExecutionErrorsCount(0);
@@ -98,7 +98,7 @@ public class MozartService {
 	public void handleProcessingError(String workflowId) {
 		LOGGER.info("handling workflow error {}",workflowId);
 		DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        if(!dwdp.getJoinDetails().isJoin()) {
+        if(!dwdp.getJoinDetails().isJoiner()) {
             DescriptorJob descriptorJob = dwdp.getPortfolio().getJobByName(dwdp.getDescriptorJob().getName()).get();
             descriptorJob.setLastCheckingDate(new Date());
             descriptorJob.setExecutionErrorsCount(0);

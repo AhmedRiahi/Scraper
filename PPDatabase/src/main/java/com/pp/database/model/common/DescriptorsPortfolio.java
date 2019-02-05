@@ -2,7 +2,7 @@ package com.pp.database.model.common;
 
 import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.engine.DescriptorJob;
-import com.pp.database.model.scrapper.descriptor.DescriptorJoin;
+import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import lombok.Data;
 import lombok.NonNull;

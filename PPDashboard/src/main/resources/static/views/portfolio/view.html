@@ -96,8 +96,9 @@
 									<div class="col-md-12">
 										<input type="text" class="form-control" ng-model="selectedJoin.name" placeholder="Join Name" />
 									</div>
+
 									<div class="col-md-6">
-										<h5><b>Source Join properties</b></h5>
+										<h4><b>Source Join properties</b></h4>
 										<div class='form-group'>
 											Source Descriptor
 											<select class="form-control"
@@ -106,34 +107,20 @@
 										</div>
 										
 										<div class='form-group'>
-											Source Listener
-											<select class="form-control"
-													ng-model="selectedJoin.sourceContentListenerModel"
-													ng-options="listener as listener.name for listener in selectedJoin.sourceDescriptorModel.contentListeners | joinable"></select>
-										</div>
-										<div class='form-group'>
 											Source URL Listener
 											<select class="form-control"
 														ng-model="selectedJoin.sourceURLListener"
 														ng-options="listener as listener.name for listener in selectedJoin.sourceDescriptorModel.contentListeners track by listener.name"></select>
 										</div>
-										
 									</div>
 
 									<div class="col-md-6">
-										<h5><b>Target Join properties</b></h5>
+										<h4><b>Target Join properties</b></h4>
 										<div class='form-group'>
 											Target Descriptor
 											<select class="form-control"
 													ng-model="selectedJoin.targetDescriptorModel"
 													ng-options="descriptor as descriptor.name for descriptor in currentPortfolio.descriptors track by descriptor.name"/>
-										</div>
-
-										<div class='form-group'>
-											Target Listener
-											<select class="form-control"
-													ng-model="selectedJoin.targetContentListenerModel"
-													ng-options="listener as listener.name for listener in selectedJoin.targetDescriptorModel.contentListeners track by listener.name"></select>
 										</div>
 
 										<div class='form-group'>
@@ -146,6 +133,36 @@
 													{{dsm.name}}
 												</option>
 											</select>
+										</div>
+									</div>
+
+									<div class="col-md-12">
+										<div class='form-group'>
+											<h4>Properties mapping</h4>
+											<button class="btn btn-xs btn-success pull-right"
+												ng-click="addJoinProperties()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+											<table class="table table-striped">
+												<thead>
+													<tr>
+														<th>Source listener</th>
+														<th>Target listener</th>
+													</tr>
+												</thead>
+												<tbody>
+													<tr ng-repeat="joinProperty in selectedJoin.joinProperties">
+														<td>
+															<select class="form-control"
+															ng-model="joinProperty.sourceContentListenerModel"
+															ng-options="listener as listener.name for listener in selectedJoin.sourceDescriptorModel.contentListeners | joinable"></select>
+														</td>
+														<td>
+															<select class="form-control"
+																ng-model="joinProperty.targetContentListenerModel"
+																ng-options="listener as listener.name for listener in selectedJoin.targetDescriptorModel.contentListeners track by listener.name"></select>
+														</td>
+													</tr>
+												</tbody>
+											</table>
 										</div>
 									</div>
 								</div>

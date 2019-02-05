@@ -61,6 +61,6 @@ public class DescriptorModel extends PPEntity{
 	}
 
 	public Optional<ContentListenerModel> getDSMContentListenerBySemanticName(String dsmId, String semanticName){
-	    return this.contentListeners.stream().filter(cl -> cl.getName().equals(this.getSemanticMappingById(dsmId).get().getClNameBySemanticName(semanticName))).findAny();
+	    return this.contentListeners.stream().filter(cl -> cl.getName().equals(this.getSemanticMappingById(dsmId).get().getClNameBySemanticName(semanticName).get())).findAny();
     }
 }
