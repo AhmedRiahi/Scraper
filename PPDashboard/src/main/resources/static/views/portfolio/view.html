@@ -78,7 +78,7 @@
 									<div class="pull-right">
 										<button class="btn btn-xs btn-danger"
 												ng-show="selectedJoin"
-												ng-click="removeJoin()"><i class="fa fa-plus" aria-hidden="true"></i> Remove</button>
+												ng-click="removeJoin()"><i class="fa fa-times" aria-hidden="true"></i> Remove</button>
 										<button class="btn btn-xs btn-success"
 												ng-click="addJoin()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
 									</div>
@@ -138,9 +138,11 @@
 
 									<div class="col-md-12">
 										<div class='form-group'>
-											<h4>Properties mapping</h4>
-											<button class="btn btn-xs btn-success pull-right"
-												ng-click="addJoinProperties()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+											<div>
+												<button class="btn btn-xs btn-success pull-right"
+													ng-click="addJoinProperties()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
+												<h4><b>Properties mapping</b></h4>
+											</div>
 											<table class="table table-striped">
 												<thead>
 													<tr>
@@ -153,7 +155,7 @@
 														<td>
 															<select class="form-control"
 															ng-model="joinProperty.sourceContentListenerModel"
-															ng-options="listener as listener.name for listener in selectedJoin.sourceDescriptorModel.contentListeners | joinable"></select>
+															ng-options="listener as listener.name for listener in selectedJoin.sourceDescriptorModel.contentListeners | joinable track by listener.name"></select>
 														</td>
 														<td>
 															<select class="form-control"
@@ -177,7 +179,7 @@
 									<div class="pull-right">
 										<button class="btn btn-xs btn-danger"
 												ng-show="selectedJob"
-												ng-click="removeJob()"><i class="fa fa-plus" aria-hidden="true"></i> Remove</button>
+												ng-click="removeJob()"><i class="fa fa-times" aria-hidden="true"></i> Remove</button>
 										<button class="btn btn-xs btn-success"
 												ng-click="addJob()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
 									</div>

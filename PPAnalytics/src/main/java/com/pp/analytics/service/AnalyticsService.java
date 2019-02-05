@@ -14,6 +14,7 @@ import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
+import com.pp.database.model.scrapper.descriptor.join.DescriptorJoinProperties;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import com.pp.database.model.semantic.individual.IndividualProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
@@ -136,23 +137,25 @@ public class AnalyticsService {
         DescriptorSemanticMapping targetDSM = join.getTargetDescriptorModel().getSemanticMappingById(join.getTargetDSMId()).get();
         // Select Joined Descriptor Individual Schema Name
         //TODO We are selecting only first related source
-		join.getJoinProperties().stream().forEach(descriptorJoinProperties -> {
-			ContentListenerModel joinedSourceContentListener = join.getSourceDescriptorModel().getSemanticRelationsAsTarget(descriptorJoinProperties.getSourceContentListenerModel()).get(0).getSource();
-			String joinedIndividualSchemaName  = sourceDSM.getClSemanticName(joinedSourceContentListener);
-			// Query Joined Descriptor Individual
-			query.put("_id",new ObjectId(dwdp.getJoinDetails().getJoinedIndividualId()));
-			DBObject joinedIndividual = MongoDatastore.getAdvancedDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
+		ContentListenerModel joinedSourceContentListener = join.getSourceDescriptorModel().getSemanticRelationsAsTarget(join.getJoinProperties().get(0).getSourceContentListenerModel()).get(0).getSource();
+		String joinedIndividualSchemaName  = sourceDSM.getClSemanticName(joinedSourceContentListener);
+		// Query Joined Descriptor Individual
+		query.put("_id",new ObjectId(dwdp.getJoinDetails().getJoinedIndividualId()));
+		DBObject joinedIndividual = MongoDatastore.getAdvancedDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
 
+		for(DescriptorJoinProperties descriptorJoinProperties : join.getJoinProperties()){
 			//Get Joiner Individual
 			PPIndividual joinerIndividual = dwdp.getIndividuals().get(0);
 			//Update Joined Individual new property
 			String joinedPropertyName = sourceDSM.getClSemanticName(descriptorJoinProperties.getSourceContentListenerModel());
 			String joinerPropertyName = targetDSM.getClSemanticName(descriptorJoinProperties.getTargetContentListenerModel());
-			String joinerIndividualPropertyValue = joinerIndividual.getProperty(joinerPropertyName).get().getValue();
-			joinedIndividual.put(joinedPropertyName,joinerIndividualPropertyValue);
-			DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName);
-			collection.save(joinedIndividual);
-		});
+			if(joinerIndividual.getProperty(joinerPropertyName).isPresent()){
+				String joinerIndividualPropertyValue = joinerIndividual.getProperty(joinerPropertyName).get().getValue();
+				joinedIndividual.put(joinedPropertyName,joinerIndividualPropertyValue);
+			}
+		}
+		DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName);
+		collection.save(joinedIndividual);
 
     }
 
