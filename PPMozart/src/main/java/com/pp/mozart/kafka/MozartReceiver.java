@@ -61,7 +61,7 @@ public class MozartReceiver {
 		DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
         dwdp.getDebugInformation().setMozartExecutionStep(Scraper.MATCH_DESCRIPTOR+ OUT);
         this.dwdpDAO.save(dwdp);
-		if(dwdp.getIndividuals() != null && dwdp.getIndividuals().size() > 0) {
+		if(dwdp.getIndividuals() != null && !dwdp.getIndividuals().isEmpty()) {
 		    if(dwdp.getDescriptorJob().isStandaloneMode()){
                 this.sender.send(Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+ IN, workflowId);
             }else{
@@ -125,6 +125,7 @@ public class MozartReceiver {
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
         dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINER_DESCRITOR_POPULATION+ OUT);
         this.dwdpDAO.save(dwdp);
+        this.mozartService.launchDescriptorJoinWorkflow(workflowId);
         // TODO here scan subscription
         this.mozartService.finishDescriptorWorkflow(workflowId);
     }

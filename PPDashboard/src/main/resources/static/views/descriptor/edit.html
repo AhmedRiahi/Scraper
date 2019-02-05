@@ -448,9 +448,14 @@
 													ng-if="individual.schemaName == schema.name">
 													<td>{{$index}}</td>
 													<td ng-repeat="property in schema.allProperties">
-														<span ng-if="property.propertyType.value!='url'">
+														<span ng-if="property.propertyType.value!='url' && property.propertyType.class=='primitive'">
 															{{individual[property.name]}}
 														</span>
+
+														<span ng-if="property.propertyType.value!='url' && property.propertyType.class=='reference'">
+															{{individual[property.name].displayString}}
+														</span>
+
 														<a 	href='{{individual[property.name]}}' 
 															target='_blank'
 															ng-if="property.propertyType.value=='url'">URL</a>

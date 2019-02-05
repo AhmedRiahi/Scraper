@@ -71,6 +71,7 @@ public class MozartService {
                 joinDwdp.setDescriptorJob(joinJob);
                 joinDwdp.getJoinDetails().setDescriptorJoin(join);
                 joinDwdp.getDebugInformation().setMozartExecutionStep("Mozart Init");
+                joinDwdp.setPortfolio(dwdp.getPortfolio());
                 this.dwdpDAO.save(joinDwdp);
                 this.sender.send(KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.IN,joinDwdp.getId().toHexString());
             });
