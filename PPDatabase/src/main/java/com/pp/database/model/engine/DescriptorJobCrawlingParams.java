@@ -10,6 +10,8 @@ public class DescriptorJobCrawlingParams {
     private String url;
     private String httpMethod;
     private List<HttpParam> httpParams;
+    private boolean scriptGeneratedURL;
+    private String urlGeneratorScript;
 
 
 }

@@ -20,10 +20,6 @@ public class DescriptorSemanticMapping extends PPEntity{
         return this.clSemanticProperties.get(cl.getName());
     }
 
-    public String getClSemanticName(String clName){
-        return this.clSemanticProperties.get(clName);
-    }
-
     public Optional<String> getClNameBySemanticName(String semanticName){
         return this.clSemanticProperties.entrySet().stream().filter(entry -> entry.getValue().equals(semanticName)).map(Map.Entry::getKey).findFirst();
     }

@@ -141,7 +141,7 @@
 											<div>
 												<button class="btn btn-xs btn-success pull-right"
 													ng-click="addJoinProperties()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
-												<h4><b>Properties mapping</b></h4>
+												<h4><b>Listeners mapping</b></h4>
 											</div>
 											<table class="table table-striped">
 												<thead>
@@ -265,8 +265,31 @@
 									<div>
 										<div class='form-group'>
 											<b>Job URL</b>
-											<input type="text" class="form-control" ng-model="selectedJob.crawlingParams.url" placeholder="Job URL" />
+											<div class='checkbox'>
+												<label><input type="checkbox" ng-model="selectedJob.crawlingParams.scriptGeneratedURL" /> URL Script generation</label>
+											</div>
+
+											<input type="text" 
+												class="form-control" 
+												ng-model="selectedJob.crawlingParams.url" 
+												placeholder="Job URL" 
+												ng-if="!selectedJob.crawlingParams.scriptGeneratedURL"/>
+
+											<div>
+												<textarea type="text" 
+													class="form-control" 
+													ng-model="selectedJob.crawlingParams.urlGeneratorScript" 
+													placeholder="Job URL Script" 
+													ng-if="selectedJob.crawlingParams.scriptGeneratedURL"
+													rows="8"/>
+												<br>
+												<button class="btn btn-info btn-sm pull-right" ng-click="testURLScript()">Test Script</button>
+												<div class="clearfix"></div>
+											</div>
+
 										</div>
+
+
 										
 										<div class='form-group'>
 											<b>HTTP Method</b>
@@ -275,7 +298,7 @@
 													ng-options="method for method in ['GET','POST']"/>
 										</div>
 
-										<div class='form-group'>
+										<div class='form-group' ng-show="selectedJob.crawlingParams.httpMethod == 'POST'">
 											<b>Request body params</b>
 											<button class="btn btn-xs btn-success pull-right"
 												ng-click="addHttpBodyParam()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
