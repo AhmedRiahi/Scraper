@@ -62,7 +62,7 @@ public class IndividualsBuilder {
 				        			}
 				        		}
 				        		// TODO Bad technique to check basing on Content Listener name
-				        		if(sr.getTarget().getName().equalsIgnoreCase("link")) {
+				        		if(sr.getTarget().getName().contains("link")) {
 				        			targetValue = itemScrapedContent.getContent().attr("href");
 				        		}else {
 				        			targetValue = itemScrapedContent.getContent().text();

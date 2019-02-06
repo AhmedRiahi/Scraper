@@ -24,16 +24,20 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 		super(PPIndividual.class);
 	}
 	
-	public void saveConvert(PPIndividual individual) {
-		DBObject dbObject = this.individualToDBObject(individual);
-		MongoDatastore.getAdvancedDatastore().getDB().getCollection(individual.getSchemaName()).save(dbObject);
-		individual.setId((ObjectId) dbObject.get("_id"));
-	}
+
 	
 	public DBObject individualToDBObject(PPIndividual individual) {
 		DBObject dbObject = new BasicDBObject();
 		for(IndividualProperty property : individual.getProperties()) {
-			dbObject.put(property.getName(),property.getValue());
+			if(property.getReferenceData() != null){
+				DBObject referenceObject = new BasicDBObject();
+				referenceObject.put("collectionName",property.getReferenceData().getCollectionName());
+				referenceObject.put("id",property.getReferenceData().getId());
+				dbObject.put(property.getName(),referenceObject);
+			}else{
+				dbObject.put(property.getName(),property.getValue());
+			}
+
 		}
 		dbObject.put("creationDate", new Date());
 		dbObject.put("schemaName", individual.getSchemaName());
@@ -43,9 +47,7 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 		return dbObject;
 	}
 	
-	public void saveAllConvert(List<PPIndividual> individuals) {
-		individuals.stream().forEach(this::saveConvert);
-	}
+
 	
 	public List<DBObject> getStagingDescriptorIndividuals(String descriptorId){
 		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());

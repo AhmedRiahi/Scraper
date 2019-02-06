@@ -283,7 +283,7 @@
 													ng-if="selectedJob.crawlingParams.scriptGeneratedURL"
 													rows="8"/>
 												<br>
-												<button class="btn btn-info btn-sm pull-right" ng-click="testURLScript()">Test Script</button>
+												<button class="btn btn-info btn-sm pull-right" ng-click="testURLScript()" ng-if="selectedJob.crawlingParams.scriptGeneratedURL">Test Script</button>
 												<div class="clearfix"></div>
 											</div>
 

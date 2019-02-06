@@ -42,26 +42,30 @@ public class AnalyticsService {
     @Autowired
     private DescriptorWorkflowDataPackageDAO dwdpDAO;
     @Autowired
-    private PPIndividualSchemaDAO individualSchemaDAO;
-    @Autowired
     private DescriptorsPortfolioDAO descriptorsPortfolioDAO;
-    private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
+    @Autowired
+    private IndividualPropertiesProcessor individualPropertiesProcessor;
+    @Autowired
+    private IndividualsPublisher individualsPublisher;
+    @Autowired
+    private IndividualsStagingPublisher individualsStagingPublisher;
 
 
     public void processStandaloneDescriptorPopulation(String workflowId) {
         log.info("Analysing Standalone descriptor population {}", workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
         if (this.processIndividuals(dwdp)) {
-            this.copyPopulationToPublishArea(dwdp);
+            this.individualsPublisher.copyPopulationToPublishArea(dwdp);
         }
         //Analyse generated links
         this.analyseGeneratedLinks(dwdp);
     }
 
+
     public boolean processIndividuals(DescriptorWorkflowDataPackage dwdp) {
         log.info("Got {} individuals", dwdp.getIndividuals().size());
         // Check for duplicated Staging individuals
-        List<PPIndividual> individuals = this.getNoDuplicatedPublishedIndividuals(dwdp.getIndividuals());
+        List<PPIndividual> individuals = this.individualsPublisher.getNoDuplicatedPublishedIndividuals(dwdp.getIndividuals());
         log.info("Got {} individuals after cleaning", individuals.size());
         dwdp.getDebugInformation().setCleanIndividualsCount(individuals.size());
         this.dwdpDAO.save(dwdp);
@@ -74,7 +78,7 @@ public class AnalyticsService {
             this.processIndividualsProperties(dwdp.getDescriptorJob(), individuals);
             // Save population to Staging Area
             log.info("Storing clean individuals into staging area.");
-            this.individualDAO.saveAllConvert(individuals);
+            this.individualsStagingPublisher.publishToStagingArea(individuals);
             // Copy to Publish Area
             log.info("Storing clean individuals into publish area.");
             return true;
@@ -83,6 +87,7 @@ public class AnalyticsService {
             return false;
         }
     }
+
 
     public void analyseGeneratedLinks(DescriptorWorkflowDataPackage dwdp) {
         log.info("Analysing Generated Links");
@@ -101,7 +106,6 @@ public class AnalyticsService {
                 log.info("Found " + job.getToBeProcessedLinks().size() + " Matched links for job " + job.getName());
             });
         }
-
         this.descriptorsPortfolioDAO.save(dwdp.getPortfolio());
     }
 
@@ -109,21 +113,23 @@ public class AnalyticsService {
     public void processJoinedDescriptorPopulation(String workflowId) {
         log.info("Analysing Joined descriptor population {}", workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        this.processIndividuals(dwdp);
+        if(this.processIndividuals(dwdp)){
+            this.individualsPublisher.copyPopulationToPublishArea(dwdp);
+        }
     }
 
 
     public void processJoinerDescriptorPopulation(String workflowId) {
         log.info("Analysing Joiner descriptor population {}", workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        if(this.processIndividuals(dwdp)){
-            this.copyPopulationToPublishArea(dwdp);
+        if (this.processIndividuals(dwdp)) {
+            this.individualsPublisher.copyPopulationToPublishArea(dwdp);
         }
         this.updateJoinedIndividuals(dwdp);
     }
 
 
-    private void updateJoinedIndividuals(DescriptorWorkflowDataPackage dwdp){
+    private void updateJoinedIndividuals(DescriptorWorkflowDataPackage dwdp) {
         DescriptorJoin join = dwdp.getJoinDetails().getDescriptorJoin();
         this.individualDAO.setDatastore(MongoDatastore.getStagingDatastore());
 
@@ -139,22 +145,22 @@ public class AnalyticsService {
         DBObject joinedIndividual = MongoDatastore.getAdvancedDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
 
         for (DescriptorJoinProperties descriptorJoinProperties : join.getJoinProperties()) {
-
             //Update Joined Individual new property
             String joinedPropertyName = sourceDSM.getClSemanticName(descriptorJoinProperties.getSourceContentListenerModel());
             String joinerPropertyName = targetDSM.getClSemanticName(descriptorJoinProperties.getTargetContentListenerModel());
             //Get Joiner Individual
             List<PPIndividual> joinerIndividuals = dwdp.getIndividuals();
 
-            if(!joinerIndividuals.isEmpty()){
-                if (joinerIndividuals.get(0).getProperty(joinerPropertyName).isPresent()) {
-                    List<String> propertiesValues = joinerIndividuals.stream().map(individual -> individual.getProperty(joinerPropertyName)).filter(Optional::isPresent).map(Optional::get).map(IndividualProperty::getValue).collect(Collectors.toList());
-                    joinedIndividual.put(joinedPropertyName, propertiesValues.size() == 1 ? propertiesValues.get(0) : propertiesValues);
-                }
+            if (!joinerIndividuals.isEmpty()) {
                 // in case of joining individual itself
                 if (joinerIndividuals.get(0).getSchemaName().equalsIgnoreCase(joinerPropertyName)) {
-                    List<DBRef> dbRefs = joinerIndividuals.stream().map(joinerIndividual -> new DBRef(joinedPropertyName,joinerIndividual.getId())).collect(Collectors.toList());
+                    List<DBRef> dbRefs = joinerIndividuals.stream().map(joinerIndividual -> new DBRef(joinedPropertyName, joinerIndividual.getId())).collect(Collectors.toList());
                     joinedIndividual.put(joinedPropertyName, dbRefs);
+                } else {
+                    if (joinerIndividuals.get(0).getProperty(joinerPropertyName).isPresent()) {
+                        List<String> propertiesValues = joinerIndividuals.stream().map(individual -> individual.getProperty(joinerPropertyName)).filter(Optional::isPresent).map(Optional::get).map(IndividualProperty::getValue).collect(Collectors.toList());
+                        joinedIndividual.put(joinedPropertyName, propertiesValues.size() == 1 ? propertiesValues.get(0) : propertiesValues);
+                    }
                 }
             }
         }
@@ -170,10 +176,10 @@ public class AnalyticsService {
     public void processIndividual(String individualId) {
         this.individualDAO.setDatastore(MongoDatastore.getStagingDatastore());
         PPIndividual individual = this.individualDAO.get(individualId);
-        this.processManuelIndividualProperties(individual);
-        boolean duplicateIndividual = this.isDuplicatedIndividual(individual);
+        this.individualPropertiesProcessor.processManuelIndividualProperties(individual);
+        boolean duplicateIndividual = this.individualsPublisher.isDuplicatedIndividual(individual);
         if (!duplicateIndividual) {
-            this.publishIndividual(individual);
+            this.individualsPublisher.publishIndividual(individual);
         } else {
             log.info("Duplicated individual {}", individual);
         }
@@ -186,153 +192,10 @@ public class AnalyticsService {
         return schemas;
     }
 
-
-    private void publishIndividual(PPIndividual individual) {
-        DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(individual.getSchemaName());
-        collection.save(individualDAO.individualToDBObject(individual));
-    }
-
-
-    private List<PPIndividual> getNoDuplicatedPublishedIndividuals(List<PPIndividual> individuals) {
-        List<PPIndividual> cleanIndividuals = new ArrayList<>();
-        for (PPIndividual individual : individuals) {
-            DBObject duplicateIndividual = this.getDuplicatedIndividual(individual);
-            if (duplicateIndividual == null) {
-                cleanIndividuals.add(individual);
-            }else{
-                individual.setId((ObjectId)duplicateIndividual.get("_id"));
-            }
-        }
-        return cleanIndividuals;
-    }
-
-
-    private DBObject getDuplicatedIndividual(PPIndividual individual) {
-
-        IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
-
-        List<PropertyDefinition> uniqueSchemaProperties = schema.getUniqueProperties();
-        for (PropertyDefinition property : uniqueSchemaProperties) {
-            DBObject query = new BasicDBObject();
-            Optional<IndividualProperty> individualProperty = individual.getProperty(property.getName());
-            if (individualProperty.isPresent()) {
-                query.put(property.getName(), individual.getProperty(property.getName()).get().getValue());
-                DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getName());
-                DBObject dbObject = collection.findOne(query);
-                return dbObject;
-            } else {
-                return null;
-            }
-        }
-        return null;
-    }
-
-
-    private boolean isDuplicatedIndividual(PPIndividual individual){
-        return this.getDuplicatedIndividual(individual) != null;
-    }
-
-
     private void processIndividualsProperties(DescriptorJob descriptorJob, List<PPIndividual> individuals) {
-        individuals.stream().forEach(individual -> this.processIndividualProperties(descriptorJob.getCrawlingParams().getUrl(), descriptorJob.getDescriptor(), descriptorJob.getDescriptorSemanticMappingId(), individual));
-    }
-
-    private void processManuelIndividualProperties(PPIndividual individual) {
-        IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
-        // TODO Also handle parent properties
-        List<PropertyDefinition> properties = schema.getAllProperties();
-        properties.stream().forEach(property ->
-                individual.getProperty(property.getName()).ifPresent(individualProperty -> {
-                    if (property.isDisplayString()) {
-                        String displayString = individual.getProperty(property.getName()).get().getValue();
-                        individual.setDisplayString(displayString);
-                    }
-                })
-        );
+        individuals.stream().forEach(individual -> this.individualPropertiesProcessor.processIndividualProperties(descriptorJob.getCrawlingParams().getUrl(), descriptorJob.getDescriptor(), descriptorJob.getDescriptorSemanticMappingId(), individual));
     }
 
 
-    private void processIndividualProperties(String url, DescriptorModel descriptor, String dsmId, PPIndividual individual) {
 
-        IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
-        // Get all properties including parent ones
-        List<PropertyDefinition> properties = schema.getAllProperties();
-
-        properties.stream().forEach(property ->
-                individual.getProperty(property.getName()).ifPresent(individualProperty -> {
-
-                    if (property.isDisplayString()) {
-                        String displayString = individual.getProperty(property.getName()).get().getValue();
-                        individual.setDisplayString(displayString);
-                    }
-
-                    if (property.getPropertyType() instanceof PrimitivePropertyType) {
-                        //TODO Convert property value to propertyType (to Java type)
-                        switch (property.getPropertyType().getValue()) {
-                            case "url":
-                                try {
-                                    if (individualProperty.getValue() == null || individualProperty.getValue().equals("")) {
-                                        throw new RuntimeException("Invalid individual property " + individualProperty.getName() + " : " + individualProperty.getValue());
-                                    }
-                                    String fullURL = URLUtils.generateFullURL(url, individualProperty.getValue());
-                                    individualProperty.setValue(fullURL);
-                                } catch (MalformedURLException e) {
-                                    log.error(e.getMessage(), e);
-                                }
-                                break;
-                        }
-                    } else {
-                        if (property.getPropertyType() instanceof ReferencePropertyType) {
-                            IndividualSchema referenceSchema = this.individualSchemaDAO.findOne("name", property.getPropertyType().getValue());
-                            PropertyDefinition uniqueSchemaProperty = referenceSchema.getUniqueProperties().get(0);
-                            //Search Reference on database
-
-                            DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(property.getPropertyType().getValue());
-                            DBObject query = new BasicDBObject();
-                            query.put(uniqueSchemaProperty.getName(), individualProperty.getValue());
-
-                            DBCursor cursor = collection.find(query);
-                            if (!cursor.hasNext()) {
-                                BasicDBObject dbObject = new BasicDBObject();
-                                dbObject.put(uniqueSchemaProperty.getName(), individualProperty.getValue());
-                                collection.insert(dbObject);
-                            }
-                        }
-                    }
-                })
-        );
-
-        properties.stream().forEach(property ->
-                individual.getProperty(property.getName()).ifPresent(individualProperty -> {
-                    Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId, individualProperty.getName());
-                    clOpt.ifPresent(cl -> {
-                        if (cl.getPreProcessScript() != null) {
-                            try {
-                                this.executeIndividualPreProcessScript(cl.getPreProcessScript(), individualProperty, individual);
-                            } catch (ScriptException e) {
-                                log.error(e.toString());
-                            }
-                        }
-                    });
-                })
-        );
-    }
-
-
-    private void executeIndividualPreProcessScript(String script, IndividualProperty individualProperty, PPIndividual ppIndividual) throws ScriptException {
-        ppIndividual.getProperties().stream().forEach(property -> this.engine.put(property.getName(), property.getValue()));
-        String result = (String) this.engine.eval(script);
-        individualProperty.setValue(result);
-    }
-
-
-    private void copyPopulationToPublishArea(DescriptorWorkflowDataPackage dwdp) {
-        dwdp.getSchemasNames().forEach(schemaName -> {
-            DBCollection collection = MongoDatastore.getStagingDatastore().getDB().getCollection(schemaName);
-            DBObject query = new BasicDBObject();
-            query.put("workflowId", dwdp.getStringId());
-            DBCursor cursor = collection.find(query);
-            cursor.forEach(dbObject -> MongoDatastore.getPublishDatastore().getDB().getCollection(schemaName).insert(dbObject));
-        });
-    }
 }
