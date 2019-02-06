@@ -27,7 +27,7 @@ public class EngineService {
     @Autowired
     private DescriptorWorkflowDataPackageDAO dwdpDao;
     @Autowired
-    private PPSender sender;
+    private EngineJobScheduler engineJobScheduler;
     @Autowired
     private DescriptorJobUrlResolver descriptorJobUrlResolver;
 
@@ -69,7 +69,8 @@ public class EngineService {
         List<String> jobURLs = this.descriptorJobUrlResolver.resolveJobURLs(job.getCrawlingParams());
         log.info("generated urls :");
         log.info(Arrays.toString(jobURLs.toArray()));
-        jobURLs.stream().forEach( url -> {
+        long globalSleepTime = 100;
+        for(String url : jobURLs){
             // Prepare Data package
             DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
             dwdp.setPortfolio(portfolio);
@@ -78,8 +79,9 @@ public class EngineService {
             dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");
             this.dwdpDao.save(dwdp);
             //Trigger Mozart
-            this.sender.send(KafkaTopics.Mozart.PROCESS_DESCRIPTOR, dwdp.getId().toHexString());
-        });
+            this.engineJobScheduler.scheduleJob(dwdp,globalSleepTime);
+            globalSleepTime+=job.getCrawlingParams().getSleepTime();
+        }
     }
 
     public void launchPortfolioDynamicJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job){
@@ -93,7 +95,7 @@ public class EngineService {
             dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");
             this.dwdpDao.save(dwdp);
             //Trigger Mozart
-            this.sender.send(KafkaTopics.Mozart.PROCESS_DESCRIPTOR, dwdp.getId().toHexString());
+            this.engineJobScheduler.scheduleJob(dwdp,100);
         });
     }
 

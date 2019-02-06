@@ -12,6 +12,6 @@ public class DescriptorJobCrawlingParams {
     private List<HttpParam> httpParams;
     private boolean scriptGeneratedURL;
     private String urlGeneratorScript;
-
+    private long sleepTime = 1000 * 60;
 
 }

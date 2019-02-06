@@ -56,6 +56,11 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"workflowId", workflowId);
 	}
+
+	public List<DBObject> getStagingWokflowIndividualsAndSchema(String workflowId){
+		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
+		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"workflowId", workflowId);
+	}
 	
 	public List<DBObject> getPublsihedDescriptorIndividuals(String descriptorId){
 		Set<String> collections = MongoDatastore.getPublishDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());

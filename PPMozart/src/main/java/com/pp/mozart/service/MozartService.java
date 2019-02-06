@@ -8,6 +8,7 @@ import com.pp.database.dao.semantic.PPIndividualDAO;
 import com.pp.database.model.engine.DescriptorJob;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.mozart.JobExecutionHistory;
+import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
 import com.pp.framework.kafka.KafkaTopics;
 import com.pp.framework.kafka.sender.PPSender;
 import com.pp.mozart.kafka.MozartReceiver;
@@ -55,8 +56,9 @@ public class MozartService {
 	    DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
         List<DBObject> individuals = this.individualDAO.getStagingWokflowIndividuals(workflowId);
         dwdp.getJoinDetails().setLaunchedJoinersCount(individuals.size());
-        individuals.stream().forEach(individual -> {
-            dwdp.getPortfolio().getDescriptorJoins(dwdp.getDescriptorJob().getDescriptor()).stream().forEach(join -> {
+
+        dwdp.getPortfolio().getDescriptorJoins(dwdp.getDescriptorJob().getDescriptor()).stream().forEach(join -> {
+            individuals.stream().forEach(individual -> {
                 DescriptorWorkflowDataPackage joinDwdp = new DescriptorWorkflowDataPackage();
                 joinDwdp.getJoinDetails().setJoiner(true);
                 joinDwdp.getJoinDetails().setJoinedIndividualId(individual.get("_id").toString());
