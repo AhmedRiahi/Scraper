@@ -33,7 +33,7 @@ public class DashboardService{
 
 	public List<DBObject> getPublishedIndividuals(String descriptorId) {
 		this.individualDAO.setDatastore(MongoDatastore.getPublishDatastore());
-		return this.individualDAO.getPublsihedDescriptorIndividuals(descriptorId);
+		return this.individualDAO.getPublishedDescriptorIndividuals(descriptorId);
 	}
 
 

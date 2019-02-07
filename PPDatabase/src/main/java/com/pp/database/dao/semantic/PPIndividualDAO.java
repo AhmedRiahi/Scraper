@@ -1,12 +1,12 @@
 package com.pp.database.dao.semantic;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBCursor;
-import com.mongodb.DBObject;
+import com.mongodb.*;
+import com.mongodb.client.model.DBCollectionFindOptions;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.kernel.PPDAO;
 import com.pp.database.model.semantic.individual.IndividualProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.springframework.stereotype.Repository;
 
@@ -56,13 +56,8 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"workflowId", workflowId);
 	}
-
-	public List<DBObject> getStagingWokflowIndividualsAndSchema(String workflowId){
-		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
-		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"workflowId", workflowId);
-	}
 	
-	public List<DBObject> getPublsihedDescriptorIndividuals(String descriptorId){
+	public List<DBObject> getPublishedDescriptorIndividuals(String descriptorId){
 		Set<String> collections = MongoDatastore.getPublishDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getPublishDatastore(),collections,"descriptorId", descriptorId);
 	}
@@ -76,6 +71,24 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 			while(cursor.hasNext()) {
 				DBObject individual = cursor.next();
 				individual.put("schemaName",collection);
+				individual.keySet().stream().forEach(key -> {
+					if(individual.get(key) instanceof DBRef){
+						DBRef ref = (DBRef) individual.get(key);
+						DBCursor refCursor = datastore.getDB().getCollection(ref.getCollectionName()).find(new BasicDBObject("_id",new ObjectId(ref.getId().toString())));
+						if(refCursor.hasNext()){
+							individual.put(key,refCursor.next());
+						}
+					}
+
+					if(individual.get(key) instanceof BasicDBList){
+						BasicDBList list = (BasicDBList)individual.get(key);
+						List<DBObject> references = list.stream().filter(item -> item instanceof DBRef).map(item -> (DBRef) item).map(dbRef ->
+								datastore.getDB().getCollection(dbRef.getCollectionName()).find(new BasicDBObject("_id",new ObjectId(dbRef.getId().toString()))).next()
+						).collect(Collectors.toList());
+						individual.put(key,references);
+					}
+				});
+
 				individuals.add(individual);
 			}
 		}

@@ -39,7 +39,7 @@ public class IndividualsPublisher {
             DBCursor cursor = collection.find(query);
             cursor.forEach(dbObject -> {
                 this.processObjectReferenceProperties(dbObject,schema);
-                MongoDatastore.getPublishDatastore().getDB().getCollection(schemaName).insert(dbObject);
+                MongoDatastore.getPublishDatastore().getDB().getCollection(schemaName).save(dbObject);
             });
         });
     }

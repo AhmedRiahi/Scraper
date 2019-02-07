@@ -121,7 +121,7 @@ public class IndividualPropertiesProcessor {
                     try {
                         this.executeIndividualPreProcessScript(cl.getPreProcessScript(), individualProperty, individual);
                     } catch (ScriptException e) {
-                        log.error(e.toString());
+                        log.error(e.toString(),e);
                     }
                 }
             });
