@@ -5,8 +5,6 @@ import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.common.DescriptorsPortfolio;
 import com.pp.database.model.engine.DescriptorJob;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

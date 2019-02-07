@@ -2,8 +2,8 @@ package com.pp.database.model.common;
 
 import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.engine.DescriptorJob;
-import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
+import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import lombok.Data;
 import lombok.NonNull;
 import org.mongodb.morphia.annotations.Embedded;

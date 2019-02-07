@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
+import com.pp.database.dao.semantic.PPIndividualDAO;
 import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
@@ -25,9 +26,10 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -36,6 +38,9 @@ public class IndividualPropertiesProcessor {
 
     @Autowired
     private PPIndividualSchemaDAO individualSchemaDAO;
+
+    @Autowired
+    private PPIndividualDAO individualDAO;
 
     private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 
@@ -58,12 +63,18 @@ public class IndividualPropertiesProcessor {
             }
 
             if (property.getPropertyType() instanceof ReferencePropertyType) {
-                this.processReferenceProperty(property, individualProperty);
+                Map<String,DBObject> generatedReferencesIndividuals = this.processReferenceProperty(property, individualProperty);
+                generatedReferencesIndividuals.values().stream().forEach(dbObject -> {
+                    dbObject.put("schemaName", property.getPropertyType().getValue());
+                    dbObject.put("descriptorId", individual.getDescriptorId());
+                    dbObject.put("workflowId", individual.getWorkflowId());
+                    dbObject.put("displayString", individualProperty.getValue());
+                    DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(property.getPropertyType().getValue());
+                    collection.save(dbObject);
+                });
             }
         });
-
         this.processPropertiesScripts(schemaProperties, descriptor, dsmId, individual);
-
     }
 
     private void processUrlProperty(String url, IndividualProperty individualProperty) {
@@ -78,7 +89,7 @@ public class IndividualPropertiesProcessor {
         }
     }
 
-    private void processReferenceProperty(PropertyDefinition property, IndividualProperty individualProperty) {
+    private Map<String,DBObject> processReferenceProperty(PropertyDefinition property, IndividualProperty individualProperty) {
         IndividualSchema referenceSchema = this.individualSchemaDAO.findOne("name", property.getPropertyType().getValue());
         PropertyDefinition uniqueSchemaProperty = referenceSchema.getUniqueProperties().get(0);
         //Search Reference on database
@@ -86,16 +97,18 @@ public class IndividualPropertiesProcessor {
         DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(property.getPropertyType().getValue());
         DBObject query = new BasicDBObject();
         query.put(uniqueSchemaProperty.getName(), individualProperty.getValue());
-
+        Map<String,DBObject> generatedReferencesIndividuals = new HashMap<>();
         DBCursor cursor = collection.find(query);
         if (!cursor.hasNext()) {
             BasicDBObject dbObject = new BasicDBObject();
             dbObject.put(uniqueSchemaProperty.getName(), individualProperty.getValue());
-            collection.insert(dbObject);
+            generatedReferencesIndividuals.put(property.getPropertyType().getValue(),dbObject);
+            collection.save(dbObject);
             individualProperty.setReferenceData(new IndividualReferenceData(property.getPropertyType().getValue(),(((ObjectId)dbObject.get("_id")).toHexString())));
         }else{
             individualProperty.setReferenceData(new IndividualReferenceData(property.getPropertyType().getValue(),(((ObjectId)cursor.next().get("_id")).toHexString())));
         }
+        return generatedReferencesIndividuals;
     }
 
     private void processPropertiesScripts(List<PropertyDefinition> schemaProperties, DescriptorModel descriptor, String dsmId, PPIndividual individual) {

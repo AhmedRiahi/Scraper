@@ -4,8 +4,6 @@ import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
 
-import java.util.List;
-
 
 @Data
 @Entity

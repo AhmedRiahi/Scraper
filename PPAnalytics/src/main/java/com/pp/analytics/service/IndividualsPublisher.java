@@ -6,7 +6,6 @@ import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.semantic.individual.IndividualProperty;
-import com.pp.database.model.semantic.individual.IndividualReferenceData;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.database.model.semantic.schema.PropertyDefinition;
@@ -18,8 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 @Service

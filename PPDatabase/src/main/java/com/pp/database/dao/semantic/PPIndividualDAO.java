@@ -7,7 +7,6 @@ import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.kernel.PPDAO;
 import com.pp.database.model.semantic.individual.IndividualProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
-import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
 import org.springframework.stereotype.Repository;
 
@@ -46,7 +45,6 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 		dbObject.put("displayString", individual.getDisplayString());
 		return dbObject;
 	}
-	
 
 	
 	public List<DBObject> getStagingDescriptorIndividuals(String descriptorId){

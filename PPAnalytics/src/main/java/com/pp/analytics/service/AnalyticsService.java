@@ -1,35 +1,30 @@
 package com.pp.analytics.service;
 
-import com.mongodb.*;
+import com.mongodb.BasicDBObject;
+import com.mongodb.DBCollection;
+import com.mongodb.DBObject;
+import com.mongodb.DBRef;
 import com.pp.database.dao.common.DescriptorsPortfolioDAO;
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.dao.semantic.PPIndividualDAO;
-import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.engine.DescriptorJob;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
-import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
+import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import com.pp.database.model.scrapper.descriptor.join.DescriptorJoinProperties;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import com.pp.database.model.semantic.individual.IndividualProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
-import com.pp.database.model.semantic.schema.IndividualSchema;
-import com.pp.database.model.semantic.schema.PrimitivePropertyType;
-import com.pp.database.model.semantic.schema.PropertyDefinition;
-import com.pp.database.model.semantic.schema.ReferencePropertyType;
-import com.pp.framework.urlUtils.URLUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
-import java.net.MalformedURLException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -142,7 +137,7 @@ public class AnalyticsService {
         // Query Joined Descriptor Individual
         DBObject query = new BasicDBObject();
         query.put("_id", new ObjectId(dwdp.getJoinDetails().getJoinedIndividualId()));
-        DBObject joinedIndividual = MongoDatastore.getAdvancedDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
+        DBObject joinedIndividual = MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
 
         for (DescriptorJoinProperties descriptorJoinProperties : join.getJoinProperties()) {
             //Update Joined Individual new property

@@ -1,14 +1,8 @@
 package com.pp.labtest;
 
 
-
 import org.json.JSONObject;
 import org.json.XML;
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.springframework.boot.json.GsonJsonParser;
-
-import java.util.List;
 
 public class Scraper {
 

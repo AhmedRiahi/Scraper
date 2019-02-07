@@ -8,14 +8,13 @@ import com.pp.database.model.scrapper.descriptor.DescriptorType;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.scrapper.core.IndividualsBuilder;
 import com.pp.scrapper.core.PPHTMLScrapper;
+import org.json.JSONObject;
+import org.json.XML;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.List;
-
-import org.json.JSONObject;
-import org.json.XML;
 
 @Service
 public class ScraperService {
