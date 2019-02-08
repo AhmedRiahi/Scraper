@@ -36,7 +36,6 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 			}else{
 				dbObject.put(property.getName(),property.getValue());
 			}
-
 		}
 		dbObject.put("creationDate", new Date());
 		dbObject.put("schemaName", individual.getSchemaName());

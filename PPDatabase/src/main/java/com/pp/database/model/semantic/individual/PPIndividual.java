@@ -19,6 +19,8 @@ public class PPIndividual extends PPEntity{
 	private String descriptorId;
 	private String workflowId;
 	private String displayString;
+	private boolean isValid = false;
+	private boolean pureJoinIndividual = false;
 
 
 	public PPIndividual() {

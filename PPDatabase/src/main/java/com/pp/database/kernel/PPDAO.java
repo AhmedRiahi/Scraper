@@ -26,14 +26,13 @@ public class PPDAO<T extends PPEntity> extends BasicDAO<T,ObjectId>{
 	
 	@Override
 	public Key<T> save(T entity) {
-		PPEntity ppEntity = (PPEntity) entity;
-		if( ppEntity.getCreationDate() == null){
-			ppEntity.setCreationDate(new Date());
+		if( entity.getCreationDate() == null){
+			entity.setCreationDate(new Date());
 		}else{
-			ppEntity.setLastModificationDate(new Date());
+			entity.setLastModificationDate(new Date());
 		}
 		
-		return super.save((T) ppEntity);
+		return super.save((T) entity);
 	}
 	
 	public void saveAll(List<T> entities){
@@ -56,9 +55,6 @@ public class PPDAO<T extends PPEntity> extends BasicDAO<T,ObjectId>{
 		this.deleteById(oid);
 	}
 
-	public List<T> getFrom(int from,int stepSize){
-		return this.createQuery().offset(from).limit(stepSize).asList();
-	}
 	
 	public void updateCollection(T entity,String field,Collection<?> updateValue){
 		Query<T> query = this.createQuery().field("_id").equal(entity.getId());

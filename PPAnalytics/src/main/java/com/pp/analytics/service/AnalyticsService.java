@@ -7,6 +7,7 @@ import com.mongodb.DBRef;
 import com.pp.database.dao.common.DescriptorsPortfolioDAO;
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.dao.semantic.PPIndividualDAO;
+import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.engine.DescriptorJob;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
@@ -16,17 +17,18 @@ import com.pp.database.model.scrapper.descriptor.join.DescriptorJoinProperties;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
 import com.pp.database.model.semantic.individual.IndividualProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
+import com.pp.database.model.semantic.schema.IndividualSchema;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.function.Function;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.groupingBy;
 
 @Service
 @Slf4j
@@ -44,24 +46,28 @@ public class AnalyticsService {
     private IndividualsPublisher individualsPublisher;
     @Autowired
     private IndividualsStagingPublisher individualsStagingPublisher;
+    @Autowired
+    private IndividualsFilter individualsFilter;
+    @Autowired
+    private PPIndividualSchemaDAO individualSchemaDAO;
 
 
     public void processStandaloneDescriptorPopulation(String workflowId) {
         log.info("Analysing Standalone descriptor population {}", workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        if (this.processIndividuals(dwdp)) {
+        if (this.generateIndividualsPopulation(dwdp)) {
             this.individualsPublisher.copyPopulationToPublishArea(dwdp);
         }
-        //Analyse generated links
         this.analyseGeneratedLinks(dwdp);
     }
 
 
-    public boolean processIndividuals(DescriptorWorkflowDataPackage dwdp) {
+    public boolean generateIndividualsPopulation(DescriptorWorkflowDataPackage dwdp) {
         log.info("Got {} individuals", dwdp.getIndividuals().size());
         // Check for duplicated Staging individuals
-        List<PPIndividual> individuals = this.individualsPublisher.getNoDuplicatedPublishedIndividuals(dwdp.getIndividuals());
-        log.info("Got {} individuals after cleaning", individuals.size());
+        List<PPIndividual> individuals = dwdp.getIndividuals().stream().filter(individual -> !individual.isPureJoinIndividual()).collect(Collectors.toList());
+        individuals = this.individualsPublisher.getNoDuplicatedPublishedIndividuals(individuals);
+        log.info("Got {} individuals after cleaning duplicate", individuals.size());
         dwdp.getDebugInformation().setCleanIndividualsCount(individuals.size());
         this.dwdpDAO.save(dwdp);
         if (!individuals.isEmpty()) {
@@ -71,9 +77,13 @@ public class AnalyticsService {
             this.dwdpDAO.updateCollection(dwdp, "schemasNames", schemasNames);
             log.info("Processing Individuals properties", individuals.size());
             this.processIndividualsProperties(dwdp.getDescriptorJob(), individuals);
+            this.individualsFilter.tagInvalidIndividuals(individuals);
+            this.dwdpDAO.updateCollection(dwdp,"individuals",individuals);
+            List<PPIndividual> validIndividuals = individuals.stream().filter(PPIndividual::isValid).collect(Collectors.toList());
+            log.info("Got {} individuals after validation", validIndividuals.size());
             // Save population to Staging Area
             log.info("Storing clean individuals into staging area.");
-            this.individualsStagingPublisher.publishToStagingArea(individuals);
+            this.individualsStagingPublisher.publishToStagingArea(validIndividuals);
             // Copy to Publish Area
             log.info("Storing clean individuals into publish area.");
             return true;
@@ -108,7 +118,7 @@ public class AnalyticsService {
     public void processJoinedDescriptorPopulation(String workflowId) {
         log.info("Analysing Joined descriptor population {}", workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        if(this.processIndividuals(dwdp)){
+        if(this.generateIndividualsPopulation(dwdp)){
             this.individualsPublisher.copyPopulationToPublishArea(dwdp);
         }
     }
@@ -117,10 +127,35 @@ public class AnalyticsService {
     public void processJoinerDescriptorPopulation(String workflowId) {
         log.info("Analysing Joiner descriptor population {}", workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        if (this.processIndividuals(dwdp)) {
+        List<PPIndividual> pureJoinIndividuals = this.preProcessJoinerIndividuals(dwdp);
+        if (this.generateIndividualsPopulation(dwdp)) {
             this.individualsPublisher.copyPopulationToPublishArea(dwdp);
         }
         this.updateJoinedIndividuals(dwdp);
+    }
+
+
+    private List<PPIndividual> preProcessJoinerIndividuals(DescriptorWorkflowDataPackage dwdp){
+
+        DescriptorJoin join = dwdp.getJoinDetails().getDescriptorJoin();
+        DescriptorSemanticMapping sourceDSM = join.getSourceDescriptorModel().getSemanticMappingById(join.getSourceDSMId()).get();
+        ContentListenerModel joinedSourceContentListener = join.getSourceDescriptorModel().getSemanticRelationsAsTarget(join.getJoinProperties().get(0).getSourceContentListenerModel()).get(0).getSource();
+        String joinedIndividualSchemaName = sourceDSM.getClSemanticName(joinedSourceContentListener);
+        IndividualSchema individualSchema = this.individualSchemaDAO.findByName(joinedIndividualSchemaName);
+        DBObject joinedIndividual = this.getJoinedIndividual(dwdp,joinedIndividualSchemaName);
+        return dwdp.getIndividuals().stream()
+                .filter(individual -> individual.getSchemaName().equals(joinedIndividualSchemaName))
+                .map(individual -> {
+                    individualSchema.getUniqueProperties().stream().filter(property -> joinedIndividual.get(property.getName()) != null).forEach(property -> {
+                            IndividualProperty individualProperty = new IndividualProperty();
+                            individualProperty.setName(property.getName());
+                            individualProperty.setValue(joinedIndividual.get(property.getName()).toString());
+                            individual.getProperties().add(individualProperty);
+                            individual.setPureJoinIndividual(true);
+                            individual.setValid(true);
+                    });
+                    return individual;
+        }).collect(Collectors.toList());
     }
 
 
@@ -135,29 +170,30 @@ public class AnalyticsService {
         ContentListenerModel joinedSourceContentListener = join.getSourceDescriptorModel().getSemanticRelationsAsTarget(join.getJoinProperties().get(0).getSourceContentListenerModel()).get(0).getSource();
         String joinedIndividualSchemaName = sourceDSM.getClSemanticName(joinedSourceContentListener);
         // Query Joined Descriptor Individual
-        DBObject query = new BasicDBObject();
-        query.put("_id", new ObjectId(dwdp.getJoinDetails().getJoinedIndividualId()));
-        DBObject joinedIndividual = MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
+        DBObject joinedIndividual = this.getJoinedIndividual(dwdp, joinedIndividualSchemaName);
 
         for (DescriptorJoinProperties descriptorJoinProperties : join.getJoinProperties()) {
             //Update Joined Individual new property
             String joinedPropertyName = sourceDSM.getClSemanticName(descriptorJoinProperties.getSourceContentListenerModel());
             String joinerPropertyName = targetDSM.getClSemanticName(descriptorJoinProperties.getTargetContentListenerModel());
             //Get Joiner Individual
-            List<PPIndividual> joinerIndividuals = dwdp.getIndividuals();
+            List<PPIndividual> joinerIndividuals = dwdp.getValidIndividuals();
 
-            if (!joinerIndividuals.isEmpty()) {
-                // in case of joining individual itself
-                if (joinerIndividuals.get(0).getSchemaName().equalsIgnoreCase(joinerPropertyName)) {
-                    List<DBRef> dbRefs = joinerIndividuals.stream().map(joinerIndividual -> new DBRef(joinedPropertyName, joinerIndividual.getId())).collect(Collectors.toList());
-                    joinedIndividual.put(joinedPropertyName, dbRefs);
-                } else {
-                    if (joinerIndividuals.get(0).getProperty(joinerPropertyName).isPresent()) {
-                        List<String> propertiesValues = joinerIndividuals.stream().map(individual -> individual.getProperty(joinerPropertyName)).filter(Optional::isPresent).map(Optional::get).map(IndividualProperty::getValue).collect(Collectors.toList());
-                        joinedIndividual.put(joinedPropertyName, propertiesValues.size() == 1 ? propertiesValues.get(0) : propertiesValues);
+            Map<String,List<PPIndividual>> groupedIndividuals = joinerIndividuals.stream().collect(groupingBy(PPIndividual::getSchemaName));
+            groupedIndividuals.entrySet().stream().forEach(entry -> {
+                if (!entry.getValue().isEmpty()) {
+                    // in case of joining individual itself
+                    if (entry.getKey().equalsIgnoreCase(joinerPropertyName)) {
+                        List<DBRef> dbRefs = entry.getValue().stream().map(joinerIndividual -> new DBRef(joinedPropertyName, joinerIndividual.getId())).collect(Collectors.toList());
+                        joinedIndividual.put(joinedPropertyName, dbRefs);
+                    } else {
+                        if (entry.getValue().get(0).getProperty(joinerPropertyName).isPresent()) {
+                            List<String> propertiesValues = entry.getValue().stream().map(individual -> individual.getProperty(joinerPropertyName)).filter(Optional::isPresent).map(Optional::get).map(IndividualProperty::getValue).collect(Collectors.toList());
+                            joinedIndividual.put(joinedPropertyName, propertiesValues.size() == 1 ? propertiesValues.get(0) : propertiesValues);
+                        }
                     }
                 }
-            }
+            });
         }
 
         DBCollection publishCollection = MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName);
@@ -167,8 +203,14 @@ public class AnalyticsService {
         stagingCollection.save(joinedIndividual);
     }
 
+    private DBObject getJoinedIndividual(DescriptorWorkflowDataPackage dwdp, String joinedIndividualSchemaName) {
+        DBObject query = new BasicDBObject();
+        query.put("_id", new ObjectId(dwdp.getJoinDetails().getJoinedIndividualId()));
+        return MongoDatastore.getPublishDatastore().getDB().getCollection(joinedIndividualSchemaName).find(query).next();
+    }
 
-    public void processIndividual(String individualId) {
+
+    public void generateIndividualPopulation(String individualId) {
         this.individualDAO.setDatastore(MongoDatastore.getStagingDatastore());
         PPIndividual individual = this.individualDAO.get(individualId);
         this.individualPropertiesProcessor.processManuelIndividualProperties(individual);

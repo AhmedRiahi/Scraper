@@ -18,7 +18,7 @@ public class DescriptorsProcessingJob implements Job {
     private EngineService engineService;
 	
 	@Override
-	public void execute(JobExecutionContext context) throws JobExecutionException {
+	public void execute(JobExecutionContext context){
 		log.info("Executing DescriptorsProcessingJob ...");
         this.engineService.checkScheduledJobs();
 	}

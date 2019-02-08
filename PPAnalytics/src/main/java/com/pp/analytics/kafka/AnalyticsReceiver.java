@@ -83,13 +83,12 @@ public class AnalyticsReceiver {
 	public void analyseIndividual(String individualId){
 		try {
 			log.info(ANALYTICS_RECEIVED_MESSAGE,KafkaTopics.Analytics.ANALYSE_INDIVIDUAL,individualId);
-			this.analyticsService.processIndividual(individualId);
+			this.analyticsService.generateIndividualPopulation(individualId);
 			this.sender.send(KafkaTopics.Analytics.ANALYSE_INDIVIDUAL+KafkaTopics.OUT, individualId);
 		}catch(Exception e) {
 			log.error(e.toString(),e);
 			this.sender.send(KafkaTopics.Analytics.ANALYSE_INDIVIDUAL+KafkaTopics.ERROR,individualId);
 		}
-		
 	}
 	
 }
