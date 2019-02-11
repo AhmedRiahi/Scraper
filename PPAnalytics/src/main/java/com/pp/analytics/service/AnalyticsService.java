@@ -66,7 +66,29 @@ public class AnalyticsService {
         log.info("Got {} individuals", dwdp.getIndividuals().size());
         // Check for duplicated Staging individuals
         List<PPIndividual> individuals = dwdp.getIndividuals().stream().filter(individual -> !individual.isPureJoinIndividual()).collect(Collectors.toList());
-        individuals = this.individualsPublisher.getNoDuplicatedPublishedIndividuals(individuals);
+        Map<Boolean,List<PPIndividual>> groupingMap = this.individualsPublisher.getIndividualsGroupedByDuplication(individuals);
+        this.mergeExistingIndividuals(groupingMap.get(true));
+        return this.generateNewIndividuals(dwdp, groupingMap.get(false));
+    }
+
+
+    private void mergeExistingIndividuals(List<PPIndividual> individuals){
+        log.info("Got {} duplicate individuals", individuals.size());
+        individuals.stream().forEach(individual -> {
+            DBObject duplicateObject = this.individualsPublisher.getDuplicatedIndividual(individual);
+            List<String> oldProperties = duplicateObject.keySet().stream().filter(propertyName -> !individual.hasProperty(propertyName)).filter(propertyName -> !propertyName.equals("_id")).collect(Collectors.toList());
+            oldProperties.stream().forEach(propertyName -> {
+                IndividualProperty individualProperty = new IndividualProperty();
+                individualProperty.setName(propertyName);
+                individualProperty.setValue(duplicateObject.get(propertyName).toString());
+                individual.addProperty(individualProperty);
+            });
+            individual.setId((ObjectId) duplicateObject.get("_id"));
+            this.individualsPublisher.updateMergedIndividual(individual);
+        });
+    }
+
+    private boolean generateNewIndividuals(DescriptorWorkflowDataPackage dwdp, List<PPIndividual> individuals) {
         log.info("Got {} individuals after cleaning duplicate", individuals.size());
         dwdp.getDebugInformation().setCleanIndividualsCount(individuals.size());
         this.dwdpDAO.save(dwdp);

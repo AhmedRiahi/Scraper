@@ -26,6 +26,16 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 
 	
 	public DBObject individualToDBObject(PPIndividual individual) {
+		DBObject dbObject = this.getDbObject(individual);
+		dbObject.put("creationDate", new Date());
+		dbObject.put("schemaName", individual.getSchemaName());
+		dbObject.put("descriptorId", individual.getDescriptorId());
+		dbObject.put("workflowId", individual.getWorkflowId());
+		dbObject.put("displayString", individual.getDisplayString());
+		return dbObject;
+	}
+
+	public DBObject getDbObject(PPIndividual individual) {
 		DBObject dbObject = new BasicDBObject();
 		for(IndividualProperty property : individual.getProperties()) {
 			if(property.getReferenceData() != null){
@@ -37,15 +47,10 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 				dbObject.put(property.getName(),property.getValue());
 			}
 		}
-		dbObject.put("creationDate", new Date());
-		dbObject.put("schemaName", individual.getSchemaName());
-		dbObject.put("descriptorId", individual.getDescriptorId());
-		dbObject.put("workflowId", individual.getWorkflowId());
-		dbObject.put("displayString", individual.getDisplayString());
 		return dbObject;
 	}
 
-	
+
 	public List<DBObject> getStagingDescriptorIndividuals(String descriptorId){
 		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"descriptorId", descriptorId);

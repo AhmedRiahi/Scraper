@@ -20,18 +20,18 @@ public class HTMLSignatureMatcher extends SignatureMatcher{
 			return referenceElement.select(cssSelector);
 
 		case CSS_SELECTOR:
-			cssSelector = ((String)signature.getValue());
+			cssSelector = signature.getValue();
 			return bodyElement.select(cssSelector);
 			
 		case DOM_CLASS:
-			String domClass = (String) signature.getValue();
+			String domClass = signature.getValue();
 			return bodyElement.getElementsByClass(domClass);
 			
 		case DOM_DISTANCE:
 			break;
 			
 		case DOM_ID:
-			String domId = (String) signature.getValue();
+			String domId = signature.getValue();
 			return new Elements(bodyElement.getElementById(domId));
 			
 		case DOM_INDEX:
@@ -41,7 +41,7 @@ public class HTMLSignatureMatcher extends SignatureMatcher{
 			break;
 			
 		case XPATH_SELECTOR:
-			String xpathSelector = ((String)signature.getValue());
+			String xpathSelector = signature.getValue();
 			xpathSelector = xpathSelector.substring(2);
 			return bodyElement.select(xpathSelector);
 			

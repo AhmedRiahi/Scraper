@@ -13,10 +13,7 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,7 +51,7 @@ public class IndividualsPublisher {
         });
     }
 
-    private DBObject getDuplicatedIndividual(PPIndividual individual) {
+    public DBObject getDuplicatedIndividual(PPIndividual individual) {
         IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
 
         List<PropertyDefinition> uniqueSchemaProperties = schema.getUniqueProperties();
@@ -78,21 +75,34 @@ public class IndividualsPublisher {
         return this.getDuplicatedIndividual(individual) != null;
     }
 
-    public List<PPIndividual> getNoDuplicatedPublishedIndividuals(List<PPIndividual> individuals) {
-        List<PPIndividual> cleanIndividuals = new ArrayList<>();
+    public Map<Boolean,List<PPIndividual>> getIndividualsGroupedByDuplication(List<PPIndividual> individuals) {
+        List<PPIndividual> newIndividuals = new ArrayList<>();
+        List<PPIndividual> duplicateIndividuals = new ArrayList<>();
+
         for (PPIndividual individual : individuals) {
             DBObject duplicateIndividual = this.getDuplicatedIndividual(individual);
             if (duplicateIndividual == null) {
-                cleanIndividuals.add(individual);
+                newIndividuals.add(individual);
             } else {
-                individual.setId((ObjectId) duplicateIndividual.get("_id"));
+                duplicateIndividuals.add(individual);
             }
         }
-        return cleanIndividuals;
+        Map<Boolean,List<PPIndividual>> groupingMap = new HashMap<>();
+        groupingMap.put(false,newIndividuals);
+        groupingMap.put(true,duplicateIndividuals);
+        return groupingMap;
     }
 
     public void publishIndividual(PPIndividual individual) {
         DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(individual.getSchemaName());
-        collection.save(individualDAO.individualToDBObject(individual));
+        collection.save(this.individualDAO.individualToDBObject(individual));
+    }
+
+
+    public void updateMergedIndividual(PPIndividual individual){
+        DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(individual.getSchemaName());
+        DBObject dbObject = this.individualDAO.getDbObject(individual);
+        dbObject.put("_id",individual.getId());
+        collection.save(dbObject);
     }
 }
