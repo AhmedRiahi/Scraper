@@ -1,7 +1,6 @@
 package com.pp.database.model.engine;
 
 
-import com.pp.database.model.engine.trigger.meta.BaseTriggerMeta;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Entity;
@@ -19,12 +18,13 @@ public class DescriptorJob{
     @Reference
     private DescriptorModel descriptor;
     private String descriptorSemanticMappingId;
-    private BaseTriggerMeta triggerMeta;
     private DescriptorJobCrawlingParams crawlingParams = new DescriptorJobCrawlingParams();
     private Date lastCheckingDate;
+    private int checkingInterval = 60 * 24;
     private int executionErrorsCount = 0;
     private boolean checkingRequired = false;
     private boolean isStandaloneMode = true;
+    private boolean isDisabled = false;
     private boolean isGenerateLinks = false;
     private boolean isDynamicURLJob = false;
     private String dynamicUrlPattern;
