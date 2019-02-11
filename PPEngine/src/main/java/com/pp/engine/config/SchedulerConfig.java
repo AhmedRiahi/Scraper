@@ -17,8 +17,6 @@ import org.springframework.scheduling.quartz.JobDetailFactoryBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SimpleTriggerFactoryBean;
 
-import java.io.IOException;
-
 
 @Configuration
 public class SchedulerConfig {
@@ -33,11 +31,9 @@ public class SchedulerConfig {
     }
 
     @Bean
-    public SchedulerFactoryBean schedulerFactoryBean(JobFactory jobFactory, @Qualifier("cleanerTrigger")Trigger cleanerTrigger, @Qualifier("descriptorsProcessingTrigger")Trigger descriptorsProcessingTrigger)
-            throws IOException {
+    public SchedulerFactoryBean schedulerFactoryBean(JobFactory jobFactory, @Qualifier("cleanerTrigger")Trigger cleanerTrigger, @Qualifier("descriptorsProcessingTrigger")Trigger descriptorsProcessingTrigger) {
         SchedulerFactoryBean factory = new SchedulerFactoryBean();
         factory.setJobFactory(jobFactory);
-        //factory.setQuartzProperties(quartzProperties());
         factory.setTriggers(cleanerTrigger,descriptorsProcessingTrigger);
         LOG.info("starting jobs....");
         return factory;

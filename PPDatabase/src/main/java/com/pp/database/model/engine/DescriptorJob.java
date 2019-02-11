@@ -20,7 +20,7 @@ public class DescriptorJob{
     private String descriptorSemanticMappingId;
     private DescriptorJobCrawlingParams crawlingParams = new DescriptorJobCrawlingParams();
     private Date lastCheckingDate;
-    private int checkingInterval = 60 * 24; // 24 hours default checking interval
+    private int checkingInterval = 60 * 24;
     private int executionErrorsCount = 0;
     private boolean checkingRequired = false;
     private boolean isStandaloneMode = true;

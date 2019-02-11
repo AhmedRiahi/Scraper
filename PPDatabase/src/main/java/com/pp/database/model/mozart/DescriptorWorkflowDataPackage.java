@@ -16,6 +16,7 @@ import org.mongodb.morphia.annotations.Transient;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Data
 @Entity
@@ -39,6 +40,10 @@ public class DescriptorWorkflowDataPackage extends PPEntity{
 	private DWDPDebugInformation debugInformation = new DWDPDebugInformation();
 	@Embedded
 	private DWDPJoinDetails joinDetails = new DWDPJoinDetails();
+
+	public List<PPIndividual> getValidIndividuals(){
+		return this.individuals.stream().filter(PPIndividual::isValid).collect(Collectors.toList());
+	}
 
 
 }
