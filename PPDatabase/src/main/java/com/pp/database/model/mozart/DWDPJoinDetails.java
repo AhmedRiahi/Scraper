@@ -18,9 +18,4 @@ public class DWDPJoinDetails {
     private DescriptorWorkflowDataPackage joinedDWDP;
     private int launchedJoinersCount;
     private int finishedJoinersCount;
-
-
-    public void incrementFinsihedJoinersCount(){
-        this.finishedJoinersCount++;
-    }
 }

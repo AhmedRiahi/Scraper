@@ -36,7 +36,7 @@ public class IndividualsPublisher {
             DBCursor cursor = collection.find(query);
             cursor.forEach(dbObject -> {
                 this.processObjectReferenceProperties(dbObject,schema);
-                MongoDatastore.getPublishDatastore().getDB().getCollection(schemaName).save(dbObject);
+                MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName()).save(dbObject);
             });
         });
     }
@@ -60,7 +60,7 @@ public class IndividualsPublisher {
             Optional<IndividualProperty> individualProperty = individual.getProperty(property.getName());
             if (individualProperty.isPresent()) {
                 query.put(property.getName(), individual.getProperty(property.getName()).get().getValue());
-                DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getName());
+                DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName());
                 DBObject dbObject = collection.findOne(query);
                 return dbObject;
             } else {

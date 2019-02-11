@@ -5,8 +5,10 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.pp.database.dao.scrapper.DescriptorDAO;
 import com.pp.database.dao.semantic.PPIndividualDAO;
+import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
+import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.framework.kafka.KafkaTopics;
 import com.pp.framework.kafka.sender.PPSender;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,8 @@ public class DashboardService{
 	private PPIndividualDAO individualDAO;
 	@Autowired
 	private PPSender sender;
+	@Autowired
+	private PPIndividualSchemaDAO schemaDAO;
 
 
 	public List<DBObject> getStagingIndividuals(String descriptorId){
@@ -40,12 +44,16 @@ public class DashboardService{
 	public void deleteDescriptorIndividuals(String descriptorId) {
 		DescriptorModel descriptor = this.descriptorDAO.get(descriptorId);
 		descriptor.getIndividualSchemas().stream().forEach(schemaName -> {
-			DBCollection publishCollection = MongoDatastore.getPublishDatastore().getDB().getCollection(schemaName);
-			DBCollection stagingCollection = MongoDatastore.getStagingDatastore().getDB().getCollection(schemaName);
-			DBObject query = new BasicDBObject();
-			query.put("descriptorId",descriptorId);
-			publishCollection.remove(query);
-			stagingCollection.remove(query);
+			IndividualSchema schema = this.schemaDAO.findByName(schemaName);
+			while(schema.getParent() != null){
+				DBCollection publishCollection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getName());
+				DBCollection stagingCollection = MongoDatastore.getStagingDatastore().getDB().getCollection(schema.getName());
+				DBObject query = new BasicDBObject();
+				query.put("descriptorId",descriptorId);
+				publishCollection.remove(query);
+				stagingCollection.remove(query);
+				schema = schema.getParent();
+			}
 		});
 	}
 	

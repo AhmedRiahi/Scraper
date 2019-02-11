@@ -10,10 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class EngineService {
@@ -53,7 +50,11 @@ public class EngineService {
                         }
                     }else{
                         // This job is never launched
-                        this.launchPortfolioJobWorkflowProcess(portfolio,job);
+                        if(!job.isDynamicURLJob()){
+                            this.launchPortfolioJobWorkflowProcess(portfolio,job);
+                        }else{
+                            this.launchPortfolioDynamicJobWorkflowProcess(portfolio,job);
+                        }
                     }
                 }else{
                     log.info("Job is disabled :"+job.getName());
@@ -84,17 +85,21 @@ public class EngineService {
 
     public void launchPortfolioDynamicJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job){
         log.info("launchPortfolioDynamicJobWorkflowProcess porfolio = {}, job = {}",portfolio.getName(),job.getName());
-        job.getToBeProcessedLinks().stream().forEach(link -> {
+        Iterator<String> iterator = job.getToBeProcessedLinks().iterator();
+        if(iterator.hasNext()){
+            String url = iterator.next();
             // Prepare Data package
             DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
-            job.getCrawlingParams().setUrl(link);
+            job.getCrawlingParams().setUrl(url);
             dwdp.setPortfolio(portfolio);
             dwdp.setDescriptorJob(job);
             dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");
-            this.dwdpDao.save(dwdp);
-            //Trigger Mozart
+            //Trigger MozartlaunchPortfolioDynamicJobWorkflowProcess
             this.engineJobScheduler.scheduleJob(dwdp,100);
-        });
+            iterator.remove();
+            this.dwdpDao.save(dwdp);
+        }
+
     }
 
     public void launchPortfolioJobWorkflowProcess(String portfolioJob){

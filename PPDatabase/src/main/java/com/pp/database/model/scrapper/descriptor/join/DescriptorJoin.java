@@ -7,6 +7,7 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -21,5 +22,5 @@ public class DescriptorJoin{
     private DescriptorModel targetDescriptorModel;
     private String targetDSMId;
     private ContentListenerModel sourceURLListener;
-    private List<DescriptorJoinProperties> joinProperties;
+    private List<DescriptorJoinProperties> joinProperties = new ArrayList<>();
 }

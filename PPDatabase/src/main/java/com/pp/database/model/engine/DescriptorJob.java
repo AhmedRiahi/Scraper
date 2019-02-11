@@ -8,6 +8,7 @@ import org.mongodb.morphia.annotations.Reference;
 
 import javax.validation.constraints.NotNull;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -25,10 +26,9 @@ public class DescriptorJob{
     private boolean checkingRequired = false;
     private boolean isStandaloneMode = true;
     private boolean isDisabled = false;
-    private boolean isGenerateLinks = false;
     private boolean isDynamicURLJob = false;
-    private String dynamicUrlPattern;
-    private Set<String> toBeProcessedLinks;
+    private Set<String> toBeProcessedLinks = new HashSet<>();
+    private LinkGenerationDetails linkGenerationDetails = new LinkGenerationDetails();
 
     public void incrementExecutionErrorsCount(){
         this.executionErrorsCount ++;

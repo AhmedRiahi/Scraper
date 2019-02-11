@@ -243,17 +243,32 @@
 										</div>
 
 										<div class='checkbox'>
-											<label><input type="checkbox" ng-model="selectedJob.generateLinks" /> Generate Links</label>
-										</div>
-
-										<div class='checkbox'>
 											<label><input type="checkbox" ng-model="selectedJob.dynamicURLJob" /> Dynamic URL Job</label>
 										</div>
 
-										<div class='form-group' ng-show="selectedJob.dynamicURLJob">
-											<b>URL Regex</b>
-											<input type="text" class='form-control' ng-model="selectedJob.dynamicUrlPattern" placeholder="URL Regex">
+										<div class="well">
+											<h4>Jobs dependencies</h4>
+											<div class='checkbox'>
+												<label><input type="checkbox" ng-model="selectedJob.linkGenerationDetails.generateLinks" /> Generate Links</label>
+											</div>
+											<div ng-show="selectedJob.linkGenerationDetails.generateLinks">
+
+												<div class='form-group'>
+													Source URL Listener
+													<select class="form-control"
+																ng-model="selectedJob.linkGenerationDetails.sourceURLListener"
+																ng-options="listener as listener.name for listener in selectedJob.descriptor.contentListeners track by listener.name"></select>
+												</div>
+
+												<div class='form-group'>
+													Target Job
+													<select class="form-control"
+															ng-model="selectedJob.linkGenerationDetails.targetDescriptorJob"
+															ng-options="job as job.name for job in currentPortfolio.jobs track by job.name"/>
+												</div>
+											</div>
 										</div>
+
 									</div>
 								</div>
 							</div>

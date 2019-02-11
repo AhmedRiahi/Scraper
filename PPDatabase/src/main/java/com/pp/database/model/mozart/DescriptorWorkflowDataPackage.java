@@ -13,6 +13,7 @@ import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 import org.mongodb.morphia.annotations.Transient;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -32,7 +33,7 @@ public class DescriptorWorkflowDataPackage extends PPEntity{
 	@JsonIgnore
 	private List<ScrapedContent> allScrapedContents;
     @JsonIgnore
-	private List<PPIndividual> individuals;
+	private List<PPIndividual> individuals = new ArrayList<>();
     @JsonIgnore
     private List<String> generatedLinks;
 	private Set<String> schemasNames;

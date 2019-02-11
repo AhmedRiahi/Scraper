@@ -31,11 +31,6 @@ public class IndividualSchema extends PPEntity{
 	public void addPropertyDefinition(PropertyDefinition propertyDefinition){
 		this.properties.add(propertyDefinition);
 	}
-	
-	public Optional<PropertyDefinition> getPropertyByName(String propertyName) {
-		return this.allProperties.stream().filter(property -> property.getName().equals(propertyName)).findFirst();
-	}
-	
 
 	@Override
 	public String toString() {
@@ -62,6 +57,15 @@ public class IndividualSchema extends PPEntity{
 			tmpParent = tmpParent.getParent();
 			
 		}
+	}
+
+	@java.beans.Transient
+	public IndividualSchema getRootParent(){
+		IndividualSchema currentSchema = this;
+		while(!currentSchema.getParent().getName().equals("Thing")){
+			currentSchema = currentSchema.getParent();
+		}
+		return currentSchema;
 	}
 	
 	//---------------------- GETTERS / SETTERS ----------------------

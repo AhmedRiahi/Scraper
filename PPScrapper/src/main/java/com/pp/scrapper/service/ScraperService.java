@@ -36,10 +36,6 @@ public class ScraperService {
 		DescriptorScrapingResult dsr = htmlScraper.scrapDescriptor();
         dsr.setDsmId(dwdp.getDescriptorJob().getDescriptorSemanticMappingId());
 		dwdp.setAllScrapedContents(dsr.getAllScrapedContents());
-		if(dwdp.getDescriptorJob().isGenerateLinks()){
-		    List<String> links = htmlScraper.detectedAllLinks();
-		    dwdp.setGeneratedLinks(links);
-        }
         this.dwdpDAO.save(dwdp);
 		List<PPIndividual> individuals = this.individualsBuilder.buildScrapedIndividuals(dsr);
 		individuals.stream().forEach(individual -> {
