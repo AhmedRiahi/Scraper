@@ -95,11 +95,10 @@ public class EngineService {
             dwdp.setDescriptorJob(job);
             dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");
             //Trigger MozartlaunchPortfolioDynamicJobWorkflowProcess
-            this.engineJobScheduler.scheduleJob(dwdp,100);
             iterator.remove();
-            this.dwdpDao.save(dwdp);
+            this.descriptorsPortfolioDAO.save(portfolio);
+            this.engineJobScheduler.scheduleJob(dwdp,100);
         }
-
     }
 
     public void launchPortfolioJobWorkflowProcess(String portfolioJob){

@@ -1,7 +1,7 @@
 package com.pp.engine.job;
 
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
+import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.sender.PPSender;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;

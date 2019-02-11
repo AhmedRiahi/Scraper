@@ -1,6 +1,6 @@
 package com.pp.cleaner.service;
 
-import com.pp.cleaner.kafka.CleanerReceiver;
+import com.pp.cleaner.jms.CleanerReceiver;
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.dao.mozart.JobExecutionHistoryDAO;
 import com.pp.database.model.mozart.JobExecutionHistory;

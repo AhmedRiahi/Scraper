@@ -34,7 +34,7 @@
   <modules>
       <module>PPDatabase</module>
       <module>PPFramework</module>
-      <module>PPScrapper</module>
+      <module>PPScraper</module>
       <module>PPCrawler</module>
       <module>PPAnalytics</module>
       <module>PPSubscription</module>
@@ -46,16 +46,14 @@
       <module>PPAdmin</module>
       <module>PPStructureDetector</module>
       <module>PPLabTest</module>
-      <module>PPNLP</module>
   </modules>
 
 
     <dependencies>
-    	<dependency>
-	      <groupId>org.springframework.kafka</groupId>
-	      <artifactId>spring-kafka</artifactId>
-	      <version>1.0.0.RELEASE</version>
-	    </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-activemq</artifactId>
+        </dependency>
     
     	<dependency>
 			<groupId>org.springframework.boot</groupId>

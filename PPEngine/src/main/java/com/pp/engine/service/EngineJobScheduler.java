@@ -2,8 +2,8 @@ package com.pp.engine.service;
 
 
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
+import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.sender.PPSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

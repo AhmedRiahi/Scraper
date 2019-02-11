@@ -9,8 +9,8 @@ import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.semantic.schema.IndividualSchema;
-import com.pp.framework.kafka.KafkaTopics;
-import com.pp.framework.kafka.sender.PPSender;
+import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.sender.PPSender;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
