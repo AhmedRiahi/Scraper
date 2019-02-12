@@ -9,8 +9,9 @@ import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
-import com.pp.database.model.semantic.individual.IndividualProperty;
-import com.pp.database.model.semantic.individual.IndividualReferenceData;
+import com.pp.database.model.semantic.individual.properties.IndividualEmbeddedProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualReferenceData;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.database.model.semantic.schema.PrimitivePropertyType;
@@ -50,10 +51,14 @@ public class IndividualPropertiesProcessor {
         // Get all properties including parent ones that exists on individual properties
         List<PropertyDefinition> schemaProperties = schema.getAllProperties().stream().filter(property -> individual.getProperty(property.getName()).isPresent()).collect(Collectors.toList());
 
-        schemaProperties.stream().forEach(property -> {
-            IndividualProperty individualProperty = individual.getProperty(property.getName()).get();
+        List<PropertyDefinition> primitivePropertiesDefinitions = schemaProperties.stream().filter(property -> property.getPropertyType() instanceof PrimitivePropertyType).collect(Collectors.toList());
+        List<PropertyDefinition> referencePropertiesDefinitions = schemaProperties.stream().filter(property -> property.getPropertyType() instanceof ReferencePropertyType && !((ReferencePropertyType) property.getPropertyType()).isEmbedded()).collect(Collectors.toList());
+
+        primitivePropertiesDefinitions.stream().forEach(property -> {
+           IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
+
             if (property.isDisplayString()) {
-                String displayString = individual.getProperty(property.getName()).get().getValue();
+                String displayString = individualProperty.getValue();
                 individual.setDisplayString(displayString);
             }
 
@@ -62,6 +67,10 @@ public class IndividualPropertiesProcessor {
                 this.processUrlProperty(url, individualProperty);
             }
 
+        });
+
+        referencePropertiesDefinitions.stream().forEach(property -> {
+            IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
             if (property.getPropertyType() instanceof ReferencePropertyType) {
                 Map<String,DBObject> generatedReferencesIndividuals = this.processReferenceProperty(property, individualProperty);
                 generatedReferencesIndividuals.values().stream().forEach(dbObject -> {
@@ -74,10 +83,12 @@ public class IndividualPropertiesProcessor {
                 });
             }
         });
+
         this.processPropertiesScripts(schemaProperties, descriptor, dsmId, individual);
     }
 
-    private void processUrlProperty(String url, IndividualProperty individualProperty) {
+
+    private void processUrlProperty(String url, IndividualSimpleProperty individualProperty) {
         try {
             if (individualProperty.getValue() == null || individualProperty.getValue().equals("")) {
                 throw new RuntimeException("Invalid individual property " + individualProperty.getName() + " : " + individualProperty.getValue());
@@ -89,7 +100,8 @@ public class IndividualPropertiesProcessor {
         }
     }
 
-    private Map<String,DBObject> processReferenceProperty(PropertyDefinition property, IndividualProperty individualProperty) {
+
+    private Map<String,DBObject> processReferenceProperty(PropertyDefinition property, IndividualSimpleProperty individualProperty) {
         IndividualSchema referenceSchema = this.individualSchemaDAO.findOne("name", property.getPropertyType().getValue());
         PropertyDefinition uniqueSchemaProperty = referenceSchema.getUniqueProperties().get(0);
         //Search Reference on database
@@ -111,10 +123,11 @@ public class IndividualPropertiesProcessor {
         return generatedReferencesIndividuals;
     }
 
+
     private void processPropertiesScripts(List<PropertyDefinition> schemaProperties, DescriptorModel descriptor, String dsmId, PPIndividual individual) {
         //generate content listeners values having pre-process script
         schemaProperties.stream().forEach(property -> {
-            IndividualProperty individualProperty = individual.getProperty(property.getName()).get();
+            IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
             Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId, individualProperty.getName());
             clOpt.ifPresent(cl -> {
                 if (cl.getPreProcessScript() != null) {
@@ -129,23 +142,13 @@ public class IndividualPropertiesProcessor {
     }
 
 
-    private void executeIndividualPreProcessScript(String script, IndividualProperty individualProperty, PPIndividual ppIndividual) throws ScriptException {
-        ppIndividual.getProperties().stream().forEach(property -> this.engine.put(property.getName(), property.getValue()));
+    private void executeIndividualPreProcessScript(String script, IndividualSimpleProperty individualProperty, PPIndividual ppIndividual) throws ScriptException {
+        ppIndividual.getProperties().stream().forEach(property -> {
+            if(property instanceof IndividualSimpleProperty){
+                this.engine.put(property.getName(), ((IndividualSimpleProperty)property).getValue());
+            }
+        });
         String result = (String) this.engine.eval(script);
         individualProperty.setValue(result);
-    }
-
-    public void processManuelIndividualProperties(PPIndividual individual) {
-        IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
-        // TODO Also handle parent properties
-        List<PropertyDefinition> properties = schema.getAllProperties();
-        properties.stream().forEach(property ->
-                individual.getProperty(property.getName()).ifPresent(individualProperty -> {
-                    if (property.isDisplayString()) {
-                        String displayString = individual.getProperty(property.getName()).get().getValue();
-                        individual.setDisplayString(displayString);
-                    }
-                })
-        );
     }
 }

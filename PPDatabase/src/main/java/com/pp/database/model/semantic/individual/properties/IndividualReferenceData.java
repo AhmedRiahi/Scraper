@@ -1,4 +1,4 @@
-package com.pp.database.model.semantic.individual;
+package com.pp.database.model.semantic.individual.properties;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

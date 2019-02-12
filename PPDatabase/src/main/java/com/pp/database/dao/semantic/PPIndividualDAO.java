@@ -1,10 +1,12 @@
 package com.pp.database.dao.semantic;
 
 import com.mongodb.*;
-import com.mongodb.client.model.DBCollectionFindOptions;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.kernel.PPDAO;
-import com.pp.database.model.semantic.individual.IndividualProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualBaseProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualEmbeddedProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualListProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.Datastore;
@@ -37,15 +39,31 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 
 	public DBObject getDbObject(PPIndividual individual) {
 		DBObject dbObject = new BasicDBObject();
-		for(IndividualProperty property : individual.getProperties()) {
-			if(property.getReferenceData() != null){
-				DBObject referenceObject = new BasicDBObject();
-				referenceObject.put("collectionName",property.getReferenceData().getCollectionName());
-				referenceObject.put("id",property.getReferenceData().getId());
-				dbObject.put(property.getName(),referenceObject);
+		for(IndividualBaseProperty property : individual.getProperties()) {
+			if(property instanceof IndividualSimpleProperty){
+				IndividualSimpleProperty individualSimpleProperty = (IndividualSimpleProperty) property;
+				if(individualSimpleProperty.getReferenceData() != null){
+					DBObject referenceObject = new BasicDBObject();
+					referenceObject.put("collectionName",individualSimpleProperty.getReferenceData().getCollectionName());
+					referenceObject.put("id",individualSimpleProperty.getReferenceData().getId());
+					dbObject.put(property.getName(),referenceObject);
+				}else{
+					dbObject.put(property.getName(),individualSimpleProperty.getValue());
+				}
 			}else{
-				dbObject.put(property.getName(),property.getValue());
+				if(property instanceof IndividualEmbeddedProperty){
+					IndividualEmbeddedProperty individualEmbeddedProperty = (IndividualEmbeddedProperty) property;
+					DBObject dbObject1 = this.getDbObject(individualEmbeddedProperty.getValue());
+					dbObject.put(property.getName(),dbObject1);
+				}else{
+					if(property instanceof IndividualListProperty){
+						IndividualListProperty individualListProperty = (IndividualListProperty) property;
+						List<DBObject> dbObjects = individualListProperty.getValue().stream().map(this::getDbObject).collect(Collectors.toList());
+						dbObject.put(property.getName(),dbObjects);
+					}
+				}
 			}
+
 		}
 		return dbObject;
 	}

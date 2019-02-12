@@ -79,6 +79,13 @@
 										<option ng-repeat="schema in schemas"  value="{{schema.name}}">{{schema.name}}</option>
 									</select>
 								</div>
+
+								<div>
+									<input 	type="checkbox"
+											ng-true-value="true"
+											ng-false-value="false" 
+											ng-model="currentProperty.propertyType.embedded"/> Is Embedded
+								</div>
 							</div>
 						</div>
 					</div>

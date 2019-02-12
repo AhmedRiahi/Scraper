@@ -1,6 +1,9 @@
 package com.pp.database.model.semantic.schema;
 
+import lombok.Data;
+
+@Data
 public class ReferencePropertyType extends PropertyType {
 
-	// TODO : conception de l'id de la reference => ref vers un Schema ?
+	private boolean isEmbedded = false;
 }

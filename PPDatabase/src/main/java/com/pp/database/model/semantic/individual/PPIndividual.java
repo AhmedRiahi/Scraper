@@ -1,6 +1,8 @@
 package com.pp.database.model.semantic.individual;
 
 import com.pp.database.kernel.PPEntity;
+import com.pp.database.model.semantic.individual.properties.IndividualBaseProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import lombok.Data;
 import org.mongodb.morphia.annotations.Embedded;
 
@@ -15,7 +17,7 @@ public class PPIndividual extends PPEntity{
 	@NotNull
 	private String schemaName;
 	@Embedded
-	private List<IndividualProperty> properties;
+	private List<IndividualBaseProperty> properties;
 	private String descriptorId;
 	private String workflowId;
 	private String displayString;
@@ -33,14 +35,18 @@ public class PPIndividual extends PPEntity{
 		this.schemaName = schemaName;
 	}
 	
-	public void addProperty(IndividualProperty propertyValue){
+	public void addProperty(IndividualBaseProperty propertyValue){
 		this.properties.add(propertyValue);
 	}
 	
-	public Optional<IndividualProperty> getProperty(String propertyName) {
+	public Optional<IndividualBaseProperty> getProperty(String propertyName) {
 		return this.properties.stream().filter(p -> p.getName().equals(propertyName)).findFirst();
 	}
-	
+
+	public Optional<IndividualSimpleProperty> getSimpleProperty(String propertyName) {
+		return this.properties.stream().filter(p -> p instanceof IndividualSimpleProperty && p.getName().equals(propertyName)).map(p -> (IndividualSimpleProperty)p).findFirst();
+	}
+
 	public boolean hasProperty(String propertyName) {
 		return this.properties.stream().anyMatch(p -> p.getName().equals(propertyName));
 	}

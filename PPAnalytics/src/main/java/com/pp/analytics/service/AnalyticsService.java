@@ -15,7 +15,7 @@ import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
 import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import com.pp.database.model.scrapper.descriptor.join.DescriptorJoinProperties;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
-import com.pp.database.model.semantic.individual.IndividualProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import lombok.extern.slf4j.Slf4j;
@@ -24,8 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.function.Function;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -80,7 +78,7 @@ public class AnalyticsService {
             DBObject duplicateObject = this.individualsPublisher.getDuplicatedIndividual(individual);
             List<String> oldProperties = duplicateObject.keySet().stream().filter(propertyName -> !individual.hasProperty(propertyName)).filter(propertyName -> !propertyName.equals("_id")).collect(Collectors.toList());
             oldProperties.stream().forEach(propertyName -> {
-                IndividualProperty individualProperty = new IndividualProperty();
+                IndividualSimpleProperty individualProperty = new IndividualSimpleProperty();
                 individualProperty.setName(propertyName);
                 individualProperty.setValue(duplicateObject.get(propertyName).toString());
                 individual.addProperty(individualProperty);
@@ -121,7 +119,7 @@ public class AnalyticsService {
         if (dwdp.getDescriptorJob().getLinkGenerationDetails().isGenerateLinks()) {
             ContentListenerModel sourceUrlCL = dwdp.getDescriptorJob().getLinkGenerationDetails().getSourceURLListener();
             String sourceUrlPropertyName = dwdp.getDescriptorJob().getDescriptor().getSemanticMappingById(dwdp.getDescriptorJob().getDescriptorSemanticMappingId()).get().getClSemanticName(sourceUrlCL);
-            Set<String> sourceUrls = newIndividuals.stream().map(individual -> individual.getProperty(sourceUrlPropertyName).get().getValue()).collect(Collectors.toSet());
+            Set<String> sourceUrls = newIndividuals.stream().map(individual -> individual.getSimpleProperty(sourceUrlPropertyName).get().getValue()).collect(Collectors.toSet());
             dwdp.getPortfolio().getJobByName(dwdp.getDescriptorJob().getLinkGenerationDetails().getTargetDescriptorJob().getName()).get().setToBeProcessedLinks(sourceUrls);
         }
         this.descriptorsPortfolioDAO.save(dwdp.getPortfolio());
@@ -160,7 +158,7 @@ public class AnalyticsService {
                     .filter(individual -> individual.getSchemaName().equals(joinedIndividualSchemaName))
                     .forEach(individual ->
                         individualSchema.getUniqueProperties().stream().filter(property -> joinedIndividual.get(property.getName()) != null).forEach(property -> {
-                            IndividualProperty individualProperty = new IndividualProperty();
+                            IndividualSimpleProperty individualProperty = new IndividualSimpleProperty();
                             individualProperty.setName(property.getName());
                             individualProperty.setValue(joinedIndividual.get(property.getName()).toString());
                             individual.getProperties().add(individualProperty);
@@ -202,7 +200,7 @@ public class AnalyticsService {
                             joinedIndividual.put(joinedPropertyName, dbRefs);
                         } else {
                             if (entry.getValue().get(0).getProperty(joinerPropertyName).isPresent()) {
-                                List<String> propertiesValues = entry.getValue().stream().map(individual -> individual.getProperty(joinerPropertyName)).filter(Optional::isPresent).map(Optional::get).map(IndividualProperty::getValue).collect(Collectors.toList());
+                                List<String> propertiesValues = entry.getValue().stream().map(individual -> individual.getSimpleProperty(joinerPropertyName)).filter(Optional::isPresent).map(Optional::get).map(IndividualSimpleProperty::getValue).collect(Collectors.toList());
                                 joinedIndividual.put(joinedPropertyName, propertiesValues.size() == 1 ? propertiesValues.get(0) : propertiesValues);
                             }
                         }
@@ -228,7 +226,6 @@ public class AnalyticsService {
     public void generateIndividualPopulation(String individualId) {
         this.individualDAO.setDatastore(MongoDatastore.getStagingDatastore());
         PPIndividual individual = this.individualDAO.get(individualId);
-        this.individualPropertiesProcessor.processManuelIndividualProperties(individual);
         boolean duplicateIndividual = this.individualsPublisher.isDuplicatedIndividual(individual);
         if (!duplicateIndividual) {
             this.individualsPublisher.publishIndividual(individual);
@@ -247,7 +244,5 @@ public class AnalyticsService {
     private void processIndividualsProperties(DescriptorJob descriptorJob, List<PPIndividual> individuals) {
         individuals.stream().forEach(individual -> this.individualPropertiesProcessor.processIndividualProperties(descriptorJob.getCrawlingParams().getUrl(), descriptorJob.getDescriptor(), descriptorJob.getDescriptorSemanticMappingId(), individual));
     }
-
-
 
 }

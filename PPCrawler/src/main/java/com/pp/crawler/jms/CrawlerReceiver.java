@@ -58,7 +58,6 @@ public class CrawlerReceiver {
                 String pageContent = this.ppCrawler.download(crawlingParams,dwdp.getDescriptorJob().getDescriptor().getCookies());
                 this.sendCrawlingResult(dwdp,pageContent);
             }
-
 		} catch (Exception e) {
 			log.error(e.toString(),e);
 			if(dwdp != null){
@@ -67,7 +66,6 @@ public class CrawlerReceiver {
             }else{
 			    log.error("Enable to set debug information exception because dwdp is null");
             }
-
 			this.sender.send(KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.ERROR, workflowId);
 		}
 	}

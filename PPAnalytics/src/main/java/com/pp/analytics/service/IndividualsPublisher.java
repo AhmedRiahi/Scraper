@@ -5,7 +5,7 @@ import com.pp.database.dao.semantic.PPIndividualDAO;
 import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.database.model.semantic.individual.IndividualProperty;
+import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.database.model.semantic.schema.PropertyDefinition;
@@ -57,9 +57,9 @@ public class IndividualsPublisher {
         List<PropertyDefinition> uniqueSchemaProperties = schema.getUniqueProperties();
         for (PropertyDefinition property : uniqueSchemaProperties) {
             DBObject query = new BasicDBObject();
-            Optional<IndividualProperty> individualProperty = individual.getProperty(property.getName());
+            Optional<IndividualSimpleProperty> individualProperty = individual.getSimpleProperty(property.getName());
             if (individualProperty.isPresent()) {
-                query.put(property.getName(), individual.getProperty(property.getName()).get().getValue());
+                query.put(property.getName(), individual.getSimpleProperty(property.getName()).get().getValue());
                 DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName());
                 DBObject dbObject = collection.findOne(query);
                 return dbObject;
