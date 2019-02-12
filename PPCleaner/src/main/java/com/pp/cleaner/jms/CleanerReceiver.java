@@ -1,7 +1,7 @@
 package com.pp.cleaner.jms;
 
 import com.pp.cleaner.service.CleanerService;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,7 +21,7 @@ public class CleanerReceiver {
 
 
 
-	@JmsListener(destination = KafkaTopics.Cleaner.CLEAN+KafkaTopics.IN)
+	@JmsListener(destination = JMSTopics.Cleaner.CLEAN+ JMSTopics.IN)
 	public void clean() {
 		log.info("Cleaner Received cleaning command...");
 		this.cleanerService.clean();

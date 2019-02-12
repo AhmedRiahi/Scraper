@@ -2,7 +2,7 @@ package com.pp.dashboard.controller;
 
 import com.pp.dashboard.service.DescriptorsPortfolioService;
 import com.pp.database.model.common.DescriptorsPortfolio;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,7 +40,7 @@ public class DescriptorsPortfolioController {
     @RequestMapping(path = "/launchJob/{portfolioId}/{jobName}",method= RequestMethod.GET)
     public void launchJob(@PathVariable String portfolioId,@PathVariable String jobName){
         log.info("Launching job request {} {}",portfolioId,jobName);
-        this.sender.send(KafkaTopics.Engine.LAUNCH_JOB+KafkaTopics.IN,portfolioId+"."+jobName);
+        this.sender.send(JMSTopics.Engine.LAUNCH_JOB+ JMSTopics.IN,portfolioId+"."+jobName);
     }
 
 }

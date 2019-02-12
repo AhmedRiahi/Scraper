@@ -8,14 +8,12 @@ import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.crawler.CrawledContent;
 import com.pp.database.model.engine.DescriptorJobCrawlingParams;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.mongodb.morphia.query.Query;
 import org.mongodb.morphia.query.UpdateOperations;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
@@ -25,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
-import static com.pp.framework.jms.KafkaTopics.OUT;
+import static com.pp.framework.jms.JMSTopics.OUT;
 
 @Service
 @Slf4j
@@ -40,7 +38,7 @@ public class CrawlerReceiver {
 	@Autowired
 	private CrawledContentDAO crawledContentDAO;
 	
-	@JmsListener(destination = KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.IN)
+	@JmsListener(destination = JMSTopics.Crawler.DOWNLOAD+ JMSTopics.IN)
 	public void download(String workflowId) {
 		log.info("Crawler received message={}", workflowId);
         DescriptorWorkflowDataPackage dwdp = null;
@@ -52,7 +50,7 @@ public class CrawlerReceiver {
                 RendererPayload rendererPayload = new RendererPayload();
                 rendererPayload.setDescriptorJobCrawlingParams(dwdp.getDescriptorJob().getCrawlingParams());
                 rendererPayload.setWorkflowId(dwdp.getStringId());
-			    this.sender.send(KafkaTopics.Renderer.DOWNLOAD+KafkaTopics.IN,mapper.writeValueAsString(rendererPayload));
+			    this.sender.send(JMSTopics.Renderer.DOWNLOAD+ JMSTopics.IN,mapper.writeValueAsString(rendererPayload));
             }else{
 			    log.info("downloading url : "+crawlingParams.getUrl());
                 String pageContent = this.ppCrawler.download(crawlingParams,dwdp.getDescriptorJob().getDescriptor().getCookies());
@@ -66,7 +64,7 @@ public class CrawlerReceiver {
             }else{
 			    log.error("Enable to set debug information exception because dwdp is null");
             }
-			this.sender.send(KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.ERROR, workflowId);
+			this.sender.send(JMSTopics.Crawler.DOWNLOAD+ JMSTopics.ERROR, workflowId);
 		}
 	}
 
@@ -79,10 +77,10 @@ public class CrawlerReceiver {
         UpdateOperations<DescriptorWorkflowDataPackage> updateOperation = this.dwdpDAO.createUpdateOperations().set("crawledContent",crawledContent);
         Query<DescriptorWorkflowDataPackage> query = this.dwdpDAO.createQuery().field("_id").equal(new ObjectId(dwdp.getStringId()));
         this.dwdpDAO.update(query,updateOperation);
-        this.sender.send(KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.OUT,dwdp.getStringId());
+        this.sender.send(JMSTopics.Crawler.DOWNLOAD+ JMSTopics.OUT,dwdp.getStringId());
     }
 
-    @JmsListener(destination = KafkaTopics.Renderer.DOWNLOAD+ OUT)
+    @JmsListener(destination = JMSTopics.Renderer.DOWNLOAD+ OUT)
     public void rendererDownloadCompleted(byte[] rendererPayloadBytes) throws IOException {
         log.info("Crawler received {} after downloding rendred descriptor");
         String rendererPayloadJson = new String(rendererPayloadBytes, StandardCharsets.UTF_8);

@@ -1,6 +1,6 @@
 package com.pp.engine.job;
 
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -21,7 +21,7 @@ public class CleanerJob implements Job{
 	@Override
 	public void execute(JobExecutionContext context) throws JobExecutionException {
 		log.info("Executing CleanerJob.");
-		this.sender.send(KafkaTopics.Cleaner.CLEAN+KafkaTopics.IN, "");
+		this.sender.send(JMSTopics.Cleaner.CLEAN+ JMSTopics.IN, "");
 	}
 
 }

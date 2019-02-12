@@ -7,7 +7,7 @@ import com.pp.database.dao.semantic.PPIndividualDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.database.model.semantic.schema.IndividualSchema;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class PPSemanticWorldService {
 	public void addIndividual(PPIndividual individual) {
 		this.individualDAO.setDatastore(MongoDatastore.getStagingDatastore());
 		this.individualDAO.save(individual);
-		sender.send(KafkaTopics.Analytics.ANALYSE_INDIVIDUAL+KafkaTopics.IN,individual.getStringId());
+		sender.send(JMSTopics.Analytics.ANALYSE_INDIVIDUAL+ JMSTopics.IN,individual.getStringId());
 	}
 	
 	

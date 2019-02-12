@@ -8,7 +8,7 @@ import com.pp.database.dao.semantic.PPIndividualDAO;
 import com.pp.database.model.engine.DescriptorJob;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.mozart.JobExecutionHistory;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import com.pp.mozart.jms.MozartReceiver;
 import org.slf4j.Logger;
@@ -46,7 +46,7 @@ public class MozartService {
 		//Create execution history
 		this.createDescriptorJobExecutionHistory(dwdp);
 		//Launch crawling process
-		this.sender.send(KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.IN,dwdp.getId().toHexString());
+		this.sender.send(JMSTopics.Crawler.DOWNLOAD+ JMSTopics.IN,dwdp.getId().toHexString());
 	}
 
 
@@ -74,7 +74,7 @@ public class MozartService {
                 joinDwdp.getDebugInformation().setMozartExecutionStep("Mozart Init");
                 joinDwdp.setPortfolio(dwdp.getPortfolio());
                 this.dwdpDAO.save(joinDwdp);
-                this.sender.send(KafkaTopics.Crawler.DOWNLOAD+KafkaTopics.IN,joinDwdp.getId().toHexString());
+                this.sender.send(JMSTopics.Crawler.DOWNLOAD+ JMSTopics.IN,joinDwdp.getId().toHexString());
             });
         });
 	}

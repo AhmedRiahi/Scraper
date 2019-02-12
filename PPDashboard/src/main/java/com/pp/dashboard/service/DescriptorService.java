@@ -9,7 +9,7 @@ import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.mozart.JobExecutionHistory;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import org.bson.types.ObjectId;
 import org.jsoup.Jsoup;
@@ -58,7 +58,7 @@ public class DescriptorService {
 	
 	public void launchDescriptorProcessing(String descriptorId) {
 		log.info("Send descriptor execution request");
-		sender.send(KafkaTopics.Mozart.PROCESS_DESCRIPTOR, descriptorId);
+		sender.send(JMSTopics.Mozart.PROCESS_DESCRIPTOR, descriptorId);
 	}
 	
 	public String testScript(String scriptText,String scriptInput) {

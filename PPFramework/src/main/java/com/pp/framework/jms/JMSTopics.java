@@ -1,6 +1,6 @@
 package com.pp.framework.jms;
 
-public class KafkaTopics {
+public class JMSTopics {
 
 	public static final String IN = ".in";
 	public static final String OUT = ".out";

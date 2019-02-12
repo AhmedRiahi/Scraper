@@ -2,7 +2,7 @@ package com.pp.engine.service;
 
 
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +24,6 @@ public class EngineJobScheduler {
 
     public void scheduleJob(DescriptorWorkflowDataPackage dwdp,long delay){
         log.info("Scheduling job" +dwdp.getDescriptorJob().getName()+" delay: "+delay);
-        this.scheduledExecutorService.schedule(() ->  this.sender.send(KafkaTopics.Mozart.PROCESS_DESCRIPTOR, dwdp.getId().toHexString()),delay, TimeUnit.MILLISECONDS);
+        this.scheduledExecutorService.schedule(() ->  this.sender.send(JMSTopics.Mozart.PROCESS_DESCRIPTOR, dwdp.getId().toHexString()),delay, TimeUnit.MILLISECONDS);
     }
 }

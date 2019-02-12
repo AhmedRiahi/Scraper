@@ -2,12 +2,10 @@ package com.pp.scrapper.jms;
 
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
-import com.pp.framework.jms.KafkaTopics;
+import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
 import com.pp.scrapper.service.ScraperService;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
@@ -27,7 +25,7 @@ public class ScraperReceiver {
 	private ScraperService scraperService;
 
 
-	@JmsListener(destination = KafkaTopics.Scraper.MATCH_DESCRIPTOR+KafkaTopics.IN)
+	@JmsListener(destination = JMSTopics.Scraper.MATCH_DESCRIPTOR+ JMSTopics.IN)
 	public void matchDescriptor(String workflowId) {
         DescriptorWorkflowDataPackage dwdp = null;
 		try {
@@ -36,7 +34,7 @@ public class ScraperReceiver {
 			this.scraperService.scrapDescriptor(dwdp);
 			log.info("Saving {} scrapedContents",dwdp.getScrapedContents().size());
 			this.dwdpDAO.updateCollection(dwdp,"individuals",dwdp.getIndividuals());
-			this.sender.send(KafkaTopics.Scraper.MATCH_DESCRIPTOR+KafkaTopics.OUT,workflowId);
+			this.sender.send(JMSTopics.Scraper.MATCH_DESCRIPTOR+ JMSTopics.OUT,workflowId);
 		}catch(Exception e) {
 			log.error("Scraper Exception",e);
 			if(dwdp != null){
@@ -45,7 +43,7 @@ public class ScraperReceiver {
 			}else{
 				log.error("Enable to set debug information exception because dwdp is null");
 			}
-			this.sender.send(KafkaTopics.Scraper.MATCH_DESCRIPTOR+KafkaTopics.ERROR, workflowId);
+			this.sender.send(JMSTopics.Scraper.MATCH_DESCRIPTOR+ JMSTopics.ERROR, workflowId);
 		}
 	}
 }
