@@ -21,6 +21,7 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 
@@ -84,8 +85,9 @@ public class CrawlerReceiver {
     }
 
     @JmsListener(destination = KafkaTopics.Renderer.DOWNLOAD+ OUT)
-    public void rendererDownloadCompleted(String rendererPayloadJson) throws IOException {
+    public void rendererDownloadCompleted(byte[] rendererPayloadBytes) throws IOException {
         log.info("Crawler received {} after downloding rendred descriptor");
+        String rendererPayloadJson = new String(rendererPayloadBytes, StandardCharsets.UTF_8);
         ObjectMapper mapper = new ObjectMapper();
         RendererPayload rendererPayload = mapper.readValue(rendererPayloadJson,RendererPayload.class);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(rendererPayload.getWorkflowId());
