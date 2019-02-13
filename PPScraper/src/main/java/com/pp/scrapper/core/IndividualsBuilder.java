@@ -37,12 +37,11 @@ public class IndividualsBuilder {
 		individualContentListeners.stream().forEach(cl -> {
 			List<ScrapedContent> scrapedContents = scrapingResult.getScrapedContentByCL(cl);
 			List<SemanticRelation> compositionSemanticRelations = scrapingResult.getDescriptor().getSemanticRelationsAsSource(cl).stream().filter(sr -> sr instanceof CompositionRelation).collect(Collectors.toList());
-
 			//Process composition semantic relations
-			for (SemanticRelation compositionSemanticRelation : compositionSemanticRelations) {
-				for (ScrapedContent sc : scrapedContents) {
-					String clSemanticName = dsm.getClSemanticName(cl);
-					PPIndividual individual = new PPIndividual(clSemanticName);
+			for (ScrapedContent sc : scrapedContents) {
+				String clSemanticName = dsm.getClSemanticName(cl);
+				PPIndividual individual = new PPIndividual(clSemanticName);
+				for (SemanticRelation compositionSemanticRelation : compositionSemanticRelations) {
 					String targetValue = this.getCompositionSemanticRelationTargetValue(scrapingResult, sc, compositionSemanticRelation);
 					if (targetValue != null) {
 						String propertyName = dsm.getClSemanticName(compositionSemanticRelation.getTarget());
@@ -53,27 +52,25 @@ public class IndividualsBuilder {
 					} else {
 						log.info("Invalid composition target Value " + compositionSemanticRelation.getTarget().getName());
 					}
-					individuals.add(individual);
-					individualsScrapedContentMapping.put(individual, sc);
-					individualsContentListenerMapping.putIfAbsent(cl,new ArrayList<>());
-					individualsContentListenerMapping.getOrDefault(cl, new ArrayList<>()).add(individual);
 				}
+				individuals.add(individual);
+				individualsScrapedContentMapping.put(individual, sc);
+				individualsContentListenerMapping.putIfAbsent(cl,new ArrayList<>());
+				individualsContentListenerMapping.get(cl).add(individual);
 			}
 		});
 
 		log.info("Completed composition relations processing");
 
 		individualContentListeners.stream().forEach(cl -> {
-			List<ScrapedContent> scrapedContents = scrapingResult.getScrapedContentByCL(cl);
 			List<SemanticRelation> aggregationSemanticRelations = scrapingResult.getDescriptor().getSemanticRelationsAsSource(cl).stream().filter(sr -> sr instanceof AggregationRelation).collect(Collectors.toList());
 
 			//Process aggregation semantic relations
 			for(SemanticRelation aggregationSemanticRelation : aggregationSemanticRelations) {
-				for(ScrapedContent sc : scrapedContents){
 
-					//Cls Source/Target individuals
-					List<PPIndividual> clSourceIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getSource());
-					List<PPIndividual> clTargetIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getTarget());
+				//Cls Source/Target individuals
+				List<PPIndividual> clSourceIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getSource());
+				List<PPIndividual> clTargetIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getTarget());
 
 					for(PPIndividual sourceIndividual : clSourceIndividuals){
 						ScrapedContent sourceScrapedContent = individualsScrapedContentMapping.get(sourceIndividual);
@@ -104,7 +101,7 @@ public class IndividualsBuilder {
 							}
 						}
 					}
-				}
+
 			}
 		});
 		return individuals;
