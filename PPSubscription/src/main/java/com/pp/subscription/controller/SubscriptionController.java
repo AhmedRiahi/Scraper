@@ -1,5 +1,6 @@
 package com.pp.subscription.controller;
 
+import ch.qos.logback.core.net.server.Client;
 import com.mongodb.DBObject;
 import com.pp.database.model.subscription.SchemaSubscription;
 import com.pp.subscription.service.SubscriptionService;
@@ -31,16 +32,15 @@ public class SubscriptionController {
 	public List<SchemaSubscription> getAllSubscriptions(){
 		return this.subscriptionService.getAllSubscriptions();
 	}
+
 	
-	@RequestMapping("/individualsByCount/{subscriptionId}/{count}")
-	public List<DBObject> getSubscriptionIndividualsByCount(@PathVariable String subscriptionId,@PathVariable int count){
-		return this.subscriptionService.getSubscriptionIndividualsByCount(subscriptionId,count);
+	@RequestMapping(path="/individuals/{clientId}/{subscriptionId}/{date}",method=RequestMethod.POST)
+	public List<DBObject> getSubscriptionIndividualsByTimeStamp(@PathVariable String clientId, @PathVariable String subscriptionId, @PathVariable Date date){
+		return this.subscriptionService.getSubscriptionIndividualsByDate(clientId,subscriptionId,date);
 	}
-	
-	@RequestMapping(path="/individualsByDate/{subscriptionId}",method=RequestMethod.POST)
-	public List<DBObject> getSubscriptionIndividualsByTimeStamp(@PathVariable String subscriptionId,@RequestBody String date) throws ParseException{
-		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		Date javaDate = format.parse(date);
-		return this.subscriptionService.getSubscriptionIndividualsByDate(subscriptionId,javaDate);
+
+	@RequestMapping(path="/individuals/{clientId}/{subscriptionId}",method=RequestMethod.POST)
+	public List<DBObject> getSubscriptionIndividuals(@PathVariable String clientId, @PathVariable String subscriptionId){
+		return this.subscriptionService.getSubscriptionIndividuals(clientId,subscriptionId);
 	}
 }

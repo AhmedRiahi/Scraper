@@ -1,32 +1,39 @@
 package com.pp.subscription.core;
 
 import com.mongodb.DBObject;
+import com.pp.database.dao.subscription.SchemaSubscriptionIndividualsDAO;
 import com.pp.database.model.semantic.schema.PropertyDefinition;
 import com.pp.database.model.subscription.SchemaSubscription;
+import com.pp.database.model.subscription.SchemaSubscriptionIndividuals;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Service
+@Slf4j
 public class SubscriptionScanner {
 
-	private static final Logger log = LoggerFactory.getLogger(SubscriptionScanner.class);
-	
-	
-	public Set<SchemaSubscription> analyseSubscriptions(List<SchemaSubscription> subscriptions,List<DBObject> population) {
+	@Autowired
+	private SchemaSubscriptionIndividualsDAO schemaSubscriptionIndividualsDAO;
+
+	public List<SchemaSubscriptionIndividuals> analyseSubscriptions(List<SchemaSubscription> subscriptions,List<DBObject> population) {
 		log.info("Analysing subscriptions : {} subscriptions on {} individuals ",subscriptions.size(),population.size());
-		Set<SchemaSubscription> updatedSubscriptions = new HashSet<>();
+		List<SchemaSubscriptionIndividuals> updatedSubscriptions = new ArrayList<>();
 		for(SchemaSubscription subscription : subscriptions) {
+			SchemaSubscriptionIndividuals schemaSubscriptionIndividuals = this.schemaSubscriptionIndividualsDAO.getBySubscriptionId(subscription.getStringId());
 			for(DBObject individual : population) {
 				boolean doMatch = this.doMatch(subscription, individual);
 				if(doMatch) {
 					log.info("Matched subscription vs Individual : {} {}",subscription,individual);
-					subscription.addMatchedIndividual(individual.get("_id").toString());
-					updatedSubscriptions.add(subscription);
+					schemaSubscriptionIndividuals.addMatchedIndividual(individual.get("_id").toString());
+					updatedSubscriptions.add(schemaSubscriptionIndividuals);
 				}
 			}
 		}
