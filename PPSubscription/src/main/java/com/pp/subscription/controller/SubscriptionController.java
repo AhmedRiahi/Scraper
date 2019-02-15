@@ -34,12 +34,12 @@ public class SubscriptionController {
 	}
 
 	
-	@RequestMapping(path="/individuals/{clientId}/{subscriptionId}/{date}",method=RequestMethod.POST)
+	@RequestMapping(path="/individuals/{clientId}/{subscriptionId}/{date}",method=RequestMethod.GET)
 	public List<DBObject> getSubscriptionIndividualsByTimeStamp(@PathVariable String clientId, @PathVariable String subscriptionId, @PathVariable Date date){
 		return this.subscriptionService.getSubscriptionIndividualsByDate(clientId,subscriptionId,date);
 	}
 
-	@RequestMapping(path="/individuals/{clientId}/{subscriptionId}",method=RequestMethod.POST)
+	@RequestMapping(path="/individuals/{clientId}/{subscriptionId}",method=RequestMethod.GET)
 	public List<DBObject> getSubscriptionIndividuals(@PathVariable String clientId, @PathVariable String subscriptionId){
 		return this.subscriptionService.getSubscriptionIndividuals(clientId,subscriptionId);
 	}

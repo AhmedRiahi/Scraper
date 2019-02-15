@@ -1,9 +1,9 @@
 package com.pp.database.model.subscription;
 
 import com.pp.database.kernel.PPEntity;
-import com.pp.database.model.subscription.SchemaSubscription;
-import jdk.nashorn.internal.ir.annotations.Reference;
+
 import lombok.Data;
+import org.mongodb.morphia.annotations.Reference;
 
 import java.util.ArrayList;
 import java.util.List;

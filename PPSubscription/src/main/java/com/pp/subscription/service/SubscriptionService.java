@@ -3,6 +3,7 @@ package com.pp.subscription.service;
 import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
+import com.mongodb.DBRef;
 import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.dao.subscription.ClientCheckpointDAO;
 import com.pp.database.dao.subscription.SchemaSubscriptionDAO;
@@ -50,11 +51,13 @@ public class SubscriptionService {
 		String clientId = UUID.randomUUID().toString();
 		clientCheckpoint.setClientId(clientId);
 		clientCheckpoint.setSchemaSubscription(schemaSubscription);
+		this.clientCheckpointDAO.save(clientCheckpoint);
 	}
 
 	private void createSubscriptionIndividuals(SchemaSubscription schemaSubscription){
 		SchemaSubscriptionIndividuals schemaSubscriptionIndividuals = new SchemaSubscriptionIndividuals();
 		schemaSubscriptionIndividuals.setSchemaSubscription(schemaSubscription);
+		this.schemaSubscriptionIndividualsDAO.save(schemaSubscriptionIndividuals);
 	}
 	
 	public List<SchemaSubscription> getAllSubscriptions(){
@@ -123,6 +126,27 @@ public class SubscriptionService {
 		}
 		clientCheckpoint.setCheckingDate(nextCheckingDate);
 		this.clientCheckpointDAO.save(clientCheckpoint);
+		subscriptionIndividuals = this.updateSubscriptionIndividuals(subscriptionIndividuals);
+		return subscriptionIndividuals;
+	}
+
+	private List<DBObject> updateSubscriptionIndividuals(List<DBObject> subscriptionIndividuals){
+		subscriptionIndividuals.stream().forEach(dbObject -> {
+			dbObject.removeField("_id");
+			dbObject.keySet().stream().forEach(key -> {
+				if(dbObject.get(key) instanceof DBRef){
+					DBRef dbRef = (DBRef) dbObject.get(key);
+					DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(dbRef.getCollectionName());
+					DBObject query = new BasicDBObject();
+					query.put("_id", dbRef.getId());
+					if(collection.find(query).hasNext()){
+						DBObject refIndividual = collection.find(query).next();
+						refIndividual.removeField("_id");
+						dbObject.put(key,refIndividual);
+					}
+				}
+			});
+		});
 		return subscriptionIndividuals;
 	}
 }
