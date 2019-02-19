@@ -4,6 +4,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
+import com.mongodb.util.JSON;
 import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.dao.subscription.ClientCheckpointDAO;
 import com.pp.database.dao.subscription.SchemaSubscriptionDAO;
@@ -14,6 +15,7 @@ import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.database.model.subscription.ClientCheckpoint;
 import com.pp.database.model.subscription.SchemaSubscription;
 import com.pp.database.model.subscription.SchemaSubscriptionIndividuals;
+import com.pp.subscription.core.IndividualToBeanConverter;
 import com.pp.subscription.core.SubscriptionScanner;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -38,6 +41,9 @@ public class SubscriptionService {
 	private SchemaSubscriptionIndividualsDAO schemaSubscriptionIndividualsDAO;
 	@Autowired
 	private SubscriptionScanner subscriptionScanner;
+
+	@Autowired
+	private IndividualToBeanConverter individualToBeanConverter;
 
 	
 	public void createSubscription(SchemaSubscription schemaSubscription) {
@@ -104,6 +110,12 @@ public class SubscriptionService {
 		return subscriptionIndividuals;
 	}
 
+	public String getJSONSubscriptionIndividuals(String clientId,String subscriptionId){
+		List<DBObject> subscriptionIndividuals = this.getSubscriptionIndividuals(clientId,subscriptionId).stream().map(this.individualToBeanConverter::convert).collect(Collectors.toList());
+		return JSON.serialize(subscriptionIndividuals);
+
+	}
+
 
 	public List<DBObject> getSubscriptionIndividuals(String clientId,String subscriptionId){
 		Date nextCheckingDate = new Date();
@@ -126,27 +138,6 @@ public class SubscriptionService {
 		}
 		clientCheckpoint.setCheckingDate(nextCheckingDate);
 		this.clientCheckpointDAO.save(clientCheckpoint);
-		subscriptionIndividuals = this.updateSubscriptionIndividuals(subscriptionIndividuals);
-		return subscriptionIndividuals;
-	}
-
-	private List<DBObject> updateSubscriptionIndividuals(List<DBObject> subscriptionIndividuals){
-		subscriptionIndividuals.stream().forEach(dbObject -> {
-			dbObject.removeField("_id");
-			dbObject.keySet().stream().forEach(key -> {
-				if(dbObject.get(key) instanceof DBRef){
-					DBRef dbRef = (DBRef) dbObject.get(key);
-					DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(dbRef.getCollectionName());
-					DBObject query = new BasicDBObject();
-					query.put("_id", dbRef.getId());
-					if(collection.find(query).hasNext()){
-						DBObject refIndividual = collection.find(query).next();
-						refIndividual.removeField("_id");
-						dbObject.put(key,refIndividual);
-					}
-				}
-			});
-		});
 		return subscriptionIndividuals;
 	}
 }

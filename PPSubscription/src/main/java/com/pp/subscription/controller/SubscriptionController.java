@@ -40,7 +40,8 @@ public class SubscriptionController {
 	}
 
 	@RequestMapping(path="/individuals/{clientId}/{subscriptionId}",method=RequestMethod.GET)
-	public List<DBObject> getSubscriptionIndividuals(@PathVariable String clientId, @PathVariable String subscriptionId){
-		return this.subscriptionService.getSubscriptionIndividuals(clientId,subscriptionId);
+	@ResponseBody
+	public String getSubscriptionIndividuals(@PathVariable String clientId, @PathVariable String subscriptionId){
+		return this.subscriptionService.getJSONSubscriptionIndividuals(clientId,subscriptionId);
 	}
 }

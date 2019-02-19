@@ -1,4 +1,4 @@
-package com.pp.framework.urlUtils;
+package com.pp.framework.utils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
