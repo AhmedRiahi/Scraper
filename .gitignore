@@ -9,4 +9,5 @@ PPLabTest/PPLabTest.iml
 PPDatabase/PPDatabase.iml
 pupitter/**
 PPAdmin/PPAdmin.iml
-PPAdmin/PPAdmin.iml
+PPSubscription/PPSubscription.iml
+**/*.iml

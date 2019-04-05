@@ -35,7 +35,7 @@ public class ClassificationEngine {
 	private void createStatTree(){
 		// init root element
 		Element currentElement = this.domTree;
-		StatNode rootNode = this.jsoupElementelementToStatNode(currentElement);
+		StatNode rootNode = this.jsoupElementToStatNode(currentElement);
 		this.statTree.createRootNode(currentElement.tagName(),rootNode);
 		
 		// Fill Stat Tree with nodes
@@ -56,7 +56,7 @@ public class ClassificationEngine {
 				children.addAll(currentElement.children().stream().filter(Objects::nonNull).collect(Collectors.toList()));
 				
 				// Create new StatNode Child
-				StatNode statNode = this.jsoupElementelementToStatNode(currentElement);
+				StatNode statNode = this.jsoupElementToStatNode(currentElement);
 				TreeNode<StatNode> childNode = currentNode.addChild(currentElement.tagName(),statNode);
 				nextNode.add(childNode);
 			}
@@ -64,7 +64,7 @@ public class ClassificationEngine {
 	}
 	
 	
-	private StatNode jsoupElementelementToStatNode(Element element){
+	private StatNode jsoupElementToStatNode(Element element){
 		StatNode statNode = new StatNode(element);
 		statNode.setTagName(element.tagName());
 		statNode.setOwnText(element.ownText());

@@ -50,11 +50,6 @@
             <artifactId>PPDatabase</artifactId>
             <version>0.0.3-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>ProfitNProvide</groupId>
-            <artifactId>PPNLP</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-        </dependency>
 
         <dependency>
             <groupId>net.sourceforge.htmlunit</groupId>

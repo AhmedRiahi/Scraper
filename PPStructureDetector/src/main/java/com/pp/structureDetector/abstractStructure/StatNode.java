@@ -128,7 +128,6 @@ public class StatNode extends ProcessingTreeNodeValue{
 			this.generatePureClassRates();
 			response.setResult(this.treeNode);
 			return response;
-			
 		}
 		return null;
 	}
