@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class SubscriptionService {
+public class SchemaSubscriptionService {
 
 	@Autowired
 	private SchemaSubscriptionDAO schemaSubscriptionDAO;
@@ -120,24 +120,29 @@ public class SubscriptionService {
 	public List<DBObject> getSubscriptionIndividuals(String clientId,String subscriptionId){
 		Date nextCheckingDate = new Date();
 		SchemaSubscriptionIndividuals schemaSubscriptionIndividuals = this.schemaSubscriptionIndividualsDAO.getBySubscriptionId(subscriptionId);
-		ClientCheckpoint clientCheckpoint = this.clientCheckpointDAO.getCheckPointByClientIdAndSubscriptionId(clientId,subscriptionId);
-		List<String> matchedIndividualsIds = schemaSubscriptionIndividuals.getMatchedIndividualsIds();
 		List<DBObject> subscriptionIndividuals = new ArrayList<>();
-		DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schemaSubscriptionIndividuals.getSchemaSubscription().getSchema().getName());
-		int i = 0;
-		while(i < matchedIndividualsIds.size()) {
-			String individualId = matchedIndividualsIds.get(i++);
-			DBObject query = new BasicDBObject();
-			query.put("_id", new ObjectId(individualId));
-			query.put("creationDate",new BasicDBObject("$gte",clientCheckpoint.getCheckingDate()));
-			if(collection.find(query).hasNext()) {
-				DBObject individual = collection.find(query).next();
-				individual.put("id",individualId);
-				subscriptionIndividuals.add(individual);
+		if(schemaSubscriptionIndividuals != null){
+			ClientCheckpoint clientCheckpoint = this.clientCheckpointDAO.getCheckPointByClientIdAndSubscriptionId(clientId,subscriptionId);
+			List<String> matchedIndividualsIds = schemaSubscriptionIndividuals.getMatchedIndividualsIds();
+
+			DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schemaSubscriptionIndividuals.getSchemaSubscription().getSchema().getName());
+			int i = 0;
+			while(i < matchedIndividualsIds.size()) {
+				String individualId = matchedIndividualsIds.get(i++);
+				DBObject query = new BasicDBObject();
+				query.put("_id", new ObjectId(individualId));
+				query.put("creationDate",new BasicDBObject("$gte",clientCheckpoint.getCheckingDate()));
+				if(collection.find(query).hasNext()) {
+					DBObject individual = collection.find(query).next();
+					individual.put("id",individualId);
+					subscriptionIndividuals.add(individual);
+				}
 			}
+			clientCheckpoint.setCheckingDate(nextCheckingDate);
+			this.clientCheckpointDAO.save(clientCheckpoint);
+		}else{
+			log.info("Invalid subscription details");
 		}
-		clientCheckpoint.setCheckingDate(nextCheckingDate);
-		this.clientCheckpointDAO.save(clientCheckpoint);
 		return subscriptionIndividuals;
 	}
 }

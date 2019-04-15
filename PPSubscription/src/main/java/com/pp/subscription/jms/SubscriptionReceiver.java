@@ -4,7 +4,7 @@ import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
-import com.pp.subscription.service.SubscriptionService;
+import com.pp.subscription.service.SchemaSubscriptionService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jms.annotation.JmsListener;
@@ -18,7 +18,7 @@ import java.util.stream.Collectors;
 public class SubscriptionReceiver {
 	
 	@Autowired
-	private SubscriptionService subscriptionService;
+	private SchemaSubscriptionService schemaSubscriptionService;
 	@Autowired
 	private PPSender sender;
 	@Autowired
@@ -31,7 +31,7 @@ public class SubscriptionReceiver {
 		try {
 			log.info("Subscription received message='{}'"+ processingDataId);
 			dwdp = this.dwdpDAO.get(processingDataId);
-			this.subscriptionService.scanDescriptorPopulation(dwdp);
+			this.schemaSubscriptionService.scanDescriptorPopulation(dwdp);
 			this.sender.send(JMSTopics.Subscription.SCAN_DESCRIPTOR_POPULATION_SUBSCRIPTION+ JMSTopics.OUT, processingDataId);
 		}catch(Throwable e) {
 			log.error(e.toString());
