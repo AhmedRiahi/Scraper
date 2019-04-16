@@ -82,7 +82,7 @@ async function download(payload) {
       }
     })
   }
-  await page.waitFor(10000);
+  await page.waitFor(30000);
   const html = await page.content();
   
   payload.contents=html;

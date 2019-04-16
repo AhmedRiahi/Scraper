@@ -22,4 +22,9 @@ public class URLUtils {
 		URL fullURL = new URL(cleanBaseURL+referenceURL);
 		return fullURL.toString();
 	}
+
+
+	public static boolean isValidUrl(String url){
+		return url.startsWith("http");
+	}
 }

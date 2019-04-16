@@ -5,6 +5,7 @@ import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.common.DescriptorsPortfolio;
 import com.pp.database.model.engine.DescriptorJob;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
+import com.pp.framework.utils.URLUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,6 +89,9 @@ public class EngineService {
         Iterator<String> iterator = job.getToBeProcessedLinks().iterator();
         if(iterator.hasNext()){
             String url = iterator.next();
+            if(!URLUtils.isValidUrl(url)){
+                url = job.getCrawlingParams().getBaseUrl()+url;
+            }
             // Prepare Data package
             DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
             job.getCrawlingParams().setUrl(url);
@@ -97,6 +101,7 @@ public class EngineService {
             //Trigger MozartlaunchPortfolioDynamicJobWorkflowProcess
             iterator.remove();
             this.descriptorsPortfolioDAO.save(portfolio);
+            this.dwdpDao.save(dwdp);
             this.engineJobScheduler.scheduleJob(dwdp,100);
         }
     }

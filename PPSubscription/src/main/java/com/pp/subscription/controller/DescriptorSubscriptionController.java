@@ -18,7 +18,7 @@ public class DescriptorSubscriptionController {
 
 
     @RequestMapping(path="/putUrl/{subscriptionId}/{url}",method= RequestMethod.GET)
-    public void putUrl(@PathVariable String clientId, @PathVariable String subscriptionId,@PathVariable String url){
+    public void putUrl( @PathVariable String subscriptionId,@PathVariable String url){
         this.descriptorSubscriptionService.putUrl(subscriptionId,url);
     }
 }

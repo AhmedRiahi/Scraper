@@ -4,9 +4,11 @@ import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.common.DescriptorsPortfolio;
 import com.pp.database.model.engine.DescriptorJob;
 import lombok.Data;
+import org.mongodb.morphia.annotations.Entity;
 import org.mongodb.morphia.annotations.Reference;
 
 @Data
+@Entity
 public class DescriptorSubscription extends PPEntity {
 
     @Reference

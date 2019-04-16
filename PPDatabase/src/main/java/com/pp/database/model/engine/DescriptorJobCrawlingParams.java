@@ -7,6 +7,7 @@ import java.util.List;
 @Data
 public class DescriptorJobCrawlingParams {
 
+    private String baseUrl;
     private String url;
     private String httpMethod;
     private List<HttpParam> httpParams;
