@@ -55,7 +55,19 @@ async function download(payload) {
   await page.goto(payload.descriptorJobCrawlingParams.url);
   await page.waitFor(1000);
   page.evaluate(_ => {
-    window.scrollBy(0,3500);
+    window.scrollBy(0,1000);
+  });
+  await page.waitFor(500);
+  page.evaluate(_ => {
+    window.scrollBy(0,1000);
+  });
+  await page.waitFor(500);
+  page.evaluate(_ => {
+    window.scrollBy(0,1000);
+  });
+  await page.waitFor(500);
+  page.evaluate(_ => {
+    window.scrollBy(0,1000);
   });
   await page.waitFor(10000);
 

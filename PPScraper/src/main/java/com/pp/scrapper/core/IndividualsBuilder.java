@@ -50,7 +50,7 @@ public class IndividualsBuilder {
 						propertyValue.setValue(targetValue);
 						individual.addProperty(propertyValue);
 					} else {
-						log.info("Invalid composition target Value " + compositionSemanticRelation.getTarget().getName());
+						log.error("Invalid composition target Value " + compositionSemanticRelation.getTarget().getName());
 					}
 				}
 				individuals.add(individual);
