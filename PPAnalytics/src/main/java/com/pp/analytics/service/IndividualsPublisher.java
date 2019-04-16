@@ -36,6 +36,7 @@ public class IndividualsPublisher {
             DBCursor cursor = collection.find(query);
             cursor.forEach(dbObject -> {
                 this.processObjectReferenceProperties(dbObject,schema);
+                dbObject.put("urlSource",dwdp.getDescriptorJob().getCrawlingParams().getUrl());
                 MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName()).save(dbObject);
             });
         });
