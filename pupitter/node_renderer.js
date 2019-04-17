@@ -69,6 +69,24 @@ async function download(payload) {
   page.evaluate(_ => {
     window.scrollBy(0,1000);
   });
+
+
+  await page.waitFor(1000);
+  page.evaluate(_ => {
+    window.scrollBy(0,-1000);
+  });
+  await page.waitFor(500);
+  page.evaluate(_ => {
+    window.scrollBy(0,-1000);
+  });
+  await page.waitFor(500);
+  page.evaluate(_ => {
+    window.scrollBy(0,-1000);
+  });
+  await page.waitFor(500);
+  page.evaluate(_ => {
+    window.scrollBy(0,-1000);
+  });
   await page.waitFor(10000);
 
   if(payload.descriptorJobCrawlingParams.url.includes("recent-activity")){
@@ -82,8 +100,11 @@ async function download(payload) {
       }
     })
   }
+  console.log('BEFORE WAIT');
   await page.waitFor(30000);
+  console.log('after middle WAIT');
   const html = await page.content();
+  console.log('AFTER WAIT');
   
   payload.contents=html;
   console.log("sending html content")
