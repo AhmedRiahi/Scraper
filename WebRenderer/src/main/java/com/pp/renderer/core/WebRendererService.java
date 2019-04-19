@@ -33,7 +33,7 @@ public class WebRendererService {
             WebDriver webDriver = new ChromeDriver();
             webDriver.get(descriptorJobCrawlingParams.getUrl());
             try {
-                webDriver.wait(1000 * 5);
+                DriverUtils.driverWait(webDriver,1000 * 5);
             } catch (InterruptedException e) {
                 log.error(e.getMessage(),e);
             }
