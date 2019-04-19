@@ -27,7 +27,7 @@ public class EngineService {
     @Autowired
     private DescriptorJobUrlResolver descriptorJobUrlResolver;
 
-    public void checkScheduledJobs(){
+    public synchronized void  checkScheduledJobs(){
         List<DescriptorsPortfolio> portfolios = this.descriptorsPortfolioDAO.find().asList();
         log.info("Found {} portfolios to be processed.",portfolios.size());
         portfolios.stream().forEach(portfolio ->
