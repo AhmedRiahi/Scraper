@@ -56,6 +56,9 @@ public class LinkedinDownloader {
             this.webDriver.get(url);
             DriverUtils.driverWait(this.webDriver,1000 * 5);
             DriverUtils.upDownScroll(this.webDriver,5);
+            if(url.contains("results/people")){
+                DriverUtils.downScroll(this.webDriver,5);
+            }
             if(url.contains("recent-activity")){
                 DriverUtils.upDownScroll(this.webDriver,15);
                 this.webDriver.findElements(By.className("feed-shared-social-counts__num-comments")).stream().forEach(webElement -> {

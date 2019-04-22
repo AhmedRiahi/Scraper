@@ -16,6 +16,19 @@ public class DriverUtils {
         }
     }
 
+    public static void downScroll(WebDriver driver,int count){
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        //scroll down
+        IntStream.range(1, count).forEach(i -> {
+            try {
+                js.executeScript("window.scrollBy(0," + (i * 1000) + ")");
+                DriverUtils.driverWait(driver,1000);
+            } catch (InterruptedException e) {
+                log.error(e.getMessage(), e);
+            }
+        });
+    }
+
     public static void upDownScroll(WebDriver driver,int count) {
         JavascriptExecutor js = (JavascriptExecutor) driver;
         //scroll down
