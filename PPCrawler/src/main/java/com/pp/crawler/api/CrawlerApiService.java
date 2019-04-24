@@ -4,6 +4,7 @@ package com.pp.crawler.api;
 import com.pp.crawler.core.PPCrawler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -18,10 +19,11 @@ public class CrawlerApiService {
     private PPCrawler ppCrawler;
 
 
-    public byte[] downloadImage(String url) throws IOException {
+    public String downloadImage(String url) throws IOException {
         BufferedImage bufferedImage = this.ppCrawler.downloadImage(new URL(url));
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ImageIO.write(bufferedImage,"png",baos);
-        return baos.toByteArray();
+        BASE64Encoder base64Encoder = new BASE64Encoder();
+        return base64Encoder.encode(baos.toByteArray());
     }
 }

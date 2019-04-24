@@ -13,7 +13,9 @@ import com.pp.database.model.semantic.individual.properties.IndividualEmbeddedPr
 import com.pp.database.model.semantic.individual.properties.IndividualListProperty;
 import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
+import com.pp.scrapper.core.requester.PPCrawlerRequester;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -23,6 +25,9 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 public class IndividualsBuilder {
+
+    @Autowired
+    private PPCrawlerRequester ppCrawlerRequester;
 
     public List<PPIndividual> buildScrapedIndividuals(DescriptorScrapingResult scrapingResult) {
         List<PPIndividual> individuals = new ArrayList<>();
@@ -132,7 +137,14 @@ public class IndividualsBuilder {
                 if (sr.getTarget().getName().toLowerCase().contains("link")) {
                     targetValue = itemScrapedContent.getContent().attr("href");
                 } else {
-                    targetValue = itemScrapedContent.getContent().text();
+                    // TODO Bad technique to check basing on element tag name
+                    if(itemScrapedContent.getContent().tagName().equalsIgnoreCase("img")){
+                        String imageUrl = itemScrapedContent.getContent().attr("src");
+                        targetValue = this.ppCrawlerRequester.downloadImage(imageUrl);
+                    }else{
+                        targetValue = itemScrapedContent.getContent().text();
+                    }
+
                 }
             }
         }

@@ -15,7 +15,7 @@ public class CrawlerRestController {
     private CrawlerApiService crawlerApiService;
 
     @RequestMapping("/downloadImage")
-    public byte[] downloadImage(@RequestParam String url) throws IOException {
+    public String downloadImage(@RequestParam String url) throws IOException {
         return this.crawlerApiService.downloadImage(url);
     }
 }
