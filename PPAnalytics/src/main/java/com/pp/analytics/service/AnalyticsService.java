@@ -5,11 +5,13 @@ import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.DBRef;
 import com.pp.database.dao.common.DescriptorsPortfolioDAO;
+import com.pp.database.dao.engine.DescriptorJobDataSetDAO;
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.dao.semantic.PPIndividualDAO;
 import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.kernel.MongoDatastore;
 import com.pp.database.model.engine.DescriptorJob;
+import com.pp.database.model.engine.DescriptorJobDataSet;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
 import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
@@ -48,6 +50,8 @@ public class AnalyticsService {
     private IndividualsFilter individualsFilter;
     @Autowired
     private PPIndividualSchemaDAO individualSchemaDAO;
+    @Autowired
+    private DescriptorJobDataSetDAO descriptorJobDataSetDAO;
 
 
     public void processStandaloneDescriptorPopulation(String workflowId) {
@@ -120,7 +124,18 @@ public class AnalyticsService {
             ContentListenerModel sourceUrlCL = dwdp.getDescriptorJob().getLinkGenerationDetails().getSourceURLListener();
             String sourceUrlPropertyName = dwdp.getDescriptorJob().getDescriptor().getSemanticMappingById(dwdp.getDescriptorJob().getDescriptorSemanticMappingId()).get().getClSemanticName(sourceUrlCL);
             Set<String> sourceUrls = newIndividuals.stream().map(individual -> individual.getSimpleProperty(sourceUrlPropertyName).get().getValue()).collect(Collectors.toSet());
-            dwdp.getPortfolio().getJobByName(dwdp.getDescriptorJob().getLinkGenerationDetails().getTargetDescriptorJob().getName()).get().setToBeProcessedLinks(sourceUrls);
+            Optional<DescriptorJobDataSet> descriptorJobDataSetOptional = this.descriptorJobDataSetDAO.findByPortfolioAndJobName(dwdp.getPortfolio(),dwdp.getDescriptorJob().getLinkGenerationDetails().getTargetDescriptorJob().getName());
+            if(!descriptorJobDataSetOptional.isPresent()){
+                DescriptorJobDataSet descriptorJobDataSet = new DescriptorJobDataSet();
+                descriptorJobDataSet.setDescriptorsPortfolio(dwdp.getPortfolio());
+                descriptorJobDataSet.setJobName(dwdp.getDescriptorJob().getLinkGenerationDetails().getTargetDescriptorJob().getName());
+                descriptorJobDataSet.setToBeProcessedLinks(sourceUrls);
+                this.descriptorJobDataSetDAO.save(descriptorJobDataSet);
+            }else{
+                descriptorJobDataSetOptional.get().getToBeProcessedLinks().addAll(sourceUrls);
+                this.descriptorJobDataSetDAO.save(descriptorJobDataSetOptional.get());
+            }
+
         }
         this.descriptorsPortfolioDAO.save(dwdp.getPortfolio());
     }
