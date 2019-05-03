@@ -26,9 +26,9 @@ public class StatNode extends ProcessingTreeNodeValue{
 	public StatNode(Element jsoupElement){
 		this.jsoupElement 		= jsoupElement;
 		this.classRates 		= new ObservableTreeSet<>();
-		this.pureClassRates 	= new TreeSet<ClassRate>();
+		this.pureClassRates 	= new TreeSet<>();
 		this.relevantClassRates = new TreeSet<>();
-		this.classNames 		= new HashSet<String>();
+		this.classNames 		= new HashSet<>();
 		this.tags 				= new ArrayList<>(); 
 	}
 	

@@ -1,8 +1,6 @@
 package com.pp.crawler.jms;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pp.crawler.core.PPCrawler;
-import com.pp.crawler.payload.RendererPayload;
 import com.pp.database.dao.crawler.CrawledContentDAO;
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.crawler.CrawledContent;
@@ -19,7 +17,6 @@ import org.springframework.jms.annotation.JmsListener;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.stream.Collectors;
 

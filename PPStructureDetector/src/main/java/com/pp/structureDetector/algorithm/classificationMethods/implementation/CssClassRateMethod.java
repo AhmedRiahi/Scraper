@@ -9,12 +9,15 @@ import com.pp.structureDetector.abstractStructure.ClassRate;
 import com.pp.structureDetector.abstractStructure.StatNode;
 import com.pp.structureDetector.algorithm.classificationMethods.ClassificationMethod;
 import com.pp.structureDetector.exception.NoCapacityToDetectException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TreeSet;
 
+
+@Slf4j
 public class CssClassRateMethod extends ClassificationMethod{
 
 	private int repetetionThreshold = 10;
@@ -43,7 +46,7 @@ public class CssClassRateMethod extends ClassificationMethod{
 			this.repetetionThreshold = lastThreshold;
 		}
 		
-		System.out.println(this.repetetionThreshold);
+		log.info("CssClassRateMethod Threashold : "+this.repetetionThreshold);
 	}
 
 	@Override

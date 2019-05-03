@@ -5,9 +5,11 @@ import com.pp.framework.dataStructure.tree.TreeNode;
 import com.pp.structureDetector.abstractStructure.StatNode;
 import com.pp.structureDetector.algorithm.classificationMethods.ClassificationMethod;
 import com.pp.structureDetector.exception.NoCapacityToDetectException;
+import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class TextLengthMethod extends ClassificationMethod{
 
 	private double threasholdPercentage = 70;
@@ -17,9 +19,7 @@ public class TextLengthMethod extends ClassificationMethod{
 	}
 
 	@Override
-	public void init() {
-		
-	}
+	public void init() { }
 	
 	@Override
 	public TreeNode<StatNode> detectMainContainer(){
@@ -55,17 +55,6 @@ public class TextLengthMethod extends ClassificationMethod{
 	@Override
 	public TreeNode<StatNode> detectMainNavigation() throws NoCapacityToDetectException {
 		throw new NoCapacityToDetectException(this.getClass().getName(),"Main navigation detection");
-	}
-
-	
-	// -------------------------------- GETTER / SETTER --------------------------------
-	
-	public double getThreasholdPercentage() {
-		return threasholdPercentage;
-	}
-
-	public void setThreasholdPercentage(double threasholdPercentage) {
-		this.threasholdPercentage = threasholdPercentage;
 	}
 
 }
