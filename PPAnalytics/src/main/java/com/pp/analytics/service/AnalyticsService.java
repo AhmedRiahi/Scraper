@@ -70,7 +70,7 @@ public class AnalyticsService {
         // Check for duplicated Staging individuals
         List<PPIndividual> individuals = dwdp.getIndividuals().stream().filter(individual -> !individual.isPureJoinIndividual()).collect(Collectors.toList());
         Map<Boolean, List<PPIndividual>> groupingMap = this.individualsPublisher.getIndividualsGroupedByDuplication(individuals);
-        this.mergeExistingIndividuals(groupingMap.get(true));
+        //this.mergeExistingIndividuals(groupingMap.get(true));
         this.generateNewIndividuals(dwdp, groupingMap.get(false));
         return groupingMap.get(false);
     }
