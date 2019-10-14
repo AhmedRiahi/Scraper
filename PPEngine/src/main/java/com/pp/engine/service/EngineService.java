@@ -1,9 +1,11 @@
 package com.pp.engine.service;
 
 import com.pp.database.dao.common.DescriptorsPortfolioDAO;
+import com.pp.database.dao.engine.DescriptorJobDataSetDAO;
 import com.pp.database.dao.mozart.DescriptorWorkflowDataPackageDAO;
 import com.pp.database.model.common.DescriptorsPortfolio;
 import com.pp.database.model.engine.DescriptorJob;
+import com.pp.database.model.engine.DescriptorJobDataSet;
 import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.framework.utils.URLUtils;
 import org.slf4j.Logger;
@@ -26,8 +28,10 @@ public class EngineService {
     private EngineJobScheduler engineJobScheduler;
     @Autowired
     private DescriptorJobUrlResolver descriptorJobUrlResolver;
+    @Autowired
+    private DescriptorJobDataSetDAO descriptorJobDataSetDAO;
 
-    public void checkScheduledJobs(){
+    public synchronized void  checkScheduledJobs(){
         List<DescriptorsPortfolio> portfolios = this.descriptorsPortfolioDAO.find().asList();
         log.info("Found {} portfolios to be processed.",portfolios.size());
         portfolios.stream().forEach(portfolio ->
@@ -65,7 +69,7 @@ public class EngineService {
     }
 
     public void launchPortfolioJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job){
-        log.info("processDescriptorWorkflow porfolio = {}, job = {}",portfolio.getName(),job.getName());
+        log.info("processDescriptorWorkflow portfolio = {}, job = {}",portfolio.getName(),job.getName());
         List<String> jobURLs = this.descriptorJobUrlResolver.resolveJobURLs(job.getCrawlingParams());
         log.info("generated urls :");
         log.info(Arrays.toString(jobURLs.toArray()));
@@ -86,24 +90,36 @@ public class EngineService {
 
     public void launchPortfolioDynamicJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job){
         log.info("launchPortfolioDynamicJobWorkflowProcess porfolio = {}, job = {}",portfolio.getName(),job.getName());
-        Iterator<String> iterator = job.getToBeProcessedLinks().iterator();
-        if(iterator.hasNext()){
-            String url = iterator.next();
-            if(!URLUtils.isValidUrl(url)){
-                url = job.getCrawlingParams().getBaseUrl()+url;
+        Optional<DescriptorJobDataSet> descriptorJobDataSetOptional = this.descriptorJobDataSetDAO.findByPortfolioAndJobName(portfolio,job.getName());
+        if(descriptorJobDataSetOptional.isPresent()){
+            Iterator<String> iterator = descriptorJobDataSetOptional.get().getToBeProcessedLinks().iterator();
+            if(iterator.hasNext()){
+                String url = iterator.next();
+                if(!URLUtils.isValidUrl(url)){
+                    url = job.getCrawlingParams().getBaseUrl()+url;
+                }
+                // Prepare Data package
+                DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
+                job.getCrawlingParams().setUrl(url);
+                dwdp.setPortfolio(portfolio);
+                dwdp.setDescriptorJob(job);
+                dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");
+                //Trigger MozartlaunchPortfolioDynamicJobWorkflowProcess
+                iterator.remove();
+                this.descriptorJobDataSetDAO.save(descriptorJobDataSetOptional.get());
+                this.dwdpDao.save(dwdp);
+                this.engineJobScheduler.scheduleJob(dwdp,100);
+            }else{
+                log.info("no url to be processed");
+                job.setLastCheckingDate(new Date());
+                this.descriptorsPortfolioDAO.save(portfolio);
             }
-            // Prepare Data package
-            DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
-            job.getCrawlingParams().setUrl(url);
-            dwdp.setPortfolio(portfolio);
-            dwdp.setDescriptorJob(job);
-            dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");
-            //Trigger MozartlaunchPortfolioDynamicJobWorkflowProcess
-            iterator.remove();
+        }else{
+            log.error("No dataset found for portfolio = {}, job = {}",portfolio.getName(),job.getName());
+            job.setLastCheckingDate(new Date());
             this.descriptorsPortfolioDAO.save(portfolio);
-            this.dwdpDao.save(dwdp);
-            this.engineJobScheduler.scheduleJob(dwdp,100);
         }
+
     }
 
     public void launchPortfolioJobWorkflowProcess(String portfolioJob){

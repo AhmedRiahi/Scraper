@@ -12,6 +12,8 @@ import org.jsoup.nodes.Document;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -41,6 +43,10 @@ public class PPCrawler {
 		URLDownloader urlDownloader = new URLDownloader(url);
 		urlDownloader.download();
 		return urlDownloader.getUrlContent();
+    }
+
+    public BufferedImage downloadImage(URL url) throws  IOException{
+        return ImageIO.read(url);
     }
     
     public String download(DescriptorJobCrawlingParams crawlingParams, List<Cookie> cookies) throws  IOException, IrrelevantLinkException{

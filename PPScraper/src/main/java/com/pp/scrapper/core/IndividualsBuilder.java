@@ -13,7 +13,9 @@ import com.pp.database.model.semantic.individual.properties.IndividualEmbeddedPr
 import com.pp.database.model.semantic.individual.properties.IndividualListProperty;
 import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
+import com.pp.scrapper.core.requester.PPCrawlerRequester;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -24,118 +26,128 @@ import java.util.stream.Collectors;
 @Slf4j
 public class IndividualsBuilder {
 
-	public List<PPIndividual> buildScrapedIndividuals(DescriptorScrapingResult scrapingResult){
-		List<PPIndividual> individuals = new ArrayList<>();
-		List<ContentListenerModel> orderedContentListener = ScrapingUtils.generateOrderedContentListeners(scrapingResult.getDescriptor(),DescriptorModel.SEMANTIC_LISTENER);
-		DescriptorSemanticMapping dsm = scrapingResult.getDescriptor().getSemanticMappingById(scrapingResult.getDsmId()).get();
-		//Get content listeners as individuals
-		List<ContentListenerModel> individualContentListeners = orderedContentListener.stream().filter(ContentListenerModel::isIndividual).collect(Collectors.toList());
+    @Autowired
+    private PPCrawlerRequester ppCrawlerRequester;
 
-		Map<PPIndividual, ScrapedContent> individualsScrapedContentMapping = new HashMap<>();
-		Map<ContentListenerModel, List<PPIndividual>> individualsContentListenerMapping = new HashMap<>();
+    public List<PPIndividual> buildScrapedIndividuals(DescriptorScrapingResult scrapingResult) {
+        List<PPIndividual> individuals = new ArrayList<>();
+        List<ContentListenerModel> orderedContentListener = ScrapingUtils.generateOrderedContentListeners(scrapingResult.getDescriptor(), DescriptorModel.SEMANTIC_LISTENER);
+        DescriptorSemanticMapping dsm = scrapingResult.getDescriptor().getSemanticMappingById(scrapingResult.getDsmId()).get();
+        //Get content listeners as individuals
+        List<ContentListenerModel> individualContentListeners = orderedContentListener.stream().filter(ContentListenerModel::isIndividual).collect(Collectors.toList());
 
-		individualContentListeners.stream().forEach(cl -> {
-			List<ScrapedContent> scrapedContents = scrapingResult.getScrapedContentByCL(cl);
-			List<SemanticRelation> compositionSemanticRelations = scrapingResult.getDescriptor().getSemanticRelationsAsSource(cl).stream().filter(sr -> sr instanceof CompositionRelation).collect(Collectors.toList());
-			//Process composition semantic relations
-			for (ScrapedContent sc : scrapedContents) {
-				String clSemanticName = dsm.getClSemanticName(cl);
-				PPIndividual individual = new PPIndividual(clSemanticName);
-				for (SemanticRelation compositionSemanticRelation : compositionSemanticRelations) {
-					String targetValue = this.getCompositionSemanticRelationTargetValue(scrapingResult, sc, compositionSemanticRelation);
-					if (targetValue != null) {
-						String propertyName = dsm.getClSemanticName(compositionSemanticRelation.getTarget());
-						IndividualSimpleProperty propertyValue = new IndividualSimpleProperty();
-						propertyValue.setName(propertyName);
-						propertyValue.setValue(targetValue);
-						individual.addProperty(propertyValue);
-					} else {
-						log.error("Invalid composition target Value " + compositionSemanticRelation.getTarget().getName());
-					}
-				}
-				individuals.add(individual);
-				individualsScrapedContentMapping.put(individual, sc);
-				individualsContentListenerMapping.putIfAbsent(cl,new ArrayList<>());
-				individualsContentListenerMapping.get(cl).add(individual);
-			}
-		});
+        Map<PPIndividual, ScrapedContent> individualsScrapedContentMapping = new HashMap<>();
+        Map<ContentListenerModel, List<PPIndividual>> individualsContentListenerMapping = new HashMap<>();
 
-		log.info("Completed composition relations processing");
+        individualContentListeners.stream().forEach(cl -> {
+            List<ScrapedContent> scrapedContents = scrapingResult.getScrapedContentByCL(cl);
+            List<SemanticRelation> compositionSemanticRelations = scrapingResult.getDescriptor().getSemanticRelationsAsSource(cl).stream().filter(sr -> sr instanceof CompositionRelation).collect(Collectors.toList());
+            //Process composition semantic relations
+            for (ScrapedContent sc : scrapedContents) {
+                String clSemanticName = dsm.getClSemanticName(cl);
+                PPIndividual individual = new PPIndividual(clSemanticName);
+                for (SemanticRelation compositionSemanticRelation : compositionSemanticRelations) {
+                    String targetValue = this.getCompositionSemanticRelationTargetValue(scrapingResult, sc, compositionSemanticRelation);
+                    if (targetValue != null) {
+                        String propertyName = dsm.getClSemanticName(compositionSemanticRelation.getTarget());
+                        IndividualSimpleProperty propertyValue = new IndividualSimpleProperty();
+                        propertyValue.setName(propertyName);
+                        propertyValue.setValue(targetValue);
+                        individual.addProperty(propertyValue);
+                    } else {
+                        log.error("Invalid composition target Value " + compositionSemanticRelation.getTarget().getName());
+                    }
+                }
+                individuals.add(individual);
+                individualsScrapedContentMapping.put(individual, sc);
+                individualsContentListenerMapping.putIfAbsent(cl, new ArrayList<>());
+                individualsContentListenerMapping.get(cl).add(individual);
+            }
+        });
 
-		individualContentListeners.stream().forEach(cl -> {
-			List<SemanticRelation> aggregationSemanticRelations = scrapingResult.getDescriptor().getSemanticRelationsAsSource(cl).stream().filter(sr -> sr instanceof AggregationRelation).collect(Collectors.toList());
+        log.info("Completed composition relations processing");
 
-			//Process aggregation semantic relations
-			for(SemanticRelation aggregationSemanticRelation : aggregationSemanticRelations) {
+        individualContentListeners.stream().forEach(cl -> {
+            List<SemanticRelation> aggregationSemanticRelations = scrapingResult.getDescriptor().getSemanticRelationsAsSource(cl).stream().filter(sr -> sr instanceof AggregationRelation).collect(Collectors.toList());
 
-				//Cls Source/Target individuals
-				List<PPIndividual> clSourceIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getSource());
-				List<PPIndividual> clTargetIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getTarget());
+            //Process aggregation semantic relations
+            for (SemanticRelation aggregationSemanticRelation : aggregationSemanticRelations) {
 
-					for(PPIndividual sourceIndividual : clSourceIndividuals){
-						ScrapedContent sourceScrapedContent = individualsScrapedContentMapping.get(sourceIndividual);
-						List<ScrapedContent> targetScrapedContents = scrapingResult.getScrapedContentByParent(sourceScrapedContent,aggregationSemanticRelation.getTarget().getName());
-						for(PPIndividual targetIndividual : clTargetIndividuals){
-							boolean found = targetScrapedContents.stream().anyMatch(targetScrapedContent -> targetScrapedContent.equals(individualsScrapedContentMapping.get(targetIndividual)));
-							if(found){
-								individuals.remove(targetIndividual);
-								IndividualBaseProperty individualBaseProperty = null;
-								if(aggregationSemanticRelation.getCardinalityType().equals(SemanticRelation.CardinalityType.ONE_TO_MANY)){
-									individualBaseProperty = new IndividualListProperty();
-									if(sourceIndividual.getProperty(aggregationSemanticRelation.getTarget().getName()).isPresent()){
-										individualBaseProperty = sourceIndividual.getProperty(aggregationSemanticRelation.getTarget().getName()).get();
-										((IndividualListProperty)individualBaseProperty).getValue().add(targetIndividual);
-									}else{
-										individualBaseProperty.setName(aggregationSemanticRelation.getTarget().getName());
-										((IndividualListProperty)individualBaseProperty).setValue(new ArrayList<>());
-										((IndividualListProperty)individualBaseProperty).getValue().add(targetIndividual);
-									}
-								}else{
-									if(aggregationSemanticRelation.getCardinalityType().equals(SemanticRelation.CardinalityType.ONE_TO_ONE)){
-										individualBaseProperty = new IndividualEmbeddedProperty();
-										individualBaseProperty.setName(aggregationSemanticRelation.getTarget().getName());
-										((IndividualEmbeddedProperty)individualBaseProperty).setValue(targetIndividual);
-									}
-								}
-								sourceIndividual.addProperty(individualBaseProperty);
-							}
-						}
-					}
+                //Cls Source/Target individuals
+                List<PPIndividual> clSourceIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getSource());
+                List<PPIndividual> clTargetIndividuals = individualsContentListenerMapping.get(aggregationSemanticRelation.getTarget());
 
-			}
-		});
-		return individuals;
-	}
+                for (PPIndividual sourceIndividual : clSourceIndividuals) {
+                    ScrapedContent sourceScrapedContent = individualsScrapedContentMapping.get(sourceIndividual);
+                    List<ScrapedContent> targetScrapedContents = scrapingResult.getScrapedContentByParent(sourceScrapedContent, aggregationSemanticRelation.getTarget().getName());
+                    for (PPIndividual targetIndividual : clTargetIndividuals) {
+                        boolean found = targetScrapedContents.stream().anyMatch(targetScrapedContent -> targetScrapedContent.equals(individualsScrapedContentMapping.get(targetIndividual)));
+                        if (found) {
+                            individuals.remove(targetIndividual);
+                            IndividualBaseProperty individualBaseProperty = null;
+                            if (aggregationSemanticRelation.getCardinalityType().equals(SemanticRelation.CardinalityType.ONE_TO_MANY)) {
+                                individualBaseProperty = new IndividualListProperty();
+                                if (sourceIndividual.getProperty(aggregationSemanticRelation.getTarget().getName()).isPresent()) {
+                                    individualBaseProperty = sourceIndividual.getProperty(aggregationSemanticRelation.getTarget().getName()).get();
+                                    ((IndividualListProperty) individualBaseProperty).getValue().add(targetIndividual);
+                                } else {
+                                    individualBaseProperty.setName(aggregationSemanticRelation.getTarget().getName());
+                                    ((IndividualListProperty) individualBaseProperty).setValue(new ArrayList<>());
+                                    ((IndividualListProperty) individualBaseProperty).getValue().add(targetIndividual);
+                                }
+                            } else {
+                                if (aggregationSemanticRelation.getCardinalityType().equals(SemanticRelation.CardinalityType.ONE_TO_ONE)) {
+                                    individualBaseProperty = new IndividualEmbeddedProperty();
+                                    individualBaseProperty.setName(aggregationSemanticRelation.getTarget().getName());
+                                    ((IndividualEmbeddedProperty) individualBaseProperty).setValue(targetIndividual);
+                                }
+                            }
+                            sourceIndividual.addProperty(individualBaseProperty);
+                        }
+                    }
+                }
 
-	private String getCompositionSemanticRelationTargetValue(DescriptorScrapingResult scrapingResult, ScrapedContent sc, SemanticRelation sr) {
-		String targetValue = null;
-		if(sr.getTarget().isStatic()) {
-			//Handle static content listener
-			targetValue = sr.getTarget().getStaticValue();
-		}else {
-			ScrapedContent itemScrapedContent = null;
-			List<ScrapedContent> scTargets = scrapingResult.getScrapedContentByParent(sc, sr.getTarget().getName());
-			if(scTargets!=null && !scTargets.isEmpty()) {
-				switch (sr.getCardinalityType()){
-					case ONE_TO_MANY:
-						break;
-					case MANY_TO_MANY:
-						break;
-					case MANY_TO_ONE:
-						itemScrapedContent = scrapingResult.getScrapedContentByCL(sr.getTarget()).get(0);
-						break;
-					case ONE_TO_ONE:
-						itemScrapedContent = scTargets.get(0);
-						break;
-				}
-				// TODO Bad technique to check basing on Content Listener name
-				if(sr.getTarget().getName().toLowerCase().contains("link")) {
-					targetValue = itemScrapedContent.getContent().attr("href");
-				}else {
-					targetValue = itemScrapedContent.getContent().text();
-				}
-			}
-		}
-		return targetValue;
-	}
+            }
+        });
+        return individuals;
+    }
+
+    private String getCompositionSemanticRelationTargetValue(DescriptorScrapingResult scrapingResult, ScrapedContent sc, SemanticRelation sr) {
+        String targetValue = null;
+        if (sr.getTarget().isStatic()) {
+            //Handle static content listener
+            targetValue = sr.getTarget().getStaticValue();
+        } else {
+            ScrapedContent itemScrapedContent = null;
+            List<ScrapedContent> scTargets = scrapingResult.getScrapedContentByParent(sc, sr.getTarget().getName());
+            if (scTargets != null && !scTargets.isEmpty()) {
+                switch (sr.getCardinalityType()) {
+                    case ONE_TO_MANY:
+                        break;
+                    case MANY_TO_MANY:
+                        break;
+                    case MANY_TO_ONE:
+                        itemScrapedContent = scrapingResult.getScrapedContentByCL(sr.getTarget()).get(0);
+                        break;
+                    case ONE_TO_ONE:
+                        itemScrapedContent = scTargets.get(0);
+                        break;
+                }
+                // TODO Bad technique to check basing on Content Listener name
+                if (sr.getTarget().getName().toLowerCase().contains("link")) {
+                    targetValue = itemScrapedContent.getContent().attr("href");
+                } else {
+                    // TODO Bad technique to check basing on element tag name
+                    if(itemScrapedContent.getContent().tagName().equalsIgnoreCase("img")){
+                        String imageUrl = itemScrapedContent.getContent().attr("src");
+                        targetValue = this.ppCrawlerRequester.downloadImage(imageUrl);
+                    }else{
+                        targetValue = itemScrapedContent.getContent().text();
+                    }
+
+                }
+            }
+        }
+        return targetValue;
+    }
 }

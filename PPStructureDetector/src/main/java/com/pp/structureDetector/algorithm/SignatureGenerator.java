@@ -7,7 +7,7 @@ import com.pp.structureDetector.abstractStructure.StatNode;
 public class SignatureGenerator {
 
 	
-	public static DomSignatureModel generateRepetitionSingnature(TreeNode<StatNode> treeNode){
+	public static DomSignatureModel generateRepetitionSignature(TreeNode<StatNode> treeNode){
 		return null;
 	}
 	

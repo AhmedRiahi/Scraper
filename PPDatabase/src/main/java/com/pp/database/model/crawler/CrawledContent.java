@@ -12,4 +12,5 @@ public class CrawledContent extends PPEntity{
 	private String url;
 	@JsonIgnore
 	private String contents;
+
 }

@@ -47,6 +47,7 @@
       <module>PPAdmin</module>
       <module>PPStructureDetector</module>
       <module>PPLabTest</module>
+      <module>WebRenderer</module>
   </modules>
 
 
