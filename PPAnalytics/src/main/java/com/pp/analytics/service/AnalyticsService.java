@@ -77,7 +77,7 @@ public class AnalyticsService {
         individuals.stream().forEach(individual -> {
             DBObject duplicateObject = this.individualsPublisher.getDuplicatedIndividual(individual);
             List<String> oldProperties = duplicateObject.keySet().stream().filter(propertyName -> !individual.hasProperty(propertyName)).filter(propertyName -> !propertyName.equals("_id")).collect(Collectors.toList());
-            oldProperties.stream().forEach(propertyName -> {
+            oldProperties.stream().filter(propertyName -> !individual.hasProperty(propertyName)).forEach(propertyName -> {
                 IndividualSimpleProperty individualProperty = new IndividualSimpleProperty();
                 individualProperty.setName(propertyName);
                 individualProperty.setValue(duplicateObject.get(propertyName).toString());
