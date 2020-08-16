@@ -26,28 +26,28 @@ public class IndividualsPublisher {
 
 
     public void copyPopulationToPublishArea(DescriptorWorkflowDataPackage dwdp) {
-        Map<String,IndividualSchema> schemasMap = dwdp.getSchemasNames().stream().collect(Collectors.toMap(schemaName -> schemaName,schemaName -> this.individualSchemaDAO.findOne("name", schemaName)));
+        Map<String, IndividualSchema> schemasMap = dwdp.getSchemasNames().stream().collect(Collectors.toMap(schemaName -> schemaName, schemaName -> this.individualSchemaDAO.findOne("name", schemaName)));
         dwdp.getSchemasNames().forEach(schemaName -> {
-            IndividualSchema schema  = schemasMap.get(schemaName);
+            IndividualSchema schema = schemasMap.get(schemaName);
 
             DBCollection collection = MongoDatastore.getStagingDatastore().getDB().getCollection(schemaName);
             DBObject query = new BasicDBObject();
             query.put("workflowId", dwdp.getStringId());
             DBCursor cursor = collection.find(query);
             cursor.forEach(dbObject -> {
-                this.processObjectReferenceProperties(dbObject,schema);
-                dbObject.put("urlSource",dwdp.getDescriptorJob().getCrawlingParams().getUrl());
+                this.processObjectReferenceProperties(dbObject, schema);
+                dbObject.put("urlSource", dwdp.getDescriptorJob().getCrawlingParams().getUrl());
                 MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName()).save(dbObject);
             });
         });
     }
 
-    private void processObjectReferenceProperties(DBObject dbObject,IndividualSchema schema){
+    private void processObjectReferenceProperties(DBObject dbObject, IndividualSchema schema) {
         schema.getReferenceProperties().stream().forEach(propertyDefinition -> {
-            DBObject referenceData = (DBObject)dbObject.get(propertyDefinition.getName());
-            if(referenceData !=null){
-                DBRef dbRef = new DBRef(referenceData.get("collectionName").toString(),new ObjectId(referenceData.get("id").toString()));
-                dbObject.put(propertyDefinition.getName(),dbRef);
+            DBObject referenceData = (DBObject) dbObject.get(propertyDefinition.getName());
+            if (referenceData != null) {
+                DBRef dbRef = new DBRef(referenceData.get("collectionName").toString(), new ObjectId(referenceData.get("id").toString()));
+                dbObject.put(propertyDefinition.getName(), dbRef);
             }
         });
     }
@@ -56,11 +56,19 @@ public class IndividualsPublisher {
         IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
 
         List<PropertyDefinition> uniqueSchemaProperties = schema.getUniqueProperties();
-        for (PropertyDefinition property : uniqueSchemaProperties) {
-            DBObject query = new BasicDBObject();
-            Optional<IndividualSimpleProperty> individualProperty = individual.getSimpleProperty(property.getName());
+        for (PropertyDefinition uniqueProperty : uniqueSchemaProperties) {
+
+            Optional<IndividualSimpleProperty> individualProperty = individual.getSimpleProperty(uniqueProperty.getName());
             if (individualProperty.isPresent()) {
-                query.put(property.getName(), individual.getSimpleProperty(property.getName()).get().getValue());
+                DBObject query = new BasicDBObject();
+                if (uniqueProperty.getPropertyType().getValue().equalsIgnoreCase("url")) {
+                    // For url properties, URL may not contain domain name
+                    DBObject regex = new BasicDBObject("$regex", individual.getSimpleProperty(uniqueProperty.getName()).get().getValue() + "$");
+                    query.put(uniqueProperty.getName(), regex);
+                } else {
+                    query.put(uniqueProperty.getName(), individual.getSimpleProperty(uniqueProperty.getName()).get().getValue());
+                }
+
                 DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName());
                 DBObject dbObject = collection.findOne(query);
                 return dbObject;
@@ -76,7 +84,7 @@ public class IndividualsPublisher {
         return this.getDuplicatedIndividual(individual) != null;
     }
 
-    public Map<Boolean,List<PPIndividual>> getIndividualsGroupedByDuplication(List<PPIndividual> individuals) {
+    public Map<Boolean, List<PPIndividual>> getIndividualsGroupedByDuplication(List<PPIndividual> individuals) {
         List<PPIndividual> newIndividuals = new ArrayList<>();
         List<PPIndividual> duplicateIndividuals = new ArrayList<>();
 
@@ -88,9 +96,9 @@ public class IndividualsPublisher {
                 duplicateIndividuals.add(individual);
             }
         }
-        Map<Boolean,List<PPIndividual>> groupingMap = new HashMap<>();
-        groupingMap.put(false,newIndividuals);
-        groupingMap.put(true,duplicateIndividuals);
+        Map<Boolean, List<PPIndividual>> groupingMap = new HashMap<>();
+        groupingMap.put(false, newIndividuals);
+        groupingMap.put(true, duplicateIndividuals);
         return groupingMap;
     }
 
@@ -100,10 +108,10 @@ public class IndividualsPublisher {
     }
 
 
-    public void updateMergedIndividual(PPIndividual individual){
+    public void updateMergedIndividual(PPIndividual individual) {
         DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(individual.getSchemaName());
         DBObject dbObject = this.individualDAO.getDbObject(individual);
-        dbObject.put("_id",individual.getId());
+        dbObject.put("_id", individual.getId());
         collection.save(dbObject);
     }
 }
