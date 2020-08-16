@@ -1,5 +1,5 @@
 var ViewPortfolioController = function($scope,$http,$stateParams,DataService,ngToast){
-	
+
 
 	DataService.get(dashboardServerURL,'descriptor',true).then(function(descriptors){
 		$scope.descriptors = descriptors;
@@ -39,7 +39,7 @@ var ViewPortfolioController = function($scope,$http,$stateParams,DataService,ngT
 		if($scope.descriptorAlreadyAllocated($scope.selectedDescriptor)){
 			alert("Descriptor already allocated")
 			return;
-		} 
+		}
 		$scope.currentPortfolio.descriptors.push($scope.selectedDescriptor);
 	}
 
@@ -101,8 +101,8 @@ var ViewPortfolioController = function($scope,$http,$stateParams,DataService,ngT
 
 	$scope.selectExecutionHistory = function(exec){
 		$scope.selectedExecution = exec;
-		$http.get(dashboardServerURL+'dwdp/'+exec.dwdp.stringId+'/individuals').then(function(response){
-			$scope.individuals = response.data;
+		$http.get(dashboardServerURL+'dwdp/'+exec.dwdpStringId+'/individuals').then(function(response){
+			$scope.selectedExecution.individuals = response.data;
 		})
 	}
 

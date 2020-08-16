@@ -28,21 +28,21 @@ import java.util.List;
 public class DescriptorService {
 
 	private static final Logger log = LoggerFactory.getLogger(DescriptorsPortfolioController.class);
-	
+
 	@Autowired
 	private DescriptorDAO descriptorDAO;
 	@Autowired
-	private JobExecutionHistoryDAO dehDAO;
+	private JobExecutionHistoryDAO jobExecutionHistoryDAO;
 	@Autowired
 	private DescriptorWorkflowDataPackageDAO dwdpDAO;
 	@Autowired
 	private CrawledContentDAO crawledContentDAO;
 	@Autowired
 	private PPSender sender;
-	
+
 	private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
-	
-	
+
+
 	public List<DescriptorModel> getAllDescriptors() {
 		return this.descriptorDAO.find().asList();
 	}
@@ -51,16 +51,16 @@ public class DescriptorService {
 	public void addDescriptor(DescriptorModel descriptorModel) {
 		this.descriptorDAO.save(descriptorModel);
 	}
-	
+
 	public void deleteDescriptor(String descriptorId) {
 		this.descriptorDAO.deleteById(new ObjectId(descriptorId));
 	}
-	
+
 	public void launchDescriptorProcessing(String descriptorId) {
 		log.info("Send descriptor execution request");
 		sender.send(JMSTopics.Mozart.PROCESS_DESCRIPTOR, descriptorId);
 	}
-	
+
 	public String testScript(String scriptText,String scriptInput) {
 		try {
 			this.engine.put("clContent",scriptInput);
@@ -70,27 +70,27 @@ public class DescriptorService {
 			}else {
 				return "No Result!";
 			}
-			
+
 		} catch (ScriptException e) {
 			return e.getMessage();
 		}
 	}
-	
+
 	public void descriptorErrorsChecked(String descriptorId) {
 		DescriptorModel descriptor = this.descriptorDAO.get(descriptorId);
 		this.descriptorDAO.save(descriptor);
 	}
-	
+
 	public List<JobExecutionHistory> getDescriptorExecutionHistory(String descriptorId){
-		return this.dehDAO.getByDescriptorId(descriptorId);
+		return this.jobExecutionHistoryDAO.getByDescriptorId(descriptorId);
 	}
-	
-	
+
+
 	public DescriptorWorkflowDataPackage getExecutionHistoryDWDP(String executionHistoryID) {
-		JobExecutionHistory deh = this.dehDAO.get(executionHistoryID);
-		return deh.getDwdp();
+		JobExecutionHistory jobExecutionHistory = this.jobExecutionHistoryDAO.get(executionHistoryID);
+		return jobExecutionHistory.getDwdp();
 	}
-	
+
 	public String getCrawledContent(String crawledContentId) {
 		return this.crawledContentDAO.get(crawledContentId).getContents();
 	}

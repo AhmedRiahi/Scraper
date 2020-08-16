@@ -18,7 +18,7 @@ public class JobExecutionHistoryDAO extends PPDAO<JobExecutionHistory>{
 	public JobExecutionHistory getByDWDPId(String dwdpId) {
 		return this.createQuery().disableValidation().field("dwdp.$id").equal(new ObjectId(dwdpId)).get();
 	}
-	
+
 	public List<JobExecutionHistory> getByDescriptorId(String descriptorId){
 		return this.createQuery().disableValidation().field("descriptor.$id").equal(new ObjectId(descriptorId)).order("-startTime").limit(10).asList();
 	}

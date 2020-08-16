@@ -70,6 +70,9 @@ public class AnalyticsService {
         // Check for duplicated Staging individuals
         List<PPIndividual> individuals = dwdp.getIndividuals().stream().filter(individual -> !individual.isPureJoinIndividual()).collect(Collectors.toList());
         Map<Boolean, List<PPIndividual>> groupingMap = this.individualsPublisher.getIndividualsGroupedByDuplication(individuals);
+        // TODO check if this is a matching
+        // If is matching descriptor then check if there is any individual property update
+        // Create new individual version
         //this.mergeExistingIndividuals(groupingMap.get(true));
         this.generateNewIndividuals(dwdp, groupingMap.get(false));
         return groupingMap.get(false);
@@ -124,14 +127,14 @@ public class AnalyticsService {
             ContentListenerModel sourceUrlCL = dwdp.getDescriptorJob().getLinkGenerationDetails().getSourceURLListener();
             String sourceUrlPropertyName = dwdp.getDescriptorJob().getDescriptor().getSemanticMappingById(dwdp.getDescriptorJob().getDescriptorSemanticMappingId()).get().getClSemanticName(sourceUrlCL);
             Set<String> sourceUrls = newIndividuals.stream().map(individual -> individual.getSimpleProperty(sourceUrlPropertyName).get().getValue()).collect(Collectors.toSet());
-            Optional<DescriptorJobDataSet> descriptorJobDataSetOptional = this.descriptorJobDataSetDAO.findByPortfolioAndJobName(dwdp.getPortfolio(),dwdp.getDescriptorJob().getLinkGenerationDetails().getTargetDescriptorJob().getName());
-            if(!descriptorJobDataSetOptional.isPresent()){
+            Optional<DescriptorJobDataSet> descriptorJobDataSetOptional = this.descriptorJobDataSetDAO.findByPortfolioAndJobName(dwdp.getPortfolio(), dwdp.getDescriptorJob().getLinkGenerationDetails().getTargetDescriptorJob().getName());
+            if (!descriptorJobDataSetOptional.isPresent()) {
                 DescriptorJobDataSet descriptorJobDataSet = new DescriptorJobDataSet();
                 descriptorJobDataSet.setDescriptorsPortfolio(dwdp.getPortfolio());
                 descriptorJobDataSet.setJobName(dwdp.getDescriptorJob().getLinkGenerationDetails().getTargetDescriptorJob().getName());
                 descriptorJobDataSet.setToBeProcessedLinks(sourceUrls);
                 this.descriptorJobDataSetDAO.save(descriptorJobDataSet);
-            }else{
+            } else {
                 descriptorJobDataSetOptional.get().getToBeProcessedLinks().addAll(sourceUrls);
                 this.descriptorJobDataSetDAO.save(descriptorJobDataSetOptional.get());
             }

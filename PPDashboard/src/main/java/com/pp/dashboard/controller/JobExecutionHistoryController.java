@@ -1,6 +1,7 @@
 package com.pp.dashboard.controller;
 
 
+import com.pp.dashboard.payload.JobExecutionHistoryPayload;
 import com.pp.dashboard.service.JobExecutionHistoryService;
 import com.pp.database.model.mozart.JobExecutionHistory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +20,7 @@ public class JobExecutionHistoryController {
     private JobExecutionHistoryService jobExecutionHistoryService;
 
     @RequestMapping(path = "/portfolio/{portfolioId}",method = RequestMethod.GET)
-    public List<JobExecutionHistory> getPortfolioExecutionHistory(@PathVariable String portfolioId){
+    public List<JobExecutionHistoryPayload> getPortfolioExecutionHistory(@PathVariable String portfolioId){
         return this.jobExecutionHistoryService.getPortfolioExecutionHistory(portfolioId);
     }
 
@@ -29,12 +30,12 @@ public class JobExecutionHistoryController {
     }
 
     @RequestMapping(path = "/inError", method = RequestMethod.GET)
-    public List<JobExecutionHistory> getInErrorJobExecutionHistoryList(){
+    public List<JobExecutionHistoryPayload> getInErrorJobExecutionHistoryList(){
         return this.jobExecutionHistoryService.getInErrorJobs();
     }
 
     @RequestMapping(path = "/active", method = RequestMethod.GET)
-    public List<JobExecutionHistory> getActiveJobExecutionHistoryList(){
+    public List<JobExecutionHistoryPayload> getActiveJobExecutionHistoryList(){
         return this.jobExecutionHistoryService.getActiveJobs();
     }
 }

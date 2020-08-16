@@ -25,16 +25,14 @@ public class DescriptorWorkflowDataPackage extends PPEntity{
 
 	@Reference
 	private DescriptorsPortfolio portfolio;
+	@JsonIgnore
 	private DescriptorJob descriptorJob;
 	@Reference
 	private CrawledContent crawledContent;
 	@Transient
 	private Map<ScrapedContent,List<ScrapedContent>> scrapedContents;
-	@JsonIgnore
 	private List<ScrapedContent> allScrapedContents;
-    @JsonIgnore
 	private List<PPIndividual> individuals = new ArrayList<>();
-    @JsonIgnore
     private List<String> generatedLinks;
 	private Set<String> schemasNames;
 	@Embedded

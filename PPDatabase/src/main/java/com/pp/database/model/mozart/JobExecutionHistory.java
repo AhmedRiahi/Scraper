@@ -1,5 +1,6 @@
 package com.pp.database.model.mozart;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.common.DescriptorsPortfolio;
 import com.pp.database.model.engine.DescriptorJob;
@@ -21,5 +22,5 @@ public class JobExecutionHistory extends PPEntity{
 	private Date startTime;
 	private Date finishTime;
 	private boolean inError;
-	
+
 }

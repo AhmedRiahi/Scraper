@@ -24,9 +24,9 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 	public PPIndividualDAO() {
 		super(PPIndividual.class);
 	}
-	
 
-	
+
+
 	public DBObject individualToDBObject(PPIndividual individual) {
 		DBObject dbObject = this.getDbObject(individual);
 		dbObject.put("creationDate", new Date());
@@ -78,18 +78,20 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 		Set<String> collections = MongoDatastore.getStagingDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getStagingDatastore(),collections,"workflowId", workflowId);
 	}
-	
+
 	public List<DBObject> getPublishedDescriptorIndividuals(String descriptorId){
 		Set<String> collections = MongoDatastore.getPublishDatastore().getDB().getCollectionNames().stream().filter(collectionName  -> !collectionName.equalsIgnoreCase("system.users")).collect(Collectors.toSet());
 		return this.getIndividualsBy(MongoDatastore.getPublishDatastore(),collections,"descriptorId", descriptorId);
 	}
-	
+
 	private List<DBObject> getIndividualsBy(Datastore datastore, Set<String> collections, String field, String id){
 		List<DBObject> individuals = new ArrayList<>();
 		for(String collection : collections) {
+			DBObject sortObject = new BasicDBObject();
+			sortObject.put("creationDate",-1);
 			DBObject query = new BasicDBObject();
 			query.put(field, id);
-			DBCursor cursor = datastore.getDB().getCollection(collection).find(query);
+			DBCursor cursor = datastore.getDB().getCollection(collection).find(query).sort(sortObject).limit(100);
 			while(cursor.hasNext()) {
 				DBObject individual = cursor.next();
 				individual.put("schemaName",collection);

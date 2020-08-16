@@ -58,7 +58,7 @@
 									<h4><b><i class="fa fa-share-square" aria-hidden="true"></i> Allocated Descriptors</b></h4>
 								</div>
 								<ul class="list-group">
-									<li class="list-group-item" 
+									<li class="list-group-item"
 										class="list-group-item"
 										ng-class="{active : selectedAllocatedDescriptor == descriptor }"
 										ng-repeat="descriptor in currentPortfolio.descriptors"
@@ -105,7 +105,7 @@
 													ng-model="selectedJoin.sourceDescriptorModel"
 													ng-options="descriptor as descriptor.name for descriptor in currentPortfolio.descriptors track by descriptor.name"/>
 										</div>
-										
+
 										<div class='form-group'>
 											Source URL Listener
 											<select class="form-control"
@@ -128,7 +128,7 @@
 											<select class="form-control"
 													ng-model="selectedJoin.targetDSMId">
 
-												<option ng-repeat="dsm in selectedJoin.targetDescriptorModel.descriptorSemanticMappings" 
+												<option ng-repeat="dsm in selectedJoin.targetDescriptorModel.descriptorSemanticMappings"
 														value="{{dsm.stringId}}">
 													{{dsm.name}}
 												</option>
@@ -186,7 +186,7 @@
 									<h4><b><i class="fa fa-hourglass-start" aria-hidden="true"></i> Portfolio Jobs</b></h4>
 								</div>
 								<ul class="list-group">
-									<li class="list-group-item" 
+									<li class="list-group-item"
 										class="list-group-item"
 										ng-class="{active : selectedJob == job }"
 										ng-repeat="job in currentPortfolio.jobs"
@@ -206,7 +206,7 @@
 											<b>Job Name</b>
 											<input type="text" class="form-control" ng-model="selectedJob.name" placeholder="Job Name" />
 										</div>
-										
+
 										<div class='form-group'>
 											<b>Job Descriptor</b>
 											<select class="form-control"
@@ -218,13 +218,13 @@
 											<b>Job Checking Interval (Minutes)</b>
 											<input type="number" class='form-control' ng-model="selectedJob.checkingInterval" placeholder="Job Checking Interval">
 										</div>
-										
+
 										<div class='form-group'>
 											Descriptor Semantic Mapping
 											<select class="form-control"
 													ng-model="selectedJob.descriptorSemanticMappingId">
 
-												<option ng-repeat="dsm in selectedJob.descriptor.descriptorSemanticMappings" 
+												<option ng-repeat="dsm in selectedJob.descriptor.descriptorSemanticMappings"
 														value="{{dsm.stringId}}">
 													{{dsm.name}}
 												</option>
@@ -284,17 +284,17 @@
 												<label><input type="checkbox" ng-model="selectedJob.crawlingParams.scriptGeneratedURL" /> URL Script generation</label>
 											</div>
 
-											<input type="text" 
-												class="form-control" 
-												ng-model="selectedJob.crawlingParams.url" 
-												placeholder="Job URL" 
+											<input type="text"
+												class="form-control"
+												ng-model="selectedJob.crawlingParams.url"
+												placeholder="Job URL"
 												ng-if="!selectedJob.crawlingParams.scriptGeneratedURL"/>
 
 											<div>
-												<textarea type="text" 
-													class="form-control" 
-													ng-model="selectedJob.crawlingParams.urlGeneratorScript" 
-													placeholder="Job URL Script" 
+												<textarea type="text"
+													class="form-control"
+													ng-model="selectedJob.crawlingParams.urlGeneratorScript"
+													placeholder="Job URL Script"
 													ng-if="selectedJob.crawlingParams.scriptGeneratedURL"
 													rows="8"/>
 												<br>
@@ -308,7 +308,7 @@
 											<b>Sleep time (Millis)</b>
 											<input type="text" class="form-control" ng-model="selectedJob.crawlingParams.sleepTime" placeholder="Sleep time">
 										</div>
-										
+
 										<div class='form-group'>
 											<b>HTTP Method</b>
 											<select class="form-control"
@@ -358,16 +358,16 @@
 										ng-repeat="exec in executionHistory"
 										ng-click="selectExecutionHistory(exec)">
 										<h4 class="list-group-item-heading">
-											{{exec.descriptorJob.name}}
+											{{exec.descriptorName}}
 											<span class="label label-default pull-right" style="font-size:10px">{{exec.startTime | date : 'dd/MM/yyyy'}}</span>
 										</h4>
-										
+
 										<span class="label label-warning">{{exec.startTime | date : 'HH:mm:ss'}}</span>
 										<span class="label label-warning">{{exec.finishTime | date : 'HH:mm:ss'}}</span>
 										<span class="label label-danger" ng-if="!exec.finishTime">Not Finished</span>
-										<span class="label label-success pull-right" style="font-size:10px">{{individuals.length}} Individuals</span>
+										<span class="label label-success pull-right" style="font-size:10px">{{exec.individuals.length}} Individuals</span>
 										<span class="clearfix"></span>
-										
+
 									</li>
 								</ul>
 							</div>
@@ -376,9 +376,9 @@
 								<div class="row">
 									<div class="col-md-12">
 										<h4><b><i class="fa fa-bug" aria-hidden="true"></i> Debug Information</b></h4>
-										<h5>Last Executed Step : {{selectedExecution.dwdp.debugInformation.mozartExecutionStep}}</h5>
-										<h5 class="well" ng-if="selectedExecution.dwdp.debugInformation.exception">
-											Exception : {{selectedExecution.dwdp.debugInformation.exception}}
+										<h5>Last Executed Step : {{selectedExecution.lastExecutedStep}}</h5>
+										<h5 class="well" ng-if="selectedExecution.executionException">
+											Exception : {{selectedExecution.executionException}}
 										</h5>
 										<a class="btn btn-primary" ui-sref="debug({executionId:selectedExecution.stringId})">Debug Signature</a>
 									</div>
@@ -386,8 +386,8 @@
 								<div class="row">
 									<div class="col-md-12">
 										<h4><b><i class="fa fa-list-alt" aria-hidden="true"></i> Generated Individuals</b></h4>
-										<table class="table table-hover well" 
-												ng-repeat="individual in individuals">
+										<table class="table table-hover well"
+												ng-repeat="individual in selectedExecution.individuals">
 											<thead>
 												<th>Property Name</th>
 												<th>Property Value</th>
@@ -398,7 +398,7 @@
 													<td>{{individual.schemaName}}</td>
 												</tr>
 												<tr ng-repeat="property in individual.properties">
-													<td>{{property.name}}</td> 
+													<td>{{property.name}}</td>
 													<td>{{property.value}}</td>
 												</tr>
 											</tbody>
