@@ -52,7 +52,7 @@ public class IndividualsPublisher {
         });
     }
 
-    public DBObject getDuplicatedIndividual(PPIndividual individual) {
+    public DBObject getDuplicateIndividual(PPIndividual individual) {
         IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
 
         List<PropertyDefinition> uniqueSchemaProperties = schema.getUniqueProperties();
@@ -81,7 +81,7 @@ public class IndividualsPublisher {
 
 
     public boolean isDuplicatedIndividual(PPIndividual individual) {
-        return this.getDuplicatedIndividual(individual) != null;
+        return this.getDuplicateIndividual(individual) != null;
     }
 
     public Map<Boolean, List<PPIndividual>> getIndividualsGroupedByDuplication(List<PPIndividual> individuals) {
@@ -89,7 +89,7 @@ public class IndividualsPublisher {
         List<PPIndividual> duplicateIndividuals = new ArrayList<>();
 
         for (PPIndividual individual : individuals) {
-            DBObject duplicateIndividual = this.getDuplicatedIndividual(individual);
+            DBObject duplicateIndividual = this.getDuplicateIndividual(individual);
             if (duplicateIndividual == null) {
                 newIndividuals.add(individual);
             } else {

@@ -1,9 +1,11 @@
 package com.pp.database.model.semantic.individual;
 
+import com.mongodb.DBObject;
 import com.pp.database.kernel.PPEntity;
 import com.pp.database.model.semantic.individual.properties.IndividualBaseProperty;
 import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import lombok.Data;
+import org.bson.types.ObjectId;
 import org.mongodb.morphia.annotations.Embedded;
 
 import javax.validation.constraints.NotNull;
@@ -23,22 +25,24 @@ public class PPIndividual extends PPEntity{
 	private String displayString;
 	private boolean isValid = false;
 	private boolean pureJoinIndividual = false;
+	private ObjectId previousVersion;
+	private long version = 1;
 
 
 	public PPIndividual() {
 		this.properties = new ArrayList<>();
 	}
-	
+
 
 	public PPIndividual(String schemaName){
 		this();
 		this.schemaName = schemaName;
 	}
-	
+
 	public void addProperty(IndividualBaseProperty propertyValue){
 		this.properties.add(propertyValue);
 	}
-	
+
 	public Optional<IndividualBaseProperty> getProperty(String propertyName) {
 		return this.properties.stream().filter(p -> p.getName().equals(propertyName)).findFirst();
 	}

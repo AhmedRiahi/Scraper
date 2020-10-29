@@ -27,6 +27,7 @@ public class DescriptorJob{
     private boolean isStandaloneMode = true;
     private boolean isDisabled = false;
     private boolean isDynamicURLJob = false;
+    private boolean allowVersioning = false;
     private LinkGenerationDetails linkGenerationDetails = new LinkGenerationDetails();
 
     public void incrementExecutionErrorsCount(){

@@ -34,6 +34,8 @@ public class PPIndividualDAO extends PPDAO<PPIndividual>{
 		dbObject.put("descriptorId", individual.getDescriptorId());
 		dbObject.put("workflowId", individual.getWorkflowId());
 		dbObject.put("displayString", individual.getDisplayString());
+		dbObject.put("previousVersion", individual.getPreviousVersion());
+		dbObject.put("version", individual.getVersion());
 		return dbObject;
 	}
 

@@ -2,7 +2,6 @@ package com.pp.dashboard.service;
 
 
 import com.pp.database.dao.common.DescriptorsPortfolioDAO;
-import com.pp.database.dao.mozart.JobExecutionHistoryDAO;
 import com.pp.database.model.common.DescriptorsPortfolio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,8 +13,6 @@ public class DescriptorsPortfolioService {
 
     @Autowired
     private DescriptorsPortfolioDAO descriptorsPortfolioDAO;
-    @Autowired
-    private JobExecutionHistoryDAO dehDao;
 
     public void create(DescriptorsPortfolio descriptorsPortfolio){
         this.descriptorsPortfolioDAO.save(descriptorsPortfolio);

@@ -17,8 +17,8 @@ import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
 import com.pp.database.model.scrapper.descriptor.join.DescriptorJoin;
 import com.pp.database.model.scrapper.descriptor.join.DescriptorJoinProperties;
 import com.pp.database.model.scrapper.descriptor.listeners.ContentListenerModel;
-import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
+import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
@@ -52,6 +52,8 @@ public class AnalyticsService {
     private PPIndividualSchemaDAO individualSchemaDAO;
     @Autowired
     private DescriptorJobDataSetDAO descriptorJobDataSetDAO;
+    // TODO another bad dependecy to link property
+    private List<String> commonIndividualProperties = Arrays.asList("_id", "creationDate", "urlSource", "displayString", "workflowId", "descriptorId", "schemaName", "generatedURL", "previousVersion", "version");
 
 
     public void processStandaloneDescriptorPopulation(String workflowId) {
@@ -70,29 +72,39 @@ public class AnalyticsService {
         // Check for duplicated Staging individuals
         List<PPIndividual> individuals = dwdp.getIndividuals().stream().filter(individual -> !individual.isPureJoinIndividual()).collect(Collectors.toList());
         Map<Boolean, List<PPIndividual>> groupingMap = this.individualsPublisher.getIndividualsGroupedByDuplication(individuals);
-        // TODO check if this is a matching
-        // If is matching descriptor then check if there is any individual property update
-        // Create new individual version
-        //this.mergeExistingIndividuals(groupingMap.get(true));
-        this.generateNewIndividuals(dwdp, groupingMap.get(false));
-        return groupingMap.get(false);
+        List<PPIndividual> newIndividuals = new ArrayList<>();
+        newIndividuals.addAll(groupingMap.get(false));
+        if (dwdp.getDescriptorJob().isAllowVersioning()) {
+            // Create duplicate individual versions
+            List<PPIndividual> updatedIndividuals = this.mergeExistingIndividuals(groupingMap.get(true));
+            newIndividuals.addAll(updatedIndividuals);
+        }
+
+        this.generateNewIndividuals(dwdp, newIndividuals);
+        return newIndividuals;
     }
 
 
-    private void mergeExistingIndividuals(List<PPIndividual> individuals) {
+    private List<PPIndividual> mergeExistingIndividuals(List<PPIndividual> individuals) {
         log.info("Got {} duplicate individuals", individuals.size());
+        List<PPIndividual> updatedIndividuals = new ArrayList<>();
         individuals.stream().forEach(individual -> {
-            DBObject duplicateObject = this.individualsPublisher.getDuplicatedIndividual(individual);
-            List<String> oldProperties = duplicateObject.keySet().stream().filter(propertyName -> !individual.hasProperty(propertyName)).filter(propertyName -> !propertyName.equals("_id")).collect(Collectors.toList());
-            oldProperties.stream().filter(propertyName -> !individual.hasProperty(propertyName)).forEach(propertyName -> {
-                IndividualSimpleProperty individualProperty = new IndividualSimpleProperty();
-                individualProperty.setName(propertyName);
-                individualProperty.setValue(duplicateObject.get(propertyName).toString());
-                individual.addProperty(individualProperty);
-            });
-            individual.setId((ObjectId) duplicateObject.get("_id"));
-            this.individualsPublisher.updateMergedIndividual(individual);
+            DBObject duplicateObject = this.individualsPublisher.getDuplicateIndividual(individual);
+            List<String> oldProperties = duplicateObject.keySet().stream()
+                    .filter(propertyName -> !commonIndividualProperties.contains(propertyName))
+                    .collect(Collectors.toList());
+
+            boolean individualUpdated = oldProperties.stream()
+                    .anyMatch(propertyName -> !individual.hasProperty(propertyName) || !Objects.equals(duplicateObject.get(propertyName), individual.getSimpleProperty(propertyName).get().getValue()));
+
+            if (individualUpdated) {
+                individual.setPreviousVersion((ObjectId) duplicateObject.get("_id"));
+                long versionNumber = (Long) duplicateObject.get("version") + 1;
+                individual.setVersion(versionNumber);
+                updatedIndividuals.add(individual);
+            }
         });
+        return updatedIndividuals;
     }
 
     private void generateNewIndividuals(DescriptorWorkflowDataPackage dwdp, List<PPIndividual> individuals) {
@@ -113,8 +125,6 @@ public class AnalyticsService {
             // Save population to Staging Area
             log.info("Storing clean individuals into staging area.");
             this.individualsStagingPublisher.publishToStagingArea(validIndividuals);
-            // Copy to Publish Area
-            log.info("Storing clean individuals into publish area.");
         } else {
             log.info("No individuals to be processed : Aborting processing");
         }

@@ -61,7 +61,8 @@ public class IndividualPropertiesProcessor {
 
             if (property.getPropertyType() instanceof PrimitivePropertyType && property.getPropertyType().getValue().equals("url")) {
                 //TODO Convert property value to propertyType (to Java type)
-                this.processUrlProperty(url, individualProperty);
+                IndividualSimpleProperty generatedUrlProperty =  this.generateUrlProperty(url, individualProperty);
+                individual.addProperty(generatedUrlProperty);
             }
 
         });
@@ -83,16 +84,20 @@ public class IndividualPropertiesProcessor {
     }
 
 
-    private void processUrlProperty(String url, IndividualSimpleProperty individualProperty) {
+    private IndividualSimpleProperty generateUrlProperty(String url, IndividualSimpleProperty individualProperty) {
+        IndividualSimpleProperty generatedURLProperty = new IndividualSimpleProperty();
+        generatedURLProperty.setName("generatedURL");
         try {
             if (individualProperty.getValue() == null || individualProperty.getValue().equals("")) {
                 throw new RuntimeException("Invalid individual property " + individualProperty.getName() + " : " + individualProperty.getValue());
             }
             String fullURL = URLUtils.generateFullURL(url, individualProperty.getValue());
-            individualProperty.setValue(fullURL);
+            generatedURLProperty.setValue(fullURL);
         } catch (MalformedURLException e) {
+            generatedURLProperty.setValue(individualProperty.getValue());
             log.error(e.getMessage(), e);
         }
+        return generatedURLProperty;
     }
 
 

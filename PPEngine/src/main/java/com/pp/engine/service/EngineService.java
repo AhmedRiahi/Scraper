@@ -31,50 +31,50 @@ public class EngineService {
     @Autowired
     private DescriptorJobDataSetDAO descriptorJobDataSetDAO;
 
-    public synchronized void  checkScheduledJobs(){
+    public synchronized void checkScheduledJobs() {
         List<DescriptorsPortfolio> portfolios = this.descriptorsPortfolioDAO.find().asList();
-        log.info("Found {} portfolios to be processed.",portfolios.size());
+        log.info("Found {} portfolios to be processed.", portfolios.size());
         portfolios.stream().forEach(portfolio ->
-            portfolio.getJobs().stream().forEach(job -> {
-                if(!job.isDisabled()){
-                    if(job.getLastCheckingDate() != null){
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(job.getLastCheckingDate());
-                        calendar.add(Calendar.MILLISECOND, job.getCheckingInterval() * 60 *1000);
-                        Date nextCheckingDate = calendar.getTime();
-                        if(!job.isCheckingRequired() && (new Date().after(nextCheckingDate))){
-                            if(!job.isDynamicURLJob()){
-                                this.launchPortfolioJobWorkflowProcess(portfolio,job);
-                            }else{
-                                this.launchPortfolioDynamicJobWorkflowProcess(portfolio,job);
+                portfolio.getJobs().stream().forEach(job -> {
+                    if (!job.isDisabled()) {
+                        if (job.getLastCheckingDate() != null) {
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(job.getLastCheckingDate());
+                            calendar.add(Calendar.MILLISECOND, job.getCheckingInterval() * 60 * 1000);
+                            Date nextCheckingDate = calendar.getTime();
+                            if (!job.isCheckingRequired() && (new Date().after(nextCheckingDate))) {
+                                if (!job.isDynamicURLJob()) {
+                                    this.launchPortfolioJobWorkflowProcess(portfolio, job);
+                                } else {
+                                    this.launchPortfolioDynamicJobWorkflowProcess(portfolio, job);
+                                }
+                            } else {
+                                log.info("Job is already checked or checking is required : " + job.getDescriptor().getName() + " " + job.getName());
+                                log.info("Is checking required :" + job.isCheckingRequired());
+                                log.info(nextCheckingDate + " vs " + new Date());
                             }
-                        }else{
-                            log.info("Job is already checked or checking is required : "+job.getDescriptor().getName()+" "+job.getName());
-                            log.info("Is checking required :"+job.isCheckingRequired());
-                            log.info(nextCheckingDate+" vs "+new Date());
+                        } else {
+                            // This job is never launched
+                            if (!job.isDynamicURLJob()) {
+                                this.launchPortfolioJobWorkflowProcess(portfolio, job);
+                            } else {
+                                this.launchPortfolioDynamicJobWorkflowProcess(portfolio, job);
+                            }
                         }
-                    }else{
-                        // This job is never launched
-                        if(!job.isDynamicURLJob()){
-                            this.launchPortfolioJobWorkflowProcess(portfolio,job);
-                        }else{
-                            this.launchPortfolioDynamicJobWorkflowProcess(portfolio,job);
-                        }
+                    } else {
+                        log.info("Job is disabled :" + job.getName());
                     }
-                }else{
-                    log.info("Job is disabled :"+job.getName());
-                }
-            })
+                })
         );
     }
 
-    public void launchPortfolioJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job){
-        log.info("processDescriptorWorkflow portfolio = {}, job = {}",portfolio.getName(),job.getName());
+    public void launchPortfolioJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job) {
+        log.info("processDescriptorWorkflow portfolio = {}, job = {}", portfolio.getName(), job.getName());
         List<String> jobURLs = this.descriptorJobUrlResolver.resolveJobURLs(job.getCrawlingParams());
         log.info("generated urls :");
         log.info(Arrays.toString(jobURLs.toArray()));
         long globalSleepTime = 100;
-        for(String url : jobURLs){
+        for (String url : jobURLs) {
             // Prepare Data package
             DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
             dwdp.setPortfolio(portfolio);
@@ -83,20 +83,20 @@ public class EngineService {
             dwdp.getDebugInformation().setMozartExecutionStep("Engine Prepare Package");
             this.dwdpDao.save(dwdp);
             //Trigger Mozart
-            this.engineJobScheduler.scheduleJob(dwdp,globalSleepTime);
-            globalSleepTime+=job.getCrawlingParams().getSleepTime();
+            this.engineJobScheduler.scheduleJob(dwdp, globalSleepTime);
+            globalSleepTime += job.getCrawlingParams().getSleepTime();
         }
     }
 
-    public void launchPortfolioDynamicJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job){
-        log.info("launchPortfolioDynamicJobWorkflowProcess porfolio = {}, job = {}",portfolio.getName(),job.getName());
-        Optional<DescriptorJobDataSet> descriptorJobDataSetOptional = this.descriptorJobDataSetDAO.findByPortfolioAndJobName(portfolio,job.getName());
-        if(descriptorJobDataSetOptional.isPresent()){
+    public void launchPortfolioDynamicJobWorkflowProcess(DescriptorsPortfolio portfolio, DescriptorJob job) {
+        log.info("launchPortfolioDynamicJobWorkflowProcess porfolio = {}, job = {}", portfolio.getName(), job.getName());
+        Optional<DescriptorJobDataSet> descriptorJobDataSetOptional = this.descriptorJobDataSetDAO.findByPortfolioAndJobName(portfolio, job.getName());
+        if (descriptorJobDataSetOptional.isPresent()) {
             Iterator<String> iterator = descriptorJobDataSetOptional.get().getToBeProcessedLinks().iterator();
-            if(iterator.hasNext()){
+            if (iterator.hasNext()) {
                 String url = iterator.next();
-                if(!URLUtils.isValidUrl(url)){
-                    url = job.getCrawlingParams().getBaseUrl()+url;
+                if (!URLUtils.isValidUrl(url)) {
+                    url = job.getCrawlingParams().getBaseUrl() + url;
                 }
                 // Prepare Data package
                 DescriptorWorkflowDataPackage dwdp = new DescriptorWorkflowDataPackage();
@@ -108,26 +108,26 @@ public class EngineService {
                 iterator.remove();
                 this.descriptorJobDataSetDAO.save(descriptorJobDataSetOptional.get());
                 this.dwdpDao.save(dwdp);
-                this.engineJobScheduler.scheduleJob(dwdp,100);
-            }else{
+                this.engineJobScheduler.scheduleJob(dwdp, 100);
+            } else {
                 log.info("no url to be processed");
                 job.setLastCheckingDate(new Date());
                 this.descriptorsPortfolioDAO.save(portfolio);
             }
-        }else{
-            log.error("No dataset found for portfolio = {}, job = {}",portfolio.getName(),job.getName());
+        } else {
+            log.error("No dataset found for portfolio = {}, job = {}", portfolio.getName(), job.getName());
             job.setLastCheckingDate(new Date());
             this.descriptorsPortfolioDAO.save(portfolio);
         }
 
     }
 
-    public void launchPortfolioJobWorkflowProcess(String portfolioJob){
+    public void launchPortfolioJobWorkflowProcess(String portfolioJob) {
         String portfolioId = portfolioJob.split("\\.")[0];
         String jobName = portfolioJob.split("\\.")[1];
         DescriptorsPortfolio portfolio = this.descriptorsPortfolioDAO.get(portfolioId);
         DescriptorJob job = portfolio.getJobByName(jobName).get();
-        this.launchPortfolioJobWorkflowProcess(portfolio,job);
+        this.launchPortfolioJobWorkflowProcess(portfolio, job);
 
     }
 }
