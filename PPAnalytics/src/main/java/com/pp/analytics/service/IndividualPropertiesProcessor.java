@@ -42,10 +42,8 @@ public class IndividualPropertiesProcessor {
     @Autowired
     private PPIndividualDAO individualDAO;
 
-    private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 
-
-    public void processIndividualProperties(String url, DescriptorModel descriptor, String dsmId, PPIndividual individual) {
+    public void processIndividualProperties(String url, PPIndividual individual) {
         IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
         // Get all properties including parent ones that exists on individual properties
         List<PropertyDefinition> schemaProperties = schema.getAllProperties().stream().filter(property -> individual.getProperty(property.getName()).isPresent()).collect(Collectors.toList());
@@ -54,7 +52,7 @@ public class IndividualPropertiesProcessor {
         List<PropertyDefinition> referencePropertiesDefinitions = schemaProperties.stream().filter(property -> property.getPropertyType() instanceof ReferencePropertyType && !((ReferencePropertyType) property.getPropertyType()).isEmbedded()).collect(Collectors.toList());
 
         primitivePropertiesDefinitions.stream().forEach(property -> {
-           IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
+            IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
 
             if (property.isDisplayString()) {
                 String displayString = individualProperty.getValue();
@@ -71,7 +69,7 @@ public class IndividualPropertiesProcessor {
         referencePropertiesDefinitions.stream().forEach(property -> {
             IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
             if (property.getPropertyType() instanceof ReferencePropertyType) {
-                Map<String,DBObject> generatedReferencesIndividuals = this.processReferenceProperty(property, individualProperty);
+                Map<String, DBObject> generatedReferencesIndividuals = this.processReferenceProperty(property, individualProperty);
                 generatedReferencesIndividuals.values().stream().forEach(dbObject -> {
                     dbObject.put("schemaName", property.getPropertyType().getValue());
                     dbObject.put("descriptorId", individual.getDescriptorId());
@@ -82,8 +80,6 @@ public class IndividualPropertiesProcessor {
                 });
             }
         });
-
-        this.processPropertiesScripts(schemaProperties, descriptor, dsmId, individual);
     }
 
 
@@ -100,7 +96,7 @@ public class IndividualPropertiesProcessor {
     }
 
 
-    private Map<String,DBObject> processReferenceProperty(PropertyDefinition property, IndividualSimpleProperty individualProperty) {
+    private Map<String, DBObject> processReferenceProperty(PropertyDefinition property, IndividualSimpleProperty individualProperty) {
         IndividualSchema referenceSchema = this.individualSchemaDAO.findOne("name", property.getPropertyType().getValue());
         PropertyDefinition uniqueSchemaProperty = referenceSchema.getUniqueProperties().get(0);
         //Search Reference on database
@@ -108,46 +104,19 @@ public class IndividualPropertiesProcessor {
         DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(property.getPropertyType().getValue());
         DBObject query = new BasicDBObject();
         query.put(uniqueSchemaProperty.getName(), individualProperty.getValue());
-        Map<String,DBObject> generatedReferencesIndividuals = new HashMap<>();
+        Map<String, DBObject> generatedReferencesIndividuals = new HashMap<>();
         DBCursor cursor = collection.find(query);
         if (!cursor.hasNext()) {
             BasicDBObject dbObject = new BasicDBObject();
             dbObject.put(uniqueSchemaProperty.getName(), individualProperty.getValue());
-            generatedReferencesIndividuals.put(property.getPropertyType().getValue(),dbObject);
+            generatedReferencesIndividuals.put(property.getPropertyType().getValue(), dbObject);
             collection.save(dbObject);
-            individualProperty.setReferenceData(new IndividualReferenceData(property.getPropertyType().getValue(),(((ObjectId)dbObject.get("_id")).toHexString())));
-        }else{
-            individualProperty.setReferenceData(new IndividualReferenceData(property.getPropertyType().getValue(),(((ObjectId)cursor.next().get("_id")).toHexString())));
+            individualProperty.setReferenceData(new IndividualReferenceData(property.getPropertyType().getValue(), (((ObjectId) dbObject.get("_id")).toHexString())));
+        } else {
+            individualProperty.setReferenceData(new IndividualReferenceData(property.getPropertyType().getValue(), (((ObjectId) cursor.next().get("_id")).toHexString())));
         }
         return generatedReferencesIndividuals;
     }
 
 
-    private void processPropertiesScripts(List<PropertyDefinition> schemaProperties, DescriptorModel descriptor, String dsmId, PPIndividual individual) {
-        //generate content listeners values having pre-process script
-        schemaProperties.stream().forEach(property -> {
-            IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
-            Optional<ContentListenerModel> clOpt = descriptor.getDSMContentListenerBySemanticName(dsmId, individualProperty.getName());
-            clOpt.ifPresent(cl -> {
-                if (cl.getPreProcessScript() != null) {
-                    try {
-                        this.executeIndividualPreProcessScript(cl.getPreProcessScript(), individualProperty, individual);
-                    } catch (ScriptException e) {
-                        log.error(e.toString(),e);
-                    }
-                }
-            });
-        });
-    }
-
-
-    private void executeIndividualPreProcessScript(String script, IndividualSimpleProperty individualProperty, PPIndividual ppIndividual) throws ScriptException {
-        ppIndividual.getProperties().stream().forEach(property -> {
-            if(property instanceof IndividualSimpleProperty){
-                this.engine.put(property.getName(), ((IndividualSimpleProperty)property).getValue());
-            }
-        });
-        String result = (String) this.engine.eval(script);
-        individualProperty.setValue(result);
-    }
 }

@@ -20,7 +20,7 @@
 					<button class="btn btn-success pull-right" ng-click="addSchema()">Save</button>
 					<div class="clearfix"></div>
 				</div>
-				
+
 				<div class="panel panel-primary">
 					<div class="panel-heading">
 					  <h3 class="panel-title">Schema Properties</h3>
@@ -45,13 +45,13 @@
 								<div class="form-group">
 									<input 	type="checkbox"
 											ng-true-value="true"
-											ng-false-value="false" 
+											ng-false-value="false"
 											ng-model="currentProperty.unique"/> Unique property
 								</div>
 								<div class="form-group">
 									<input 	type="checkbox"
 											ng-true-value="true"
-											ng-false-value="false" 
+											ng-false-value="false"
 											ng-model="currentProperty.displayString"/> Display String
 								</div>
 								<div class="form-group">
@@ -70,6 +70,7 @@
 										<option value="number">Number</option>
 										<option value="date">Date</option>
 										<option value="url">URL</option>
+										<option value="image">Image</option>
 									</select>
 								</div>
 								<div class="form-group" ng-if="currentProperty.propertyType.class=='reference'">
@@ -83,7 +84,7 @@
 								<div>
 									<input 	type="checkbox"
 											ng-true-value="true"
-											ng-false-value="false" 
+											ng-false-value="false"
 											ng-model="currentProperty.propertyType.embedded"/> Is Embedded
 								</div>
 							</div>
@@ -105,7 +106,7 @@
 				<div ng-if="currentIndividual">
 					<div class="form-group" ng-repeat="property in currentSchema.properties">
 						{{property.name}}
-						<input 	type="text" 
+						<input 	type="text"
 								class="form-control"
 								ng-model="currentIndividual.properties[$index].value"
 								ng-if="property.propertyType.class=='primitive'"/>
@@ -126,7 +127,7 @@
 					<p ng-repeat="property in currentSchema.allProperties">
 						<b>{{property.name}}</b> : {{individual[property.name]}}
 					</p>
-				
+
 				</div>
 			</div>
 		</div>

@@ -127,6 +127,6 @@ var ViewPortfolioController = function($scope,$http,$stateParams,DataService,ngT
 	}
 
 	$scope.testURLScript = function(){
-		eval($scope.selectedJob.crawlingParams.urlGeneratorScript);
+		alert(eval($scope.selectedJob.crawlingParams.urlGeneratorScript));
 	}
 }

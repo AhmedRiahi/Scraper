@@ -1,6 +1,7 @@
 var EditDescriptorController = function($scope,$http,$state,$stateParams,DataService,ngToast){
-	
+
 	$scope.currentDescriptor = {}
+	$scope.scriptInput = "";
 	console.log($state)
 	DataService.get(dashboardServerURL,'descriptor',true).then(function(descriptors){
 		$scope.descriptors = descriptors;
@@ -29,7 +30,7 @@ var EditDescriptorController = function($scope,$http,$state,$stateParams,DataSer
 				$scope.currentDescriptor = XML.parse($scope.descriptor);
 			}
 		}
-		
+
 		if(stringId != undefined){
 			$scope.currentDescriptor.stringId = stringId
 		}
@@ -59,7 +60,7 @@ var EditDescriptorController = function($scope,$http,$state,$stateParams,DataSer
 		if(listener.semanticProperties){
 			$scope.getSchemaIndividuals(listener.semanticProperties.semanticName)
 		}
-		
+
 		$scope.currentListener = listener;
 		$($scope.currentDescriptor.semanticRelations).each(function(i,sr){
 			if(sr.target.name == listener.name){
@@ -107,13 +108,13 @@ var EditDescriptorController = function($scope,$http,$state,$stateParams,DataSer
 	}
 
 	$scope.deleteListener = function(){
-		
+
 		//Remove Listener semantic relations
 		for(var i=0 ; i < $scope.currentDescriptor.semanticRelations.length ; i++){
 			if($scope.currentDescriptor.semanticRelations[i].source.name == $scope.currentListener.name
 				|| $scope.currentDescriptor.semanticRelations[i].target.name == $scope.currentListener.name){
 				$scope.removeSemanticRelation($scope.currentDescriptor.semanticRelations[i])
-			}	
+			}
 		}
 
 		//Remove Listener structure relations
@@ -141,7 +142,7 @@ var EditDescriptorController = function($scope,$http,$state,$stateParams,DataSer
 			'cardinalityType' : 'ONE_TO_ONE',
 			'type' : 'compositionRelation'
 		}
-		
+
 		$scope.currentDescriptor.semanticRelations.push(semanticRelation);
 	}
 
@@ -182,7 +183,7 @@ var EditDescriptorController = function($scope,$http,$state,$stateParams,DataSer
 	}
 
 	$scope.testScript = function(){
-		$http.post(dashboardServerURL+'descriptor/testScript',[$scope.currentListener.preProcessScript,$scope.scriptInput]).then(function(response){
+		$http.post(dashboardServerURL+'descriptor/testScript',[$scope.currentListener.preProcessScript,$scope.currentListener.scriptInput]).then(function(response){
 			console.log(response.data)
 			$scope.scriptResult = response.data.value
 		})
@@ -229,7 +230,7 @@ var EditDescriptorController = function($scope,$http,$state,$stateParams,DataSer
 
 	$scope.selectDSMListener = function(listener){
 		console.log(listener)
-		
+
 		$scope.currentDSM.currentListener = listener;
 		$($scope.currentDescriptor.semanticRelations).each(function(i,sr){
 			if(sr.target.name == listener.name){

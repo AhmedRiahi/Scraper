@@ -1,5 +1,6 @@
 package com.pp.scrapper.core;
 
+import com.pp.database.dao.semantic.PPIndividualSchemaDAO;
 import com.pp.database.model.scrapper.descriptor.DescriptorModel;
 import com.pp.database.model.scrapper.descriptor.DescriptorScrapingResult;
 import com.pp.database.model.scrapper.descriptor.DescriptorSemanticMapping;
@@ -13,11 +14,16 @@ import com.pp.database.model.semantic.individual.properties.IndividualEmbeddedPr
 import com.pp.database.model.semantic.individual.properties.IndividualListProperty;
 import com.pp.database.model.semantic.individual.properties.IndividualSimpleProperty;
 import com.pp.database.model.semantic.individual.PPIndividual;
+import com.pp.database.model.semantic.schema.IndividualSchema;
+import com.pp.database.model.semantic.schema.PropertyDefinition;
 import com.pp.scrapper.core.requester.PPCrawlerRequester;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.script.ScriptEngine;
+import javax.script.ScriptEngineManager;
+import javax.script.ScriptException;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -28,6 +34,11 @@ public class IndividualsBuilder {
 
     @Autowired
     private PPCrawlerRequester ppCrawlerRequester;
+
+    @Autowired
+    private PPIndividualSchemaDAO individualSchemaDAO;
+
+    private ScriptEngine engine = new ScriptEngineManager().getEngineByName("nashorn");
 
     public List<PPIndividual> buildScrapedIndividuals(DescriptorScrapingResult scrapingResult) {
         List<PPIndividual> individuals = new ArrayList<>();
@@ -109,7 +120,44 @@ public class IndividualsBuilder {
 
             }
         });
+        this.processPropertiesScripts(scrapingResult, individuals);
+        this.handleIndividualImages(individuals);
         return individuals;
+    }
+
+
+    private void processPropertiesScripts(DescriptorScrapingResult scrapingResult, List<PPIndividual> individuals) {
+
+        individuals.stream().forEach(individual -> {
+            IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
+            // Get all properties including parent ones that exists on individual properties
+            List<PropertyDefinition> schemaProperties = schema.getAllProperties().stream().filter(property -> individual.getProperty(property.getName()).isPresent()).collect(Collectors.toList());
+
+            //generate content listeners values having pre-process script
+            schemaProperties.stream().forEach(property -> {
+                IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
+                Optional<ContentListenerModel> clOpt = scrapingResult.getDescriptor().getDSMContentListenerBySemanticName(scrapingResult.getDsmId(), individualProperty.getName());
+                clOpt.ifPresent(cl -> {
+                    if (cl.getPreProcessScript() != null) {
+                        try {
+                            this.executeIndividualPreProcessScript(cl.getPreProcessScript(), individualProperty, individual);
+                        } catch (ScriptException e) {
+                            log.error(e.toString(), e);
+                        }
+                    }
+                });
+            });
+        });
+    }
+
+    private void executeIndividualPreProcessScript(String script, IndividualSimpleProperty individualProperty, PPIndividual ppIndividual) throws ScriptException {
+        ppIndividual.getProperties().stream().forEach(property -> {
+            if (property instanceof IndividualSimpleProperty) {
+                this.engine.put(property.getName(), ((IndividualSimpleProperty) property).getValue());
+            }
+        });
+        String result = (String) this.engine.eval(script);
+        individualProperty.setValue(result);
     }
 
     private String getCompositionSemanticRelationTargetValue(DescriptorScrapingResult scrapingResult, ScrapedContent sc, SemanticRelation sr) {
@@ -138,10 +186,9 @@ public class IndividualsBuilder {
                     targetValue = itemScrapedContent.getContent().attr("href");
                 } else {
                     // TODO Bad technique to check basing on element tag name
-                    if(itemScrapedContent.getContent().tagName().equalsIgnoreCase("img")){
-                        String imageUrl = itemScrapedContent.getContent().attr("src");
-                        targetValue = this.ppCrawlerRequester.downloadImage(imageUrl);
-                    }else{
+                    if (itemScrapedContent.getContent().tagName().equalsIgnoreCase("img")) {
+                        targetValue = itemScrapedContent.getContent().attr("src");
+                    } else {
                         targetValue = itemScrapedContent.getContent().text();
                     }
 
@@ -149,5 +196,24 @@ public class IndividualsBuilder {
             }
         }
         return targetValue;
+    }
+
+    private void handleIndividualImages(List<PPIndividual> individuals){
+        individuals.stream().forEach(individual -> {
+            IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
+            // Get all properties including parent ones that exists on individual properties
+            List<PropertyDefinition> schemaProperties = schema.getAllProperties().stream().filter(property -> individual.getProperty(property.getName()).isPresent()).collect(Collectors.toList());
+
+            schemaProperties.stream()
+                    .filter(property -> property.getPropertyType().getValue().equals("image"))
+                    .forEach(property -> {
+                        IndividualSimpleProperty individualProperty = (IndividualSimpleProperty) individual.getProperty(property.getName()).get();
+                        String imageContent = this.ppCrawlerRequester.downloadImage(individualProperty.getValue());
+                        IndividualSimpleProperty propertyValue = new IndividualSimpleProperty();
+                        propertyValue.setName("imageContent");
+                        propertyValue.setValue(imageContent);
+                        individual.addProperty(propertyValue);
+                    });
+        });
     }
 }

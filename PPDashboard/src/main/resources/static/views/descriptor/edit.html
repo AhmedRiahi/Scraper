@@ -12,7 +12,7 @@
 			</h3>
 			<h5>
 				<b>- Schemas</b> :
-				<span 	class="label label-info" 
+				<span 	class="label label-info"
 						ng-repeat="schema in currentDescriptor.individualSchemas">
 						{{schema}}
 				</span>
@@ -65,7 +65,7 @@
 			    </li>
 			</ul>
 		</div>
-		
+
 		<div class="row">
 			<div class="col-md-12">
 				<div class="tab-content" style="padding-top: 30px;">
@@ -147,7 +147,7 @@
 									<h4><b><i class="fa fa-assistive-listening-systems" aria-hidden="true"></i> Listeners</b></h4>
 								</div>
 								<ul class="list-group ">
-									<li class="list-group-item" 
+									<li class="list-group-item"
 										ng-class='{
 											active : currentListener == listener,
 											"list-group-item-success": listener.individual,
@@ -164,8 +164,8 @@
 											<h4><b>Listener properties</b></h4>
 											<div class='form-group'>
 												Listener Name
-												<input 	type="text" 
-														class='form-control'  
+												<input 	type="text"
+														class='form-control'
 														ng-model="currentListener.name"
 														placeholder="Listener Name">
 											</div>
@@ -214,19 +214,19 @@
 										<div class="well">
 											<h4><b>Pre-Process Script</b></h4>
 											</br>
-											<textarea 	class="form-control" 
-														rows="8" 
+											<textarea 	class="form-control"
+														rows="8"
 														placeholder="Please type your javascript code here..."
 														ng-model="currentListener.preProcessScript"></textarea>
 											</br>
 											<p class="label label-success" ng-bind="scriptResult" ng-show="scriptResult" style="display:block"></p></br>
 											<div class="pull-right">
 												<div class="form-inline">
-													<input type="text" class="form-control" placeholder="Script Input" ng-model="scriptInput"/>
+													<input type="text" class="form-control" placeholder="Script Input" ng-model="currentListener.scriptInput"/>
 													<button class="btn btn-info " ng-click="testScript()">Test Script</button>
 												</div>
 											</div>
-											
+
 											<span class="clearfix"></span>
 										</div>
 									</div>
@@ -244,7 +244,7 @@
 				    				</div>
 									<h4><b><i class="fa fa-puzzle-piece" aria-hidden="true"></i> Semantic Relations</b></h4>
 								</div>
-								<div>	
+								<div>
 									<table class="table table-hover table-condensed">
 										<thead>
 											<th>Source</th>
@@ -256,7 +256,7 @@
 										<tbody>
 											<tr ng-repeat="sr in currentDescriptor.semanticRelations">
 												<td>
-													<select class='form-control' ng-model="sr.source" 
+													<select class='form-control' ng-model="sr.source"
 															ng-options="listener.name for listener in currentDescriptor.contentListeners track by listener.name">
 													</select>
 												</td>
@@ -296,7 +296,7 @@
 				    	<div>
 							<div class="pull-right">
 								<button class='btn btn-xs btn-success pull-right' ng-click="addStructureRelation()"><i class="fa fa-plus" aria-hidden="true"></i> Add</button>
-							</div>				
+							</div>
 							<h4><b><i class="fa fa-puzzle-piece" aria-hidden="true"></i> Struncture Relations</b></h4>
 						</div>
 						<table class="table table-hover table-condensed">
@@ -338,13 +338,13 @@
 									<h4><b><i class="fa fa-link" aria-hidden="true"></i> Semantic Mapping</b></h4>
 								</div>
 								<ul class="list-group">
-									<li class="list-group-item" 
+									<li class="list-group-item"
 										ng-class='{active : currentDSM == dsm}'
 										ng-repeat="dsm in currentDescriptor.descriptorSemanticMappings"
 										ng-click="selectDSM(dsm)">{{dsm.name}}</li>
 								</ul>
 							</div>
-							
+
 							<div class="col-md-9" ng-if="currentDSM">
 								<div class="row">
 									<div class="col-md-12">
@@ -358,7 +358,7 @@
 									<div class="col-md-4">
 										<h4><b>Listeners</b></h4>
 										<ul class="list-group ">
-											<li class="list-group-item" 
+											<li class="list-group-item"
 												ng-class='{
 													active : currentDSM.currentListener == listener,
 													"list-group-item-success": listener.individual,
@@ -376,14 +376,14 @@
 												<select ng-model="currentDSM.clSemanticProperties[currentDSM.currentListener.name]"
 														class="form-control"
 														ng-if="!currentDSM.currentListener.individual">
-																				
+
 													<option ng-repeat="property in currentDSM.currentListener.sourceSchema.allProperties"
 															value="{{property.name}}">
 														{{property.name}}
 													</option>
 												</select>
 
-												<select class='form-control' 
+												<select class='form-control'
 														ng-model="currentDSM.clSemanticProperties[currentDSM.currentListener.name]"
 														ng-if="currentDSM.currentListener.individual">
 
@@ -396,20 +396,20 @@
 												<div class='form-group' ng-if="!currentDSM.currentListener.individual">
                                                     Static value
 
-                                                    <input     type="text" 
-                                                        class='form-control'  
+                                                    <input     type="text"
+                                                        class='form-control'
                                                         ng-model="currentDSM.currentListener.staticValue"
                                                         placeholder="Static value"
                                                         ng-if='!isSchemaReferenceProperty(currentDSM.currentListener)'/>
-                                                    
+
                                                     <select class="form-control"
                                                             ng-model="currentDSM.currentListener.staticValue"
                                                             ng-if="isSchemaReferenceProperty(currentDSM.currentListener)"
                                                             ng-options="individual.uniqueProperty as individual.displayString for individual in schemaIndividuals[currentDSM.clSemanticProperties[currentDSM.currentListener.name]]">
-                                                                    
+
                                                     </select>
                                                 </div>
-												
+
 											</div>
 										</div>
 									</div>
@@ -422,11 +422,11 @@
 				    	<div class="row">
 							<div class="col-md-12" >
 								<div class="pull-right">
-									<button class='btn btn-info' 
+									<button class='btn btn-info'
 											ng-click="refreshDescriptorData()"><span class="glyphicon glyphicon-refresh"></span> Refresh</button>
-									 <button 	class='btn btn-danger' 
+									 <button 	class='btn btn-danger'
 												ng-click="removeDescriptorIndividuals()"><span class="glyphicon glyphicon-remove"></span> Remove All individuals</button>
-									
+
 								</div>
 								<div class='clearfix'></div>
 								</br>
@@ -456,7 +456,7 @@
 															{{individual[property.name].displayString}}
 														</span>
 
-														<a 	href='{{individual[property.name]}}' 
+														<a 	href='{{individual[property.name]}}'
 															target='_blank'
 															ng-if="property.propertyType.value=='url'">URL</a>
 													</td>

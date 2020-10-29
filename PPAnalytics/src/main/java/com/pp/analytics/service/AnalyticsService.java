@@ -209,8 +209,8 @@ public class AnalyticsService {
                 //Get Joiner Individual
                 List<PPIndividual> joinerIndividuals = dwdp.getValidIndividuals();
 
-                Map<String, List<PPIndividual>> groupedIndividuals = joinerIndividuals.stream().collect(groupingBy(PPIndividual::getSchemaName));
-                groupedIndividuals.entrySet().stream().forEach(entry -> {
+                Map<String, List<PPIndividual>> groupedJoinerIndividuals = joinerIndividuals.stream().collect(groupingBy(PPIndividual::getSchemaName));
+                groupedJoinerIndividuals.entrySet().stream().forEach(entry -> {
                     if (!entry.getValue().isEmpty()) {
                         // in case of joining individual itself
                         if (entry.getKey().equalsIgnoreCase(joinerPropertyName)) {
@@ -220,6 +220,8 @@ public class AnalyticsService {
                             if (entry.getValue().get(0).getProperty(joinerPropertyName).isPresent()) {
                                 List<String> propertiesValues = entry.getValue().stream().map(individual -> individual.getSimpleProperty(joinerPropertyName)).filter(Optional::isPresent).map(Optional::get).map(IndividualSimpleProperty::getValue).collect(Collectors.toList());
                                 joinedIndividual.put(joinedPropertyName, propertiesValues.size() == 1 ? propertiesValues.get(0) : propertiesValues);
+                            } else {
+                                log.warn("Joined property does not exists in Joiner Individual " + joinerPropertyName);
                             }
                         }
                     }
@@ -260,7 +262,7 @@ public class AnalyticsService {
     }
 
     private void processIndividualsProperties(DescriptorJob descriptorJob, List<PPIndividual> individuals) {
-        individuals.stream().forEach(individual -> this.individualPropertiesProcessor.processIndividualProperties(descriptorJob.getCrawlingParams().getUrl(), descriptorJob.getDescriptor(), descriptorJob.getDescriptorSemanticMappingId(), individual));
+        individuals.stream().forEach(individual -> this.individualPropertiesProcessor.processIndividualProperties(descriptorJob.getCrawlingParams().getUrl(), individual));
     }
 
 }
