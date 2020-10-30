@@ -89,7 +89,7 @@ public class AnalyticsService {
         log.info("Got {} duplicate individuals", individuals.size());
         List<PPIndividual> updatedIndividuals = new ArrayList<>();
         individuals.stream().forEach(individual -> {
-            DBObject duplicateObject = this.individualsPublisher.getDuplicateIndividual(individual);
+            DBObject duplicateObject = this.individualsPublisher.getDuplicateIndividualLatestVersion(individual);
             List<String> oldProperties = duplicateObject.keySet().stream()
                     .filter(propertyName -> !commonIndividualProperties.contains(propertyName))
                     .collect(Collectors.toList());

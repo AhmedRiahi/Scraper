@@ -52,7 +52,7 @@ public class IndividualsPublisher {
         });
     }
 
-    public DBObject getDuplicateIndividual(PPIndividual individual) {
+    public List<DBObject> getDuplicateIndividuals(PPIndividual individual) {
         IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
 
         List<PropertyDefinition> uniqueSchemaProperties = schema.getUniqueProperties();
@@ -70,18 +70,24 @@ public class IndividualsPublisher {
                 }
 
                 DBCollection collection = MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName());
-                DBObject dbObject = collection.findOne(query);
-                return dbObject;
-            } else {
-                return null;
+                return collection.find(query).toArray();
             }
+        }
+        return new ArrayList<>();
+    }
+
+    public DBObject getDuplicateIndividualLatestVersion(PPIndividual individual) {
+        List<DBObject> duplicateIndividuals = this.getDuplicateIndividuals(individual);
+        if (!duplicateIndividuals.isEmpty()) {
+            duplicateIndividuals.sort(Comparator.comparing((DBObject o) -> new Integer(o.get("version").toString())));
+            return duplicateIndividuals.get(duplicateIndividuals.size()-1);
         }
         return null;
     }
 
 
     public boolean isDuplicatedIndividual(PPIndividual individual) {
-        return this.getDuplicateIndividual(individual) != null;
+        return !this.getDuplicateIndividuals(individual).isEmpty();
     }
 
     public Map<Boolean, List<PPIndividual>> getIndividualsGroupedByDuplication(List<PPIndividual> individuals) {
@@ -89,7 +95,7 @@ public class IndividualsPublisher {
         List<PPIndividual> duplicateIndividuals = new ArrayList<>();
 
         for (PPIndividual individual : individuals) {
-            DBObject duplicateIndividual = this.getDuplicateIndividual(individual);
+            DBObject duplicateIndividual = this.getDuplicateIndividualLatestVersion(individual);
             if (duplicateIndividual == null) {
                 newIndividuals.add(individual);
             } else {
