@@ -14,7 +14,7 @@ import static com.pp.framework.jms.JMSTopics.*;
 @Service
 @Slf4j
 public class MozartReceiver {
-	
+
 	@Autowired
 	private MozartService mozartService;
 	@Autowired
@@ -32,7 +32,7 @@ public class MozartReceiver {
     public void launchDescriptorJoinWorkflow(String workflowId){
         this.mozartService.launchDescriptorJoinWorkflow(workflowId);
     }
-	
+
 	/* Crawler Listeners */
 
     @JmsListener(destination = Crawler.DOWNLOAD+ OUT)
@@ -52,7 +52,7 @@ public class MozartReceiver {
 		this.dwdpDAO.save(dwdp);
 		this.mozartService.handleProcessingError(workflowId);
 	}
-	
+
 	/* Scraper Listeners */
 
     @JmsListener(destination = Scraper.MATCH_DESCRIPTOR+ OUT)
@@ -63,12 +63,12 @@ public class MozartReceiver {
         this.dwdpDAO.save(dwdp);
 		if(dwdp.getIndividuals() != null && !dwdp.getIndividuals().isEmpty()) {
 		    if(dwdp.getDescriptorJob().isStandaloneMode()){
-                this.sender.send(Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+ IN, workflowId);
+                this.sender.send(Analytics.ANALYSE_STANDALONE_DESCRIPTOR_POPULATION + IN, workflowId);
             }else{
 		        if(dwdp.getJoinDetails().isJoiner()){
-                    this.sender.send(Analytics.ANALYSE_JOINER_DESCRITOR_POPULATION+ IN, workflowId);
+                    this.sender.send(Analytics.ANALYSE_JOINER_DESCRIPTOR_POPULATION + IN, workflowId);
                 }else{
-                    this.sender.send(Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+ IN, workflowId);
+                    this.sender.send(Analytics.ANALYSE_JOINED_DESCRIPTOR_POPULATION + IN, workflowId);
                 }
             }
 		}else {
@@ -86,29 +86,29 @@ public class MozartReceiver {
         this.dwdpDAO.save(dwdp);
 		this.mozartService.handleProcessingError(workflowId);
 	}
-	
+
 	/* Analytics Listeners */
 
-    @JmsListener(destination = Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+ OUT)
+    @JmsListener(destination = Analytics.ANALYSE_STANDALONE_DESCRIPTOR_POPULATION + OUT)
 	public void analyseStandaloneDescriptorPopulationCompleted(String workflowId) {
 		log.info("Mozart received {} after analysing descriptor",workflowId);
 		DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+ OUT);
+        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_STANDALONE_DESCRIPTOR_POPULATION + OUT);
         this.dwdpDAO.save(dwdp);
 		if(dwdp.getDebugInformation().getCleanIndividualsCount() > 0) {
             this.sender.send(Subscription.SCAN_DESCRIPTOR_POPULATION_SUBSCRIPTION+ IN, workflowId);
 		}else {
 			log.info("No Clean Individuals found : Nothing to be computed aborting processing for workflow {}",workflowId);
 			this.mozartService.finishDescriptorWorkflow(workflowId);
-		}		
+		}
 	}
 
 
-    @JmsListener(destination = Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+ OUT)
+    @JmsListener(destination = Analytics.ANALYSE_JOINED_DESCRIPTOR_POPULATION + OUT)
     public void analyseJoinedDescriptorPopulationCompleted(String workflowId) {
         log.info("Mozart received {} after analysing descriptor",workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+ OUT);
+        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINED_DESCRIPTOR_POPULATION + OUT);
         this.dwdpDAO.save(dwdp);
         if(dwdp.getDebugInformation().getCleanIndividualsCount() > 0) {
             this.sender.send(Mozart.PROCESS_DESCRIPTOR_JOIN,workflowId);
@@ -119,11 +119,11 @@ public class MozartReceiver {
         }
     }
 
-    @JmsListener(destination = Analytics.ANALYSE_JOINER_DESCRITOR_POPULATION+ OUT)
+    @JmsListener(destination = Analytics.ANALYSE_JOINER_DESCRIPTOR_POPULATION + OUT)
     public void analyseJoinerDescriptorPopulationCompleted(String workflowId) {
         log.info("Mozart received {} after analysing descriptor",workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINER_DESCRITOR_POPULATION+ OUT);
+        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINER_DESCRIPTOR_POPULATION + OUT);
         this.dwdpDAO.save(dwdp);
         if(dwdp.getDebugInformation().getCleanIndividualsCount() > 0) {
             this.sender.send(Mozart.PROCESS_DESCRIPTOR_JOIN,workflowId);
@@ -137,30 +137,30 @@ public class MozartReceiver {
     }
 
 
-    @JmsListener(destination = Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+ ERROR)
+    @JmsListener(destination = Analytics.ANALYSE_STANDALONE_DESCRIPTOR_POPULATION + ERROR)
     public void analyseStandaloneDescriptorPopulationError(String workflowId) {
-        log.error("Error : "+ Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+" "+workflowId);
+        log.error("Error : "+ Analytics.ANALYSE_STANDALONE_DESCRIPTOR_POPULATION +" "+workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_STANDALONE_DESCRITOR_POPULATION+ ERROR);
+        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_STANDALONE_DESCRIPTOR_POPULATION + ERROR);
         this.dwdpDAO.save(dwdp);
         this.mozartService.handleProcessingError(workflowId);
     }
 
 
-    @JmsListener(destination = Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+ ERROR)
+    @JmsListener(destination = Analytics.ANALYSE_JOINED_DESCRIPTOR_POPULATION + ERROR)
     public void analyseJoinedDescriptorPopulationError(String workflowId) {
-        log.error("Error : "+ Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+" "+workflowId);
+        log.error("Error : "+ Analytics.ANALYSE_JOINED_DESCRIPTOR_POPULATION +" "+workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+ ERROR);
+        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINED_DESCRIPTOR_POPULATION + ERROR);
         this.dwdpDAO.save(dwdp);
         this.mozartService.handleProcessingError(workflowId);
     }
 
-    @JmsListener(destination = Analytics.ANALYSE_JOINER_DESCRITOR_POPULATION+ ERROR)
+    @JmsListener(destination = Analytics.ANALYSE_JOINER_DESCRIPTOR_POPULATION + ERROR)
     public void analyseJoineRDescriptorPopulationError(String workflowId) {
-        log.error("Error : "+ Analytics.ANALYSE_JOINED_DESCRITOR_POPULATION+" "+workflowId);
+        log.error("Error : "+ Analytics.ANALYSE_JOINED_DESCRIPTOR_POPULATION +" "+workflowId);
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
-        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINER_DESCRITOR_POPULATION+ ERROR);
+        dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINER_DESCRIPTOR_POPULATION + ERROR);
         this.dwdpDAO.save(dwdp);
         this.mozartService.handleProcessingError(workflowId);
     }

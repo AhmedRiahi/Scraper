@@ -9,6 +9,7 @@ import com.pp.database.model.semantic.individual.properties.IndividualSimpleProp
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.database.model.semantic.schema.PropertyDefinition;
+import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class IndividualsPublisher {
 
     @Autowired
@@ -39,6 +41,20 @@ public class IndividualsPublisher {
                 dbObject.put("urlSource", dwdp.getDescriptorJob().getCrawlingParams().getUrl());
                 MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName()).save(dbObject);
             });
+        });
+    }
+
+    public void copyJoinedIndividualToPublishArea(DescriptorWorkflowDataPackage dwdp, PPIndividual individual) {
+        log.info("Copy Joined individual into publish area: {}", individual.getId());
+        IndividualSchema schema = this.individualSchemaDAO.findOne("name", individual.getSchemaName());
+        DBCollection collection = MongoDatastore.getStagingDatastore().getDB().getCollection(individual.getSchemaName());
+        DBObject query = new BasicDBObject();
+        query.put("_id", individual.getId());
+        DBCursor cursor = collection.find(query);
+        cursor.forEach(dbObject -> {
+            this.processObjectReferenceProperties(dbObject, schema);
+            dbObject.put("urlSource", dwdp.getDescriptorJob().getCrawlingParams().getUrl());
+            MongoDatastore.getPublishDatastore().getDB().getCollection(schema.getRootParent().getName()).save(dbObject);
         });
     }
 
@@ -80,7 +96,7 @@ public class IndividualsPublisher {
         List<DBObject> duplicateIndividuals = this.getDuplicateIndividuals(individual);
         if (!duplicateIndividuals.isEmpty()) {
             duplicateIndividuals.sort(Comparator.comparing((DBObject o) -> new Integer(o.get("version").toString())));
-            return duplicateIndividuals.get(duplicateIndividuals.size()-1);
+            return duplicateIndividuals.get(duplicateIndividuals.size() - 1);
         }
         return null;
     }

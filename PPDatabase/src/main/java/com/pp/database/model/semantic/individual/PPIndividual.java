@@ -14,45 +14,56 @@ import java.util.List;
 import java.util.Optional;
 
 @Data
-public class PPIndividual extends PPEntity{
+public class PPIndividual extends PPEntity {
 
-	@NotNull
-	private String schemaName;
-	@Embedded
-	private List<IndividualBaseProperty> properties;
-	private String descriptorId;
-	private String workflowId;
-	private String displayString;
-	private boolean isValid = false;
-	private boolean pureJoinIndividual = false;
-	private ObjectId previousVersion;
-	private long version = 1;
-
-
-	public PPIndividual() {
-		this.properties = new ArrayList<>();
-	}
+    @NotNull
+    private String schemaName;
+    @Embedded
+    private List<IndividualBaseProperty> properties;
+    private String descriptorId;
+    private String workflowId;
+    private String displayString;
+    private boolean isValid = false;
+    private boolean pureJoinIndividual = false;
+    private ObjectId previousVersion;
+    private long version = 1;
 
 
-	public PPIndividual(String schemaName){
-		this();
-		this.schemaName = schemaName;
-	}
+    public PPIndividual() {
+        this.properties = new ArrayList<>();
+    }
 
-	public void addProperty(IndividualBaseProperty propertyValue){
-		this.properties.add(propertyValue);
-	}
 
-	public Optional<IndividualBaseProperty> getProperty(String propertyName) {
-		return this.properties.stream().filter(p -> p.getName().equals(propertyName)).findFirst();
-	}
+    public PPIndividual(String schemaName) {
+        this();
+        this.schemaName = schemaName;
+    }
 
-	public Optional<IndividualSimpleProperty> getSimpleProperty(String propertyName) {
-		return this.properties.stream().filter(p -> p instanceof IndividualSimpleProperty && p.getName().equals(propertyName)).map(p -> (IndividualSimpleProperty)p).findFirst();
-	}
+    public void addProperty(IndividualBaseProperty propertyValue) {
+        this.properties.add(propertyValue);
+    }
 
-	public boolean hasProperty(String propertyName) {
-		return this.properties.stream().anyMatch(p -> p.getName().equals(propertyName));
-	}
+    public Optional<IndividualBaseProperty> getProperty(String propertyName) {
+        return this.properties.stream().filter(p -> p.getName().equals(propertyName)).findFirst();
+    }
+
+    public Optional<IndividualSimpleProperty> getSimpleProperty(String propertyName) {
+        return this.properties.stream().filter(p -> p instanceof IndividualSimpleProperty && p.getName().equals(propertyName)).map(p -> (IndividualSimpleProperty) p).findFirst();
+    }
+
+    public boolean hasProperty(String propertyName) {
+        return this.properties.stream().anyMatch(p -> p.getName().equals(propertyName));
+    }
+
+    private void deleteProperty(String propertyName) {
+        this.properties.remove(this.getProperty(propertyName));
+    }
+
+    public void resetProperty(String name, IndividualBaseProperty property) {
+        if (this.hasProperty(property.getName())) {
+            this.deleteProperty(property.getName());
+        }
+        this.addProperty(property);
+    }
 
 }
