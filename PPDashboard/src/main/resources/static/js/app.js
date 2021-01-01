@@ -8,7 +8,7 @@ PPDashboard.config(function($stateProvider,$urlRouterProvider){
 	$stateProvider.state('admin',{
 		url 		: '/admin',
 		templateUrl	: 'views/admin/index.html'
-		
+
 	}).state('home',{
 		url 		: '/home',
 		templateUrl	: 'views/home/index.html',
@@ -80,7 +80,7 @@ PPDashboard.config(function($stateProvider,$urlRouterProvider){
 		url 		: '/debug/:executionId',
 		templateUrl	: 'views/descriptor/debug.html',
 		controller 	: DebugDescriptorController
-			
+
 	});
 
 
@@ -150,7 +150,7 @@ PPDashboard.controller('SubscriptionController',SubscriptionController);
 
 // ************** Services Management **************
 var serverHost = window.location.hostname;
-var dashboardServerURL 	= 'http://'+serverHost+':9000/';
+var dashboardServerURL 	= 'http://'+serverHost+':8002/';
 var worldServerURL 	= 'http://'+serverHost+':9001/';
 var subscriptionServerURL 	= 'http://'+serverHost+':9002/';
 var Services 	= angular.module('Services',['ngResource']);

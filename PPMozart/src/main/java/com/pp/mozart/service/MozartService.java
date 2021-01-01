@@ -10,10 +10,7 @@ import com.pp.database.model.mozart.DescriptorWorkflowDataPackage;
 import com.pp.database.model.mozart.JobExecutionHistory;
 import com.pp.framework.jms.JMSTopics;
 import com.pp.framework.jms.sender.PPSender;
-import com.pp.mozart.jms.MozartReceiver;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
@@ -30,7 +27,7 @@ public class MozartService {
     @Autowired
     private DescriptorWorkflowDataPackageDAO dwdpDAO;
     @Autowired
-    private JobExecutionHistoryDAO dehDAO;
+    private JobExecutionHistoryDAO jobExecutionHistoryDAO;
     @Autowired
     private PPSender sender;
     @Autowired
@@ -64,6 +61,7 @@ public class MozartService {
                 joinDwdp.getJoinDetails().setJoinedIndividual(dwdp.getIndividuals().stream().filter(individual -> individual.getId().toString().equals(stagingIndividual.get("_id").toString())).findFirst().get());
                 join.setSourceDSMId(dwdp.getDescriptorJob().getDescriptorSemanticMappingId());
                 DescriptorJob joinJob = new DescriptorJob();
+                joinJob.setName(dwdp.getDescriptorJob().getName() + " - Joiner");
                 joinJob.setDescriptor(join.getTargetDescriptorModel());
                 joinJob.getCrawlingParams().setHttpMethod(HttpMethod.GET.name());
                 joinJob.getCrawlingParams().setUrl(stagingIndividual.get(join.getSourceURLListener().getName()).toString());
@@ -74,6 +72,8 @@ public class MozartService {
                 joinDwdp.getDebugInformation().setMozartExecutionStep("Mozart Init");
                 joinDwdp.setPortfolio(dwdp.getPortfolio());
                 this.dwdpDAO.save(joinDwdp);
+                //Create execution history
+                this.createDescriptorJobExecutionHistory(joinDwdp);
                 this.sender.send(JMSTopics.Crawler.DOWNLOAD + JMSTopics.IN, joinDwdp.getId().toHexString());
             });
         });
@@ -87,10 +87,10 @@ public class MozartService {
             descriptorJob.setLastCheckingDate(new Date());
             descriptorJob.setExecutionErrorsCount(0);
             this.descriptorsPortfolioDAO.save(dwdp.getPortfolio());
-            this.closeDescriptorJobExecutionHistory(dwdp, false);
         } else {
             // Todo handle joiner workflow
         }
+        this.closeDescriptorJobExecutionHistory(dwdp, false);
 
     }
 
@@ -106,29 +106,29 @@ public class MozartService {
                 descriptorJob.setCheckingRequired(true);
             }
             this.descriptorsPortfolioDAO.save(dwdp.getPortfolio());
-            this.closeDescriptorJobExecutionHistory(dwdp, true);
         } else {
             // Todo handle joiner workflow
         }
-
+        this.closeDescriptorJobExecutionHistory(dwdp, true);
     }
 
     private void createDescriptorJobExecutionHistory(DescriptorWorkflowDataPackage dwdp) {
-        JobExecutionHistory deh = new JobExecutionHistory();
-        deh.setStartTime(new Date());
-        deh.setPortfolio(dwdp.getPortfolio());
-        deh.setDescriptorJob(dwdp.getDescriptorJob());
-        deh.setDwdp(dwdp);
-        this.dehDAO.save(deh);
+        JobExecutionHistory jobExecutionHistory = new JobExecutionHistory();
+        jobExecutionHistory.setStartTime(new Date());
+        jobExecutionHistory.setPortfolio(dwdp.getPortfolio());
+        jobExecutionHistory.setDescriptorJob(dwdp.getDescriptorJob());
+        jobExecutionHistory.setDwdp(dwdp);
+        jobExecutionHistory.setJoinDetails(dwdp.getJoinDetails());
+        this.jobExecutionHistoryDAO.save(jobExecutionHistory);
     }
 
     private void closeDescriptorJobExecutionHistory(DescriptorWorkflowDataPackage dwdp, boolean error) {
-        JobExecutionHistory deh = this.dehDAO.getByDWDPId(dwdp.getStringId());
-        deh.setFinishTime(new Date());
+        JobExecutionHistory jobExecutionHistory = this.jobExecutionHistoryDAO.getByDWDPId(dwdp.getStringId());
+        jobExecutionHistory.setFinishTime(new Date());
         if (error) {
-            deh.setInError(true);
+            jobExecutionHistory.setError(true);
         }
-        this.dehDAO.save(deh);
+        this.jobExecutionHistoryDAO.save(jobExecutionHistory);
     }
 
 }

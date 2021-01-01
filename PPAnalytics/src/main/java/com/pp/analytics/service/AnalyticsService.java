@@ -80,7 +80,7 @@ public class AnalyticsService {
         this.preProcessJoinerIndividual(dwdp);
         this.updateJoinedIndividuals(dwdp);
         // Process Joiner Individual
-        List<PPIndividual> newIndividuals = this.generateJoinedIndividualsPopulation(dwdp.getJoinDetails().getJoinedDWDP(), dwdp.getJoinDetails().getJoinedIndividual());
+        List<PPIndividual> newIndividuals = this.generateJoinedIndividualPopulation(dwdp.getJoinDetails().getJoinedDWDP(), dwdp.getJoinDetails().getJoinedIndividual());
         if (!newIndividuals.isEmpty()) {
             this.individualsPublisher.copyJoinedIndividualToPublishArea(dwdp.getJoinDetails().getJoinedDWDP(), dwdp.getJoinDetails().getJoinedIndividual());
         }
@@ -103,8 +103,8 @@ public class AnalyticsService {
         return this.generateNewStagingIndividuals(dwdp, newIndividuals);
     }
 
-    public List<PPIndividual> generateJoinedIndividualsPopulation(DescriptorWorkflowDataPackage dwdp, PPIndividual joinedIndividual) {
-        log.info("Got {} individuals", dwdp.getIndividuals().size());
+    public List<PPIndividual> generateJoinedIndividualPopulation(DescriptorWorkflowDataPackage dwdp, PPIndividual joinedIndividual) {
+        log.info("Generate Joined Individual Population", dwdp.getIndividuals().size());
         // Check for duplicated Staging individuals
         Map<Boolean, List<PPIndividual>> groupingMap = this.individualsPublisher.getIndividualsGroupedByDuplication(Arrays.asList(joinedIndividual));
         List<PPIndividual> newIndividuals = new ArrayList<>();
@@ -144,7 +144,12 @@ public class AnalyticsService {
 
     private List<PPIndividual> generateNewStagingIndividuals(DescriptorWorkflowDataPackage dwdp, List<PPIndividual> individuals) {
         log.info("Got {} individuals after cleaning duplicate", individuals.size());
-        dwdp.getDebugInformation().setCleanIndividualsCount(individuals.size());
+        if (dwdp.getDescriptorJob().isStandaloneMode()) {
+            dwdp.getDebugInformation().setCleanIndividualsCount(individuals.size());
+        } else {
+            dwdp.getDebugInformation().incrementCleanIndividualsCount();
+        }
+
         this.dwdpDAO.save(dwdp);
         List<PPIndividual> validIndividuals = new ArrayList<>();
         if (!individuals.isEmpty()) {

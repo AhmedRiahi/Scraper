@@ -11,4 +11,8 @@ public class DWDPDebugInformation{
     private String mozartExecutionStep;
     private int cleanIndividualsCount;
     private String exception;
+
+    public void incrementCleanIndividualsCount(){
+        this.cleanIndividualsCount++;
+    }
 }

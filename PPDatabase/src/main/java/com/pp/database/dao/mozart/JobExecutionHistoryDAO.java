@@ -24,7 +24,14 @@ public class JobExecutionHistoryDAO extends PPDAO<JobExecutionHistory>{
 	}
 
 	public List<JobExecutionHistory> getByPortfolioId(String portfolioId){
-		return this.createQuery().disableValidation().field("portfolio.$id").equal(new ObjectId(portfolioId)).order("-startTime").limit(10).asList();
+		return this.createQuery().disableValidation()
+				.field("portfolio.$id").equal(new ObjectId(portfolioId))
+				.field("joinDetails.isJoiner").equal(false)
+				.order("-startTime").limit(10).asList();
+	}
+
+	public List<JobExecutionHistory> getJoinerJobs(String parentDWDPId){
+		return this.createQuery().disableValidation().field("joinDetails.joinedDWDP.$id").equal(new ObjectId(parentDWDPId)).asList();
 	}
 
     public JobExecutionHistory getByExecutionId(String executionId){
@@ -40,7 +47,7 @@ public class JobExecutionHistoryDAO extends PPDAO<JobExecutionHistory>{
 	}
 
     public List<JobExecutionHistory> getInError() {
-        return this.createQuery().disableValidation().field("inError").equal(true).asList();
+        return this.createQuery().disableValidation().field("isError").equal(true).asList();
     }
 
     public List<JobExecutionHistory> getActiveJobs() {

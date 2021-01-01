@@ -22,7 +22,7 @@
 			<div class="panel-body">
                 <ul class="list-group">
                     <li class="list-group-item" style="cursor: pointer"
-                        ng-class="{active : selectedExecution == exec,'list-group-item-danger' : exec.inError }"
+                        ng-class="{active : selectedExecution == exec,'list-group-item-danger' : exec.isError }"
                         ng-repeat="exec in executionHistory">
                         <h4 class="list-group-item-heading">
                             {{exec.descriptorJob.descriptor.name}}:{{exec.descriptorJob.name}}
@@ -49,7 +49,7 @@
             <div class="panel-body">
                 <ul class="list-group">
                     <li class="list-group-item" style="cursor: pointer"
-                        ng-class="{active : selectedExecution == exec,'list-group-item-danger' : exec.inError }"
+                        ng-class="{active : selectedExecution == exec,'list-group-item-danger' : exec.isError }"
                         ng-repeat="exec in activeExecutionHistory">
                         <h4 class="list-group-item-heading">
                             {{exec.descriptorJob.descriptor.name}}:{{exec.descriptorJob.name}}

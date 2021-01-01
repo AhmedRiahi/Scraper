@@ -358,11 +358,12 @@
 								</h4>
 								<ul class="list-group">
 									<li class="list-group-item" style="cursor: pointer"
-										ng-class="{active : selectedExecution == exec,'list-group-item-danger' : exec.inError }"
+										ng-class="{active : selectedExecution == exec,'list-group-item-danger' : exec.error }"
 										ng-repeat="exec in executionHistory"
 										ng-click="selectExecutionHistory(exec)">
 										<h4 class="list-group-item-heading">
 											{{exec.descriptorName}}
+											<span  style="font-size:10px">{{exec.joinerJobs.length}} Joiners</span>
 											<span class="label label-default pull-right" style="font-size:10px">{{exec.startTime | date : 'dd/MM/yyyy'}}</span>
 										</h4>
 
@@ -370,6 +371,7 @@
 										<span class="label label-warning">{{exec.finishTime | date : 'HH:mm:ss'}}</span>
 										<span class="label label-danger" ng-if="!exec.finishTime">Not Finished</span>
 										<span class="label label-success pull-right" style="font-size:10px">{{exec.individuals.length}} Individuals</span>
+										<span class="label label-success pull-right" style="font-size:10px;margin-right: 2px">{{exec.cleanIndividualsCount}} Clean</span>
 										<span class="clearfix"></span>
 
 									</li>
@@ -380,15 +382,17 @@
 								<div class="row">
 									<div class="col-md-12">
 										<h4><b><i class="fa fa-bug" aria-hidden="true"></i> Debug Information</b></h4>
-										<h5>Last Executed Step : {{selectedExecution.lastExecutedStep}}</h5>
-										<h5 class="well" ng-if="selectedExecution.executionException">
-											Exception : {{selectedExecution.executionException}}
-										</h5>
-										<a class="btn btn-primary" ui-sref="debug({executionId:selectedExecution.stringId})">Debug Signature</a>
+										<div class="well">
+											<h5>Last Executed Step : {{selectedExecution.lastExecutedStep}}</h5>
+											<h5 ng-if="selectedExecution.executionException">
+												Exception : {{selectedExecution.executionException}}
+											</h5>
+											<a class="btn btn-primary" ui-sref="debug({executionId:selectedExecution.stringId})">Debug Signature</a>
+										</div>
 									</div>
 								</div>
 								<div class="row">
-									<div class="col-md-12">
+									<div class="col-md-9">
 										<h4><b><i class="fa fa-list-alt" aria-hidden="true"></i> Generated Individuals</b></h4>
 										<table class="table table-hover well"
 												ng-repeat="individual in selectedExecution.individuals">
@@ -407,6 +411,26 @@
 												</tr>
 											</tbody>
 										</table>
+									</div>
+									<div class="col-md-3">
+										<h4><b><i class="fa fa-history" aria-hidden="true"></i> Joiner Executions</b></h4>
+										<ul class="list-group">
+											<li class="list-group-item" style="cursor: pointer"
+												ng-class="{'list-group-item-danger' : joinerExec.error }"
+												ng-repeat="joinerExec in selectedExecution.joinerJobs">
+												<h4 class="list-group-item-heading">
+													{{joinerExec.descriptorName}}
+													<span class="label label-default pull-right" style="font-size:10px">{{joinerExec.startTime | date : 'dd/MM/yyyy'}}</span>
+												</h4>
+
+												<span class="label label-warning">{{joinerExec.startTime | date : 'HH:mm:ss'}}</span>
+												<span class="label label-warning">{{joinerExec.finishTime | date : 'HH:mm:ss'}}</span>
+												<span class="label label-danger" ng-if="!joinerExec.finishTime">Not Finished</span>
+												<span class="label label-success pull-right" style="font-size:10px">{{joinerExec.cleanIndividualsCount}} Clean</span>
+												<span class="clearfix"></span>
+
+											</li>
+										</ul>
 									</div>
 								</div>
 							</div>

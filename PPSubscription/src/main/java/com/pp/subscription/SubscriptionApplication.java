@@ -10,9 +10,9 @@ import org.springframework.context.annotation.ComponentScan;
 @ComponentScan("com.pp")
 @SpringBootApplication
 @EnableAutoConfiguration(exclude={MongoDataAutoConfiguration.class,MongoAutoConfiguration.class})
-public class SubsciptionApplication {
+public class SubscriptionApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SubsciptionApplication.class, args);
+		SpringApplication.run(SubscriptionApplication.class, args);
 	}
 }
