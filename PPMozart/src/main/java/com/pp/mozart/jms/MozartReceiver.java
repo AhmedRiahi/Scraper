@@ -112,7 +112,6 @@ public class MozartReceiver {
         this.dwdpDAO.save(dwdp);
         if(dwdp.getDebugInformation().getCleanIndividualsCount() > 0) {
             this.sender.send(Mozart.PROCESS_DESCRIPTOR_JOIN,workflowId);
-            this.sender.send(Subscription.SCAN_DESCRIPTOR_POPULATION_SUBSCRIPTION+IN,workflowId);
         }else {
             log.info("No Clean Individuals found : Nothing to be computed aborting processing for workflow {}",workflowId);
             this.mozartService.finishDescriptorWorkflow(workflowId);
@@ -125,14 +124,7 @@ public class MozartReceiver {
         DescriptorWorkflowDataPackage dwdp = this.dwdpDAO.get(workflowId);
         dwdp.getDebugInformation().setMozartExecutionStep(Analytics.ANALYSE_JOINER_DESCRIPTOR_POPULATION + OUT);
         this.dwdpDAO.save(dwdp);
-        if(dwdp.getDebugInformation().getCleanIndividualsCount() > 0) {
-            this.sender.send(Mozart.PROCESS_DESCRIPTOR_JOIN,workflowId);
-            this.sender.send(Subscription.SCAN_DESCRIPTOR_POPULATION_SUBSCRIPTION+IN,workflowId);
-        }else {
-            log.info("No Clean Individuals found : Nothing to be computed aborting processing for workflow {}",workflowId);
-            this.mozartService.finishDescriptorWorkflow(workflowId);
-        }
-        // TODO here scan subscription
+        this.sender.send(Subscription.SCAN_DESCRIPTOR_POPULATION_SUBSCRIPTION+IN,dwdp.getJoinDetails().getJoinedDWDP().getStringId());
         this.mozartService.finishDescriptorWorkflow(workflowId);
     }
 

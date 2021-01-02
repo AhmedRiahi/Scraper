@@ -20,4 +20,8 @@ public class SchemaSubscriptionIndividuals extends PPEntity {
     public void addMatchedIndividual(String individualId) {
         this.matchedIndividualsIds.add(individualId);
     }
+
+    public boolean individualAlreadyExists(String individualId) {
+        return this.matchedIndividualsIds.contains(individualId);
+    }
 }
