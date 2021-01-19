@@ -9,6 +9,7 @@ import com.pp.database.model.semantic.individual.properties.IndividualSimpleProp
 import com.pp.database.model.semantic.individual.PPIndividual;
 import com.pp.database.model.semantic.schema.IndividualSchema;
 import com.pp.database.model.semantic.schema.PropertyDefinition;
+import com.pp.framework.utils.URLUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +80,8 @@ public class IndividualsPublisher {
                 DBObject query = new BasicDBObject();
                 if (uniqueProperty.getPropertyType().getValue().equalsIgnoreCase("url")) {
                     // For url properties, URL may not contain domain name
-                    DBObject regex = new BasicDBObject("$regex", individual.getSimpleProperty(uniqueProperty.getName()).get().getValue() + "$");
+                    String escapedURL = URLUtils.escapeURLRegex(individual.getSimpleProperty(uniqueProperty.getName()).get().getValue());
+                    DBObject regex = new BasicDBObject("$regex", escapedURL + "$");
                     query.put(uniqueProperty.getName(), regex);
                 } else {
                     query.put(uniqueProperty.getName(), individual.getSimpleProperty(uniqueProperty.getName()).get().getValue());
