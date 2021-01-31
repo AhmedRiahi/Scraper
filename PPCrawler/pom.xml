@@ -50,7 +50,18 @@
             <artifactId>PPFramework</artifactId>
             <version>0.0.3-SNAPSHOT</version>
         </dependency>
-
     </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ProfitNProvide</groupId>
+                <artifactId>PPGlobal</artifactId>
+                <version>0.0.3-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

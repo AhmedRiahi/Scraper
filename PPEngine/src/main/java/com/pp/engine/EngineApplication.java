@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Import;
 @Import({ SchedulerConfig.class })
 @ComponentScan("com.pp")
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={MongoDataAutoConfiguration.class,MongoAutoConfiguration.class})
 public class EngineApplication {
 
 	public static void main(String[] args) {

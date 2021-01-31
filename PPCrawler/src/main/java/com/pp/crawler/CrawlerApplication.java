@@ -9,11 +9,10 @@ import org.springframework.context.annotation.ComponentScan;
 
 @ComponentScan("com.pp")
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={MongoDataAutoConfiguration.class,MongoAutoConfiguration.class})
 public class CrawlerApplication {
 
 	public static void main(String[] args){
 		SpringApplication.run(CrawlerApplication.class, args);
 	}
-	
+
 }

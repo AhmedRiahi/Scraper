@@ -11,3 +11,8 @@ pupitter/**
 PPAdmin/PPAdmin.iml
 PPSubscription/PPSubscription.iml
 **/*.iml
+*.bin
+*.nphd
+*.map
+*.ref
+*.gc

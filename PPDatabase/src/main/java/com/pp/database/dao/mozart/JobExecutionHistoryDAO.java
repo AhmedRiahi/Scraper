@@ -3,6 +3,8 @@ package com.pp.database.dao.mozart;
 import com.pp.database.kernel.PPDAO;
 import com.pp.database.model.mozart.JobExecutionHistory;
 import org.bson.types.ObjectId;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Repository;
 
 import java.util.Date;
@@ -15,6 +17,7 @@ public class JobExecutionHistoryDAO extends PPDAO<JobExecutionHistory>{
 		super(JobExecutionHistory.class);
 	}
 
+	@CacheEvict(value = "JobExecutionHistory", allEntries = true)
 	public JobExecutionHistory getByDWDPId(String dwdpId) {
 		return this.createQuery().disableValidation().field("dwdp.$id").equal(new ObjectId(dwdpId)).get();
 	}

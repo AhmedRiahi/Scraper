@@ -13,16 +13,16 @@ import java.util.List;
 
 @Service
 public class CleanerService {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(CleanerReceiver.class);
 
-	private static final long CLEAN_DELAY = 2 * 24 * 60 * 60 * 1000l ; // 2 day
+	private static final long CLEAN_DELAY = 3 * 60 * 60 * 1000l ; // 3 hours
 	@Autowired
 	private DescriptorWorkflowDataPackageDAO dwdpDAO;
 
 	@Autowired
     private JobExecutionHistoryDAO jobExecutionHistoryDAO;
-	
+
 	public void clean() {
 		//Clean DescriptorWorkflowDataPackage
 		List<JobExecutionHistory> jobExecutionHistories = this.jobExecutionHistoryDAO.getBeforeDate(CleanerService.CLEAN_DELAY);

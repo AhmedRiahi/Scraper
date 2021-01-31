@@ -51,6 +51,20 @@
                 <version>0.0.3-SNAPSHOT</version>
                 <type>pom</type>
                 <scope>import</scope>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>tomcat-embed-el</artifactId>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>tomcat-embed-core</artifactId>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                    </exclusion>
+                    <exclusion>
+                        <artifactId>tomcat-embed-websocket</artifactId>
+                        <groupId>org.apache.tomcat.embed</groupId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -1,87 +1,91 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <artifactId>PPDashboard</artifactId>
-  <parent>
-    <groupId>ProfitNProvide</groupId>
-    <artifactId>PPGlobal</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
-  </parent>
-  <name>PPDashboard</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>PPDashboard</artifactId>
+    <parent>
+        <groupId>ProfitNProvide</groupId>
+        <artifactId>PPGlobal</artifactId>
+        <version>0.0.3-SNAPSHOT</version>
+    </parent>
+    <name>PPDashboard</name>
 
 
+    <build>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>true</filtering>
+                <excludes>
+                    <exclude>static/fonts/**</exclude>
+                </excludes>
+            </resource>
 
-  <build>
+            <resource>
+                <directory>${project.basedir}/src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>static/fonts/**</include>
+                </includes>
+            </resource>
+        </resources>
 
-      <resources>
-          <resource>
-              <directory>${project.basedir}/src/main/resources</directory>
-              <filtering>true</filtering>
-              <excludes>
-                  <exclude>static/fonts/**</exclude>
-              </excludes>
-          </resource>
-
-          <resource>
-              <directory>${project.basedir}/src/main/resources</directory>
-              <filtering>false</filtering>
-              <includes>
-                  <include>static/fonts/**</include>
-              </includes>
-          </resource>
-      </resources>
-
-    <plugins>
-        <plugin>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <version>3.3</version>
-            <configuration>
-              <source>1.8</source>
-              <target>1.8</target>
-            </configuration>
-          </plugin>
+        <plugins>
+            <plugin>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.3</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
 
 
-        <plugin>
-          <groupId>org.springframework.boot</groupId>
-          <artifactId>spring-boot-maven-plugin</artifactId>
-        </plugin>
-    </plugins>
-  </build>
-  <dependencies>
-	
-      <dependency>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+    <dependencies>
+
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>ProfitNProvide</groupId>
             <artifactId>PPDatabase</artifactId>
             <version>0.0.3-SNAPSHOT</version>
-      </dependency>
+        </dependency>
 
-      <dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-devtools</artifactId>
-      </dependency>
+        </dependency>
 
-      <dependency>
+        <dependency>
             <groupId>ProfitNProvide</groupId>
             <artifactId>PPFramework</artifactId>
             <version>0.0.3-SNAPSHOT</version>
-      </dependency>
+        </dependency>
 
-      <dependency>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-security</artifactId>
-      </dependency>
-	
-  </dependencies>
-  
-  <dependencyManagement>
-	   <dependencies>
-	      <dependency>
-	       <groupId>ProfitNProvide</groupId>
-		    <artifactId>PPGlobal</artifactId>
-		    <version>0.0.3-SNAPSHOT</version>
-	        <type>pom</type>
-	        <scope>import</scope>
-	      </dependency>
-	   </dependencies>
-	</dependencyManagement>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-security</artifactId>
+        </dependency>
+
+    </dependencies>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>ProfitNProvide</groupId>
+                <artifactId>PPGlobal</artifactId>
+                <version>0.0.3-SNAPSHOT</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

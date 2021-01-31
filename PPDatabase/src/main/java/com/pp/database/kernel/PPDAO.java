@@ -12,18 +12,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-
 public class PPDAO<T extends PPEntity> extends BasicDAO<T,ObjectId>{
 
 	public PPDAO(Class<T> entityClass){
 		super(entityClass,MongoDatastore.getDatastore());
 	}
-	
+
 	public void setDatastore(Datastore datastore) {
 		this.ds = (DatastoreImpl) datastore;
 		this.initType(this.getEntityClass());
 	}
-	
+
 	@Override
 	public Key<T> save(T entity) {
 		if( entity.getCreationDate() == null){
@@ -31,21 +30,21 @@ public class PPDAO<T extends PPEntity> extends BasicDAO<T,ObjectId>{
 		}else{
 			entity.setLastModificationDate(new Date());
 		}
-		
+
 		return super.save((T) entity);
 	}
-	
+
 	public void saveAll(List<T> entities){
 		for(T entity : entities){
 			this.save(entity);
 		}
 	}
-	
+
 	public T get(String hexId){
 		ObjectId oid = new ObjectId(hexId);
 		return this.get(oid);
 	}
-	
+
 	public T get(ObjectId id){
 		return this.createQuery().field("id").equal(id).get();
 	}
@@ -55,11 +54,11 @@ public class PPDAO<T extends PPEntity> extends BasicDAO<T,ObjectId>{
 		this.deleteById(oid);
 	}
 
-	
+
 	public void updateCollection(T entity,String field,Collection<?> updateValue){
 		Query<T> query = this.createQuery().field("_id").equal(entity.getId());
 		UpdateOperations<T> updateOperation = this.createUpdateOperations().set(field, updateValue);
 		this.update(query,updateOperation);
 	}
-	
+
 }

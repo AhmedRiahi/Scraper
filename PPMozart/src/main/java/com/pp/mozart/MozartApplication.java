@@ -1,15 +1,13 @@
 package com.pp.mozart;
 
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.ComponentScan;
 
-@ComponentScan("com.pp")
 @SpringBootApplication
-@EnableAutoConfiguration(exclude={MongoDataAutoConfiguration.class,MongoAutoConfiguration.class})
+@ComponentScan(basePackages = "com.pp")
+@EnableCaching(proxyTargetClass = true)
 public class MozartApplication {
 
 	public static void main(String[] args) {

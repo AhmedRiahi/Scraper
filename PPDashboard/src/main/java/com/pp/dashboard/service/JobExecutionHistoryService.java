@@ -22,7 +22,7 @@ public class JobExecutionHistoryService {
     @Autowired
     private DescriptorWorkflowDataPackageDAO dwdpDAO;
 
-    public List<JobExecutionHistoryPayload> getPortfolioExecutionHistory(String portfolioId){
+    public List<JobExecutionHistoryPayload> getPortfolioExecutionHistory(String portfolioId) {
         List<JobExecutionHistoryPayload> jobExecutionHistoryPayloads = new ArrayList<>();
         List<JobExecutionHistory> jobExecutionHistoryEntities = this.jobExecutionHistoryDAO.getByPortfolioId(portfolioId);
         jobExecutionHistoryEntities.stream().forEach(jobExecutionHistoryEntity -> {
@@ -35,11 +35,11 @@ public class JobExecutionHistoryService {
         return jobExecutionHistoryPayloads;
     }
 
-    public JobExecutionHistory get(@PathVariable String jobId){
+    public JobExecutionHistory get(@PathVariable String jobId) {
         return this.jobExecutionHistoryDAO.get(jobId);
     }
 
-    public List<JobExecutionHistoryPayload> getInErrorJobs(){
+    public List<JobExecutionHistoryPayload> getInErrorJobs() {
         List<JobExecutionHistory> historyJobs = this.jobExecutionHistoryDAO.getInError();
         historyJobs.stream().forEach(job -> {
             job.setDwdp(null);
@@ -48,7 +48,7 @@ public class JobExecutionHistoryService {
         return historyJobs.stream().map(JobExecutionHistoryTransformer::toPayload).collect(Collectors.toList());
     }
 
-    public List<JobExecutionHistoryPayload> getActiveJobs(){
+    public List<JobExecutionHistoryPayload> getActiveJobs() {
         List<JobExecutionHistory> historyJobs = this.jobExecutionHistoryDAO.getActiveJobs();
         historyJobs.stream().forEach(job -> {
             job.setDwdp(null);
